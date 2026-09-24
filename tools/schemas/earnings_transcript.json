@@ -1,0 +1,64 @@
+{
+  "name": "earnings_transcript",
+  "description": "Retrieve the earnings-call transcript for a company's fiscal quarter, with speaker labels and prepared-remarks/Q&A sections. Use it for management commentary, guidance and analyst concerns. If no transcript is available the earnings press release is returned instead; check source_kind.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$",
+        "description": "Stock ticker symbol."
+      },
+      "quarter": {
+        "type": "string",
+        "enum": ["Q1", "Q2", "Q3", "Q4"],
+        "description": "Fiscal quarter (the company's fiscal calendar, not the calendar year)."
+      },
+      "year": {
+        "type": "integer",
+        "minimum": 2000,
+        "maximum": 2100,
+        "description": "Fiscal year the quarter belongs to."
+      }
+    },
+    "required": ["ticker", "quarter", "year"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.earnings:mock_earnings_transcript",
+      "live": null
+    },
+    "source_tier": 3,
+    "cache_ttl_s": 604800,
+    "fallbacks": ["sec_filing_search", "news_sentiment"],
+    "domains": ["sentiment"],
+    "unlock": {"after_challenge": 2},
+    "output_schema": {
+      "type": "object",
+      "required": ["ticker", "quarter", "fiscal_year", "source_kind", "segments"],
+      "properties": {
+        "ticker": {"type": "string"},
+        "quarter": {"type": "string"},
+        "fiscal_year": {"type": "integer"},
+        "call_date": {"type": ["string", "null"]},
+        "source_kind": {"enum": ["transcript", "press_release"]},
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["speaker", "section", "text"],
+            "properties": {
+              "speaker": {"type": "string"},
+              "role": {"type": "string"},
+              "section": {"enum": ["prepared", "qa"]},
+              "text": {"type": "string"}
+            }
+          }
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

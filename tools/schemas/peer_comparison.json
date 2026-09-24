@@ -1,0 +1,67 @@
+{
+  "name": "peer_comparison",
+  "description": "Identify a company's closest industry peers and compare them on standard metrics (revenue, growth, margins, ROE, P/E, market cap), with rankings. Use it for competitive positioning and relative valuation.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$",
+        "description": "Ticker of the company to compare."
+      },
+      "num_peers": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "default": 5,
+        "description": "Maximum number of peers."
+      },
+      "metrics": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["revenue", "revenue_growth", "gross_margin", "operating_margin", "net_margin", "roe", "pe_ratio", "market_cap"]
+        },
+        "minItems": 1,
+        "uniqueItems": true,
+        "description": "Metrics to compare. Omit for all."
+      }
+    },
+    "required": ["ticker"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.peer_comparison:mock_peer_comparison",
+      "live": null
+    },
+    "source_tier": 2,
+    "cache_ttl_s": 86400,
+    "fallbacks": ["financial_data_api", "company_profile"],
+    "domains": ["competition"],
+    "unlock": {"after_challenge": 4},
+    "output_schema": {
+      "type": "object",
+      "required": ["ticker", "peers", "metrics", "matrix", "rankings"],
+      "properties": {
+        "ticker": {"type": "string"},
+        "peers": {"type": "array", "items": {"type": "string"}},
+        "metrics": {"type": "array", "items": {"type": "string"}},
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ticker", "values"],
+            "properties": {
+              "ticker": {"type": "string"},
+              "name": {"type": "string"},
+              "values": {"type": "object", "additionalProperties": {"type": ["number", "null"]}}
+            }
+          }
+        },
+        "rankings": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

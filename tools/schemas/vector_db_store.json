@@ -1,0 +1,55 @@
+{
+  "name": "vector_db_store",
+  "description": "Save a research finding to long-term memory so future sessions can reuse it. Store verified, self-contained findings (one fact or insight per call) with their ticker, date and source type. Do not store speculation.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "content": {
+        "type": "string",
+        "minLength": 10,
+        "maxLength": 8000,
+        "description": "The finding, written so it makes sense without surrounding context."
+      },
+      "metadata": {
+        "type": "object",
+        "description": "Where the finding came from.",
+        "properties": {
+          "ticker": {"type": "string", "description": "Company ticker the finding is about."},
+          "date": {"type": "string", "description": "ISO date of the underlying source information."},
+          "source_type": {
+            "type": "string",
+            "enum": ["10-K", "10-Q", "8-K", "DEF 14A", "earnings_call", "press_release", "financial_data", "news", "web", "analysis"],
+            "description": "Kind of source the finding is based on."
+          },
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "verified": {"type": "boolean", "description": "True if fact-checked against more than one source."},
+          "source_url": {"type": "string"},
+          "evidence_id": {"type": "string"}
+        },
+        "required": ["ticker", "date", "source_type"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["content", "metadata"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "memory.vector_store:vector_db_store",
+      "live": null
+    },
+    "source_tier": null,
+    "cache_ttl_s": 0,
+    "fallbacks": [],
+    "domains": ["memory"],
+    "output_schema": {
+      "type": "object",
+      "required": ["id", "stored"],
+      "properties": {
+        "id": {"type": "string"},
+        "stored": {"type": "boolean"},
+        "total_records": {"type": "integer"}
+      }
+    }
+  }
+}

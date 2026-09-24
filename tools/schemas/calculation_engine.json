@@ -1,0 +1,40 @@
+{
+  "name": "calculation_engine",
+  "description": "Perform a financial calculation and show the intermediate steps. ALWAYS use this instead of doing arithmetic yourself. Types and inputs: growth_rate/percent_change (current, previous); cagr (begin_value, end_value, years); margin (numerator, revenue); ratio (numerator, denominator); dcf (cash_flows[], discount_rate, terminal_growth_rate, optional net_debt, shares_outstanding); descriptive_stats (values[]). Rates are fractions: 0.1 = 10%.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "calculation_type": {
+        "type": "string",
+        "enum": ["growth_rate", "percent_change", "cagr", "margin", "ratio", "dcf", "descriptive_stats"],
+        "description": "The calculation to perform."
+      },
+      "inputs": {
+        "type": "object",
+        "description": "Named numeric inputs for the chosen calculation type (see the tool description)."
+      }
+    },
+    "required": ["calculation_type", "inputs"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "any": "tools.calculator:calculation_engine"
+    },
+    "source_tier": null,
+    "cache_ttl_s": 0,
+    "fallbacks": [],
+    "domains": ["financials"],
+    "unlock": {"after_challenge": 6},
+    "output_schema": {
+      "type": "object",
+      "required": ["calculation_type", "inputs", "result", "steps"],
+      "properties": {
+        "calculation_type": {"type": "string"},
+        "inputs": {"type": "object"},
+        "result": {"type": ["number", "object"]},
+        "steps": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

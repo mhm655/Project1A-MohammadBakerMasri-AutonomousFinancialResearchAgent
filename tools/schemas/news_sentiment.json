@@ -1,0 +1,78 @@
+{
+  "name": "news_sentiment",
+  "description": "Collect recent news articles about a company or topic and score their sentiment from -1 (negative) to +1 (positive). Use it to gauge market narrative and to compare sentiment with what the financial data shows. Returns per-article scores and an overall summary.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 200,
+        "description": "Company name, ticker or topic, e.g. 'Palantir'."
+      },
+      "num_articles": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20,
+        "description": "Maximum number of articles to analyse."
+      },
+      "lookback_days": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 365,
+        "default": 30,
+        "description": "Only include articles from the last N days."
+      }
+    },
+    "required": ["query"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.news_sentiment:mock_news_sentiment",
+      "live": null
+    },
+    "source_tier": 4,
+    "cache_ttl_s": 1800,
+    "fallbacks": ["web_search", "vector_db_search"],
+    "domains": ["sentiment"],
+    "output_schema": {
+      "type": "object",
+      "required": ["query", "overall", "articles"],
+      "properties": {
+        "query": {"type": "string"},
+        "lookback_days": {"type": "integer"},
+        "article_count": {"type": "integer"},
+        "overall": {
+          "type": "object",
+          "required": ["score", "label"],
+          "properties": {
+            "score": {"type": "number", "minimum": -1, "maximum": 1},
+            "label": {"enum": ["positive", "negative", "neutral"]},
+            "positive": {"type": "number"},
+            "negative": {"type": "number"},
+            "neutral": {"type": "number"}
+          }
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "url", "sentiment_score"],
+            "properties": {
+              "title": {"type": "string"},
+              "url": {"type": "string"},
+              "source": {"type": "string"},
+              "published": {"type": ["string", "null"]},
+              "summary": {"type": "string"},
+              "sentiment_score": {"type": "number", "minimum": -1, "maximum": 1},
+              "sentiment_label": {"enum": ["positive", "negative", "neutral"]}
+            }
+          }
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "web_search",
+  "description": "Search the web for current news, analysis and commentary about a company or financial topic. Use it for recent events and context that filings and data APIs do not cover. Do not use it for financial figures that financial_data_api or sec_filing_search can provide.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 300,
+        "description": "Search query, e.g. 'Tesla regulatory investigations 2025'."
+      },
+      "num_results": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 25,
+        "default": 10,
+        "description": "Number of results to return."
+      },
+      "date_range": {
+        "type": "string",
+        "enum": ["day", "week", "month", "year"],
+        "description": "Only return results published within this period. Omit for any date."
+      }
+    },
+    "required": ["query"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.web_search:mock_web_search",
+      "live": null
+    },
+    "source_tier": 4,
+    "cache_ttl_s": 3600,
+    "fallbacks": ["news_sentiment", "vector_db_search"],
+    "domains": ["sentiment", "competition", "risk"],
+    "output_schema": {
+      "type": "object",
+      "required": ["query", "results"],
+      "properties": {
+        "query": {"type": "string"},
+        "date_range": {"type": ["string", "null"]},
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "url", "snippet"],
+            "properties": {
+              "title": {"type": "string"},
+              "url": {"type": "string"},
+              "snippet": {"type": "string"},
+              "source": {"type": "string"},
+              "published": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

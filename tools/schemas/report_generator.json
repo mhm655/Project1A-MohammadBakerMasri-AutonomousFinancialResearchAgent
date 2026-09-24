@@ -1,0 +1,67 @@
+{
+  "name": "report_generator",
+  "description": "Assemble finished report sections into a structured Markdown investment research report using a named template. Use it once, at the end, after the sections are written and verified. Cite evidence as [E1], [E2]...; every cited id must appear in sources. Missing template sections are flagged as data gaps.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "template": {
+        "type": "string",
+        "enum": ["company_profile", "earnings_analysis", "risk_assessment", "comparative_analysis", "investigative", "thematic", "full_report"],
+        "description": "Report template; determines the required sections."
+      },
+      "sections": {
+        "type": "object",
+        "description": "Section key to Markdown body, e.g. {\"executive_summary\": \"...\"}. Also accepts data_gaps_and_limitations and research_methodology.",
+        "additionalProperties": {"type": "string"}
+      },
+      "sources": {
+        "type": "array",
+        "description": "Evidence cited in the sections.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {"type": "string", "pattern": "^E\\d+$"},
+            "title": {"type": "string"},
+            "url": {"type": "string"},
+            "date": {"type": "string"},
+            "source_type": {"type": "string"},
+            "is_mock": {"type": "boolean"}
+          },
+          "required": ["id", "title"],
+          "additionalProperties": false
+        }
+      },
+      "title": {
+        "type": "string",
+        "maxLength": 200,
+        "description": "Report title. Defaults to the template name."
+      }
+    },
+    "required": ["template", "sections", "sources"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "any": "tools.report_gen:report_generator"
+    },
+    "source_tier": null,
+    "cache_ttl_s": 0,
+    "fallbacks": [],
+    "domains": ["synthesis"],
+    "output_schema": {
+      "type": "object",
+      "required": ["template", "markdown", "missing_sections", "unknown_citations", "word_count"],
+      "properties": {
+        "template": {"type": "string"},
+        "markdown": {"type": "string"},
+        "sections_rendered": {"type": "array", "items": {"type": "string"}},
+        "missing_sections": {"type": "array", "items": {"type": "string"}},
+        "extra_sections": {"type": "array", "items": {"type": "string"}},
+        "unknown_citations": {"type": "array", "items": {"type": "string"}},
+        "uncited_sources": {"type": "array", "items": {"type": "string"}},
+        "word_count": {"type": "integer"},
+        "contains_mock_data": {"type": "boolean"}
+      }
+    }
+  }
+}

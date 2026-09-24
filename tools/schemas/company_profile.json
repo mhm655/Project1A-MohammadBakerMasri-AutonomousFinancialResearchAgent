@@ -1,0 +1,53 @@
+{
+  "name": "company_profile",
+  "description": "Get basic facts about a company: legal name, sector, industry, market capitalisation, employees, headquarters, fiscal-year end and key executives. Use it at the start of research to identify the company and its fiscal calendar.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$",
+        "description": "Stock ticker symbol."
+      }
+    },
+    "required": ["ticker"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.company_profile:mock_company_profile",
+      "live": null
+    },
+    "source_tier": 2,
+    "cache_ttl_s": 86400,
+    "fallbacks": ["sec_filing_search", "web_search"],
+    "domains": ["financials", "competition"],
+    "output_schema": {
+      "type": "object",
+      "required": ["ticker", "name"],
+      "properties": {
+        "ticker": {"type": "string"},
+        "name": {"type": "string"},
+        "cik": {"type": "string"},
+        "exchange": {"type": "string"},
+        "sector": {"type": "string"},
+        "industry": {"type": "string"},
+        "sic_code": {"type": "string"},
+        "headquarters": {"type": "string"},
+        "employees": {"type": "integer"},
+        "fiscal_year_end": {"type": "string", "pattern": "^\\d{4}$"},
+        "market_cap": {"type": "number"},
+        "description": {"type": "string"},
+        "executives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "title"],
+            "properties": {"name": {"type": "string"}, "title": {"type": "string"}}
+          }
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

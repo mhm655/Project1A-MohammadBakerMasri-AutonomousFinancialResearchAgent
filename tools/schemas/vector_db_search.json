@@ -1,0 +1,68 @@
+{
+  "name": "vector_db_search",
+  "description": "Search the agent's long-term memory for findings from previous research sessions. Call this FIRST on every task, before any external tool, to avoid repeating research. Results carry the original date and confidence; treat old market data as stale.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 500,
+        "description": "What to look for, in natural language."
+      },
+      "top_k": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50,
+        "default": 5,
+        "description": "Maximum number of results."
+      },
+      "filter": {
+        "type": "object",
+        "description": "Optional metadata filter.",
+        "properties": {
+          "ticker": {"type": "string"},
+          "source_type": {"type": "string"},
+          "verified": {"type": "boolean"},
+          "date_from": {"type": "string", "description": "ISO date, inclusive."},
+          "date_to": {"type": "string", "description": "ISO date, inclusive."},
+          "min_confidence": {"type": "number", "minimum": 0, "maximum": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "required": ["query"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "memory.vector_store:vector_db_search",
+      "live": null
+    },
+    "source_tier": null,
+    "cache_ttl_s": 0,
+    "fallbacks": [],
+    "domains": ["memory"],
+    "output_schema": {
+      "type": "object",
+      "required": ["query", "results"],
+      "properties": {
+        "query": {"type": "string"},
+        "searched_records": {"type": "integer"},
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "content", "score", "metadata"],
+            "properties": {
+              "id": {"type": "string"},
+              "content": {"type": "string"},
+              "score": {"type": "number"},
+              "metadata": {"type": "object"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "name": "financial_data_api",
+  "description": "Retrieve structured financial statements (income statement, balance sheet, cash flow) or derived key ratios for a company over several periods. Use it for any financial figure or trend; prefer fetching a whole statement over asking for single numbers. Amounts are in USD millions; ratios are fractions (0.25 = 25%).",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$",
+        "description": "Stock ticker symbol."
+      },
+      "statement_type": {
+        "type": "string",
+        "enum": ["income_statement", "balance_sheet", "cash_flow", "key_ratios"],
+        "description": "Which statement to return."
+      },
+      "period": {
+        "type": "string",
+        "enum": ["annual", "quarterly"],
+        "default": "annual",
+        "description": "Annual (fiscal years) or quarterly figures."
+      },
+      "years": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "default": 3,
+        "description": "How many years of history to return (quarterly returns up to 4 quarters per year)."
+      }
+    },
+    "required": ["ticker", "statement_type"],
+    "additionalProperties": false
+  },
+  "x-ara": {
+    "handlers": {
+      "mock": "tools.financial_api:mock_financial_data_api",
+      "live": null
+    },
+    "source_tier": 1,
+    "cache_ttl_s": 86400,
+    "fallbacks": ["sec_filing_search", "web_search", "vector_db_search"],
+    "domains": ["financials"],
+    "output_schema": {
+      "type": "object",
+      "required": ["ticker", "statement_type", "period", "currency", "unit", "data"],
+      "properties": {
+        "ticker": {"type": "string"},
+        "company_name": {"type": "string"},
+        "statement_type": {"type": "string"},
+        "period": {"enum": ["annual", "quarterly"]},
+        "currency": {"type": "string"},
+        "unit": {"enum": ["millions", "ratio"]},
+        "fiscal_year_end": {"type": "string"},
+        "data": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["fiscal_year", "fiscal_period", "period_end", "values"],
+            "properties": {
+              "fiscal_year": {"type": "integer"},
+              "fiscal_period": {"enum": ["FY", "Q1", "Q2", "Q3", "Q4"]},
+              "period_end": {"type": "string"},
+              "values": {"type": "object", "additionalProperties": {"type": ["number", "null"]}}
+            }
+          }
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

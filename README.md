@@ -7,8 +7,16 @@ needs no step-by-step guidance.
 
 Zetheta Project 1A · Mohammad Baker Masri
 
-> **Status: Day 1, architecture only.** Setup instructions arrive on Day 3, and the full
-> quick-start guide on Day 14.
+> **Status: Day 2.** The tool registry, the 12 tool schemas and mock tool implementations are done,
+> with 80 unit tests. Full setup instructions arrive on Day 3, and the quick-start guide on Day 14.
+
+## Running the tests
+
+```bash
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt   # on macOS/Linux: .venv/bin/python
+.venv/Scripts/python -m pytest
+```
 
 ## Highlights
 
@@ -33,6 +41,8 @@ Zetheta Project 1A · Mohammad Baker Masri
 | [docs/architecture_specification.md](docs/architecture_specification.md) | The full design: cognitive loop, tools, memory, synthesis, error handling, evaluation |
 | [docs/architecture_diagram.svg](docs/architecture_diagram.svg) | Architecture diagram |
 | [ERROR_LOG.md](ERROR_LOG.md) | The 7 deliberate errors found in the project document |
+| [tools/tool_registry.py](tools/tool_registry.py) | Tool registry: schema validation, dispatch, caching, provenance, unlocks |
+| [tools/schemas/](tools/schemas/) | The 12 tool definitions (OpenAI function format plus `x-ara` metadata) |
 
 ![Architecture](docs/architecture_diagram.svg)
 

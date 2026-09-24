@@ -1,0 +1,6 @@
+# Project metadata and dependencies are completed on Day 3 (environment setup).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
