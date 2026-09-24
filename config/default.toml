@@ -1,0 +1,89 @@
+# ARA-1 default configuration.
+#
+# Precedence (lowest to highest): this file < config/<mode>.toml (if present) < environment
+# variables (including those loaded from .env). Secrets never go in this file: API keys are read
+# from the environment variables named in each provider's `api_key_env`.
+
+# mock  : scripted LLM + mock tool data. No network, no keys. Used by tests.
+# local : Ollama on this machine + live data sources.
+# free  : Gemini free tier -> Groq free tier -> Ollama, + live data sources.
+mode = "free"
+
+# Which tool handlers to use: "mock" or "live". Empty = derive from mode (mock -> mock, else live).
+# Until the live tools land (Day 5), set ARA_DATA_MODE=mock to develop against mock data.
+data_mode = ""
+
+[paths]
+data_dir = "data"
+chroma_dir = "data/chroma"
+episodic_db = "data/episodic.sqlite"
+traces_dir = "traces"
+
+[llm]
+# Tried in order; a provider is skipped when its API key is missing.
+provider_order = ["gemini", "groq", "ollama"]
+temperature = 0.0
+max_output_tokens = 4096
+timeout_s = 60.0
+# Retries per provider before moving to the next one (rate limits move on quickly).
+max_retries = 2
+
+[llm.providers.gemini]
+kind = "openai_compatible"
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+api_key_env = "GEMINI_API_KEY"
+model = "gemini-2.5-flash"
+# Gemini accepts only a subset of JSON Schema in tool definitions.
+schema_dialect = "gemini"
+
+[llm.providers.groq]
+kind = "openai_compatible"
+base_url = "https://api.groq.com/openai/v1"
+api_key_env = "GROQ_API_KEY"
+model = "llama-3.3-70b-versatile"
+schema_dialect = "openai"
+
+[llm.providers.ollama]
+kind = "openai_compatible"
+base_url = "http://localhost:11434/v1"
+api_key_env = ""            # Ollama needs no key
+model = "qwen2.5:3b"
+schema_dialect = "openai"
+
+[llm.providers.openai]      # optional, paid; not in provider_order by default
+kind = "openai_compatible"
+base_url = "https://api.openai.com/v1"
+api_key_env = "OPENAI_API_KEY"
+model = "gpt-4o-mini"
+schema_dialect = "openai"
+
+[llm.providers.anthropic]   # optional, paid; not in provider_order by default
+kind = "anthropic"
+base_url = ""
+api_key_env = "ANTHROPIC_API_KEY"
+model = "claude-sonnet-5"
+schema_dialect = "openai"
+
+[agent]
+max_tool_calls = 20         # spec A7.1
+max_calls_per_step = 3      # bounded ReAct inside each plan step
+max_replans = 3
+max_reflections = 2
+
+[retry]                     # spec A4.3
+base_delay_s = 1.0
+max_retries = 5
+max_jitter_s = 0.5
+
+[memory]
+collection_prefix = "ara_findings"
+# "default" = Chroma's built-in ONNX all-MiniLM-L6-v2 (local, free, 384 dimensions).
+embedding_model = "default"
+
+[sec]
+# EDGAR requires a User-Agent naming the application and a contact email (set SEC_CONTACT_EMAIL).
+app_name = "ARA-1 Research Agent"
+max_requests_per_second = 8
+
+[logging]
+level = "INFO"

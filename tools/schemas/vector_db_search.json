@@ -37,7 +37,7 @@
   "x-ara": {
     "handlers": {
       "mock": "memory.vector_store:vector_db_search",
-      "live": null
+      "live": "memory.vector_store:live_vector_db_search"
     },
     "source_tier": null,
     "cache_ttl_s": 0,

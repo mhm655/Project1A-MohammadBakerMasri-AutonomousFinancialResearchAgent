@@ -7,32 +7,136 @@ needs no step-by-step guidance.
 
 Zetheta Project 1A · Mohammad Baker Masri
 
-> **Status: Day 2.** The tool registry, the 12 tool schemas and mock tool implementations are done,
-> with 80 unit tests. Full setup instructions arrive on Day 3, and the quick-start guide on Day 14.
+> **Status: Day 3.** Done so far:
+> - the architecture specification;
+> - the tool registry (12 tools);
+> - configuration, the LLM client with its provider fallback chain, the Chroma vector store, and
+>   tracing.
+>
+> The agent loop itself arrives on Day 4.
 
-## Running the tests
-
-```bash
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt   # on macOS/Linux: .venv/bin/python
-.venv/Scripts/python -m pytest
-```
+**Runs at zero cost.** Every dependency and data source is free, and no credit card is required
+anywhere.
 
 ## Highlights
 
 - **Hybrid agent loop.** A Plan-and-Execute outer graph (LangGraph) runs a bounded ReAct executor for
   each step and re-plans as it learns.
-- **12 tools** behind one dispatch pipeline: schema validation, caching, rate limiting, retries with
-  jitter, per-provider circuit breakers and fallback chains.
+- **12 tools** behind one dispatch pipeline: schema validation, caching, provenance, retries,
+  per-provider circuit breakers and fallback chains.
+- **LLM fallback chain.** Gemini free tier → Groq free tier → local Ollama, all called through the
+  official `openai` SDK, with retries, token accounting and a full trace.
 - **Three-layer memory:**
   - short-term context management;
-  - long-term vector store (Chroma);
-  - episodic strategy memory, plus a structured facts store.
+  - long-term vector store (Chroma, local embeddings);
+  - episodic strategy memory.
 - **A claim ledger** in which every number carries a period, a unit, evidence ids and a confidence
   score. Conflicts are resolved with a tiered source hierarchy and always disclosed.
-- **Costs nothing to run.** The LLM chain is Gemini free tier → Groq free tier → local Ollama,
-  called through the `openai` SDK. The data sources are SEC EDGAR/XBRL, yfinance, DuckDuckGo and
-  Google News RSS, and embeddings are computed locally.
+
+## Setup
+
+### 1. Prerequisites
+
+- **Python 3.11 or newer** (developed on 3.14).
+- **Git.**
+- About 1 GB of free disk space for the dependencies and the embedding model.
+
+### 2. Install
+
+```bash
+git clone <this repository>
+cd Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent
+python -m venv .venv
+```
+
+Activate the environment:
+
+| System | Command |
+|---|---|
+| Windows (PowerShell) | `.venv\Scripts\Activate.ps1` |
+| Windows (Git Bash) | `source .venv/Scripts/activate` |
+| macOS / Linux | `source .venv/bin/activate` |
+
+Then install the dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 3. Configure
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in the following. `.env` is git-ignored, so your keys never get committed.
+
+| Variable | Required? | How to get it (all free, no card) |
+|---|---|---|
+| `GEMINI_API_KEY` | Recommended: the primary LLM | Sign in at <https://aistudio.google.com/apikey> with a Google account, then click **Create API key** |
+| `GROQ_API_KEY` | Optional: backup LLM | Create an account at <https://console.groq.com/keys> and create a key |
+| `SEC_CONTACT_EMAIL` | Required from Day 5 | Any email you read. The SEC requires a contact address in the User-Agent of every EDGAR request; no account is needed |
+
+**Optional: an offline LLM with Ollama.** Install it from <https://ollama.com>, then run
+`ollama pull qwen2.5:3b` (about 2 GB). ARA-1 falls back to it automatically when the cloud providers
+are unavailable. Run with `ARA_MODE=local` to use only Ollama.
+
+### 4. Check the setup
+
+```bash
+python -m config.doctor
+```
+
+The doctor checks the following, and says how to fix anything that is missing:
+
+- the Python version and installed packages;
+- your `.env` file and which keys are set (it never prints key values);
+- the configuration;
+- the tool registry;
+- the vector database. The embedding model, about 80 MB, is downloaded once on the first run.
+
+For each LLM provider it also checks that:
+
+- the model exists;
+- the model answers a prompt;
+- it accepts ARA-1's real tool schemas and completes a tool-call round trip.
+
+Use `--offline` to skip the network checks.
+
+### 5. Run the tests
+
+```bash
+python -m pytest
+```
+
+The tests need no network access and no API keys.
+
+## Run modes
+
+Set these in `.env` or as environment variables. Defaults live in [config/default.toml](config/default.toml).
+
+| `ARA_MODE` | LLM | Data | Use |
+|---|---|---|---|
+| `mock` | Scripted mock | Mock fixtures | Tests, and demos with no network |
+| `local` | Ollama only | Live | Offline or unlimited development |
+| `free` *(default)* | Gemini → Groq → Ollama | Live | Challenge runs |
+
+`ARA_DATA_MODE=mock|live` overrides the data source independently of the LLM. The live data tools
+arrive on Day 5; until then, keep `ARA_DATA_MODE=mock`.
+
+## Project layout
+
+```
+agent/        reasoning loop (Day 4), LLM client (llm.py), tracing (tracing.py)
+tools/        tool registry, 12 JSON tool schemas, tool implementations
+memory/       vector store (Chroma); context manager and episodic memory (Day 6)
+synthesis/    claim ledger, conflict resolution, narrative (Day 8)
+evaluation/   metrics, benchmarks, dashboard (Day 11)
+config/       default.toml, settings loader, environment doctor
+docs/         architecture specification and diagram
+results/      challenge outputs
+tests/        pytest suite
+```
 
 ## Documents
 
@@ -41,7 +145,6 @@ python -m venv .venv
 | [docs/architecture_specification.md](docs/architecture_specification.md) | The full design: cognitive loop, tools, memory, synthesis, error handling, evaluation |
 | [docs/architecture_diagram.svg](docs/architecture_diagram.svg) | Architecture diagram |
 | [ERROR_LOG.md](ERROR_LOG.md) | The 7 deliberate errors found in the project document |
-| [tools/tool_registry.py](tools/tool_registry.py) | Tool registry: schema validation, dispatch, caching, provenance, unlocks |
 | [tools/schemas/](tools/schemas/) | The 12 tool definitions (OpenAI function format plus `x-ara` metadata) |
 
 ![Architecture](docs/architecture_diagram.svg)
@@ -53,4 +156,4 @@ below.
 
 | Tool | Used for |
 |---|---|
-| Claude Code (Anthropic) | Drafting the architecture specification, diagram and error log; scaffolding code. All output is reviewed and validated against the project requirements. |
+| Claude Code (Anthropic) | Drafting the architecture specification, diagram and error log; implementing and testing code. All output is reviewed and validated against the project requirements. |

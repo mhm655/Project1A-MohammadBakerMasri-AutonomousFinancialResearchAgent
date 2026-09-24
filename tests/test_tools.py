@@ -108,7 +108,7 @@ def test_openai_payload_is_a_copy(registry):
 
 def test_describe_marks_optional_arguments(registry):
     text = registry.describe()
-    line = next(l for l in text.splitlines() if l.startswith("- sec_filing_search("))
+    line = next(row for row in text.splitlines() if row.startswith("- sec_filing_search("))
     assert "ticker: string" in line and "year?: integer" in line
 
 
@@ -242,7 +242,8 @@ def test_call_log_records_successes_and_failures(registry):
 
 def test_live_mode_only_exposes_implemented_tools():
     live = build_default_registry("live")
-    assert {s.name for s in live.available()} == {"calculation_engine", "fact_checker", "report_generator"}
+    assert {s.name for s in live.available()} == {
+        "calculation_engine", "fact_checker", "report_generator", "vector_db_search", "vector_db_store"}
     with pytest.raises(ToolUnavailableError):
         live.dispatch("web_search", {"query": "nvidia"})
 

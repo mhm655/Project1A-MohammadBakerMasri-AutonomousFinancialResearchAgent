@@ -1,3 +1,33 @@
-# Day 2 (tool registry). The full dependency list is completed on Day 3.
+# ARA-1 dependencies. Every one is free and open source; no paid service is required.
+# Install with:  python -m pip install -r requirements.txt
+
+# LLM access (Gemini, Groq and Ollama all speak the OpenAI API)
+openai>=1.40
+anthropic>=0.40            # optional adapter; only used if you have a key
+
+# Agent orchestration
+langgraph>=0.2
+
+# Memory
+chromadb>=0.5              # local vector database with built-in ONNX embeddings
+tiktoken>=0.7              # token counting for context budgets
+
+# Validation, configuration, utilities
 jsonschema>=4.21
+pydantic>=2.7
+python-dotenv>=1.0
+httpx>=0.27
+tenacity>=8.2              # retry logic
+rich>=13                   # terminal formatting
+
+# Free data sources
+yfinance>=0.2.40           # market data and statements
+ddgs>=9.0                  # DuckDuckGo web search
+feedparser>=6.0            # Google News RSS
+beautifulsoup4>=4.12       # HTML parsing (SEC filings, transcripts)
+vaderSentiment>=3.3        # news sentiment scoring
+rank-bm25>=0.2             # keyword re-ranking in retrieval
+
+# Development
 pytest>=8.0
+ruff>=0.6

@@ -113,9 +113,9 @@ _CASH = ("operating_cash_flow", "capital_expenditure")
 
 
 def _year(fy: int, period_end: str, values: tuple) -> dict:
-    income = dict(zip(_INCOME, values[0:5]))
-    balance = dict(zip(_BALANCE, values[5:9]))
-    cash = dict(zip(_CASH, values[9:11]))
+    income = dict(zip(_INCOME, values[0:5], strict=True))
+    balance = dict(zip(_BALANCE, values[5:9], strict=True))
+    cash = dict(zip(_CASH, values[9:11], strict=True))
     cash["free_cash_flow"] = cash["operating_cash_flow"] - cash["capital_expenditure"]
     return {
         "fiscal_year": fy,
@@ -156,13 +156,13 @@ ANNUAL: dict[str, list[dict]] = {
 QUARTERLY_INCOME: dict[str, list[dict]] = {
     "AAPL": [
         {"fiscal_year": 2024, "fiscal_period": "Q4", "period_end": "2024-09-28",
-         "income_statement": dict(zip(_INCOME, (94930, 43879, 29591, 14736, 0.97)))},
+         "income_statement": dict(zip(_INCOME, (94930, 43879, 29591, 14736, 0.97), strict=True))},
         {"fiscal_year": 2024, "fiscal_period": "Q3", "period_end": "2024-06-29",
-         "income_statement": dict(zip(_INCOME, (85777, 39678, 25352, 21448, 1.40)))},
+         "income_statement": dict(zip(_INCOME, (85777, 39678, 25352, 21448, 1.40), strict=True))},
         {"fiscal_year": 2024, "fiscal_period": "Q2", "period_end": "2024-03-30",
-         "income_statement": dict(zip(_INCOME, (90753, 42271, 27900, 23636, 1.53)))},
+         "income_statement": dict(zip(_INCOME, (90753, 42271, 27900, 23636, 1.53), strict=True))},
         {"fiscal_year": 2024, "fiscal_period": "Q1", "period_end": "2023-12-30",
-         "income_statement": dict(zip(_INCOME, (119575, 54855, 40373, 33916, 2.18)))},
+         "income_statement": dict(zip(_INCOME, (119575, 54855, 40373, 33916, 2.18), strict=True))},
     ],
 }
 

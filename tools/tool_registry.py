@@ -24,10 +24,12 @@ import copy
 import importlib
 import itertools
 import json
+import logging
 import time
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
@@ -151,6 +153,7 @@ class ToolRegistry:
         self._output_validators: dict[str, Draft202012Validator] = {}
         self._cache: dict[tuple[str, str], tuple[float, ToolResult]] = {}
         self._evidence_ids = itertools.count(1)
+        self._listeners: list[Callable[[CallRecord], None]] = []
         self.call_log: list[CallRecord] = []
 
     # ------------------------------------------------------------------ registration
@@ -190,6 +193,10 @@ class ToolRegistry:
         spec = self.get(name)
         spec.handler, spec.handler_mode = handler, self.mode
         self._drop_cache(name)
+
+    def add_listener(self, listener: Callable[[CallRecord], None]) -> None:
+        """Call ``listener(record)`` after every dispatch, e.g. to write the call to a trace."""
+        self._listeners.append(listener)
 
     # ------------------------------------------------------------------ lookup
 
@@ -266,6 +273,14 @@ class ToolRegistry:
         for prop, prop_schema in spec.parameters.get("properties", {}).items():
             if prop not in filled and "default" in prop_schema:
                 filled[prop] = copy.deepcopy(prop_schema["default"])
+            elif isinstance(filled.get(prop), str) and prop_schema.get("type") in ("object", "array"):
+                # Some providers only accept free-form objects as strings (see agent/llm.py), and
+                # models sometimes stringify nested JSON anyway. Decode it; if it is not JSON, leave it
+                # for the validator to reject with a clear message.
+                try:
+                    filled[prop] = json.loads(filled[prop])
+                except json.JSONDecodeError:
+                    pass
 
         errors = sorted(self._validators[name].iter_errors(filled), key=lambda e: list(e.path))
         if errors:
@@ -311,7 +326,7 @@ class ToolRegistry:
                 args=clean,
                 data=data,
                 source_tier=spec.source_tier,
-                retrieved_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                retrieved_at=datetime.now(UTC).isoformat(timespec="seconds"),
                 latency_ms=_elapsed_ms(started),
                 is_mock=spec.handler_mode == "mock",
             )
@@ -350,14 +365,14 @@ class ToolRegistry:
         if self._clock() >= expires_at:
             del self._cache[self._cache_key(name, args)]
             return None
-        hit = copy.copy(result)
+        hit = copy.deepcopy(result)  # callers may mutate their copy; the cached entry must not change
         hit.cache_hit = True
         return hit
 
     def _cache_put(self, name: str, args: dict[str, Any], result: ToolResult) -> None:
         ttl = self._specs[name].cache_ttl_s
         if ttl > 0:
-            self._cache[self._cache_key(name, args)] = (self._clock() + ttl, result)
+            self._cache[self._cache_key(name, args)] = (self._clock() + ttl, copy.deepcopy(result))
 
     def _drop_cache(self, name: str) -> None:
         for key in [k for k in self._cache if k[0] == name]:
@@ -372,18 +387,22 @@ class ToolRegistry:
         result: ToolResult | None = None,
         error: ToolError | None = None,
     ) -> None:
-        self.call_log.append(
-            CallRecord(
-                tool=name,
-                args=args,
-                ok=error is None,
-                latency_ms=_elapsed_ms(started),
-                evidence_id=result.evidence_id if result else None,
-                cache_hit=bool(result and result.cache_hit),
-                error_kind=error.kind if error else None,
-                error_message=str(error) if error else None,
-            )
+        record = CallRecord(
+            tool=name,
+            args=args,
+            ok=error is None,
+            latency_ms=_elapsed_ms(started),
+            evidence_id=result.evidence_id if result else None,
+            cache_hit=bool(result and result.cache_hit),
+            error_kind=error.kind if error else None,
+            error_message=str(error) if error else None,
         )
+        self.call_log.append(record)
+        for listener in self._listeners:
+            try:
+                listener(record)
+            except Exception:  # a broken listener must never break a tool call
+                logging.getLogger("ara").exception("Tool-call listener failed")
 
 
 def build_default_registry(mode: str = "mock", **kwargs: Any) -> ToolRegistry:
