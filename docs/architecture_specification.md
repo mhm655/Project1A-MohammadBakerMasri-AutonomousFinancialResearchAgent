@@ -246,8 +246,15 @@ name per provider:
 
 The code therefore complies with the spec's OpenAI API interface at zero cost. An `anthropic` SDK
 adapter is also provided, so a reviewer with an Anthropic key can switch to it by changing
-configuration only. Provider quirks (tool-call formats, JSON-mode support, context limits) are handled
-by a small capability table per provider.
+configuration only. Provider quirks are handled per provider through configuration:
+
+- **`schema_dialect`**: Gemini accepts only a subset of JSON Schema in tool definitions. Its dialect
+  removes unsupported keywords (`additionalProperties`, `uniqueItems`, …). It also sends free-form
+  object parameters as JSON-encoded strings, because Gemini rejects object schemas that list no
+  properties. The registry decodes those strings before validating, so tools see the same arguments
+  whichever provider made the call.
+- **Parameter names**: OpenAI's own API uses `max_completion_tokens`; compatible servers use
+  `max_tokens`.
 
 ### 8.2 Free provider fallback chain
 
@@ -279,21 +286,27 @@ Every call is logged with its provider, model, token counts and latency. That lo
 
 ### 9.1 ToolSpec
 
+Each tool is one JSON file in `tools/schemas/`. The file holds the OpenAI function definition
+(`name`, `description`, `parameters`) plus an `x-ara` block of metadata the LLM never sees. The
+registry turns each file into a `ToolSpec`:
+
 ```python
 @dataclass
 class ToolSpec:
     name: str
     description: str            # read by the LLM; 1–3 sentences on when and why to use it
     parameters: dict            # JSON Schema (OpenAI function-calling format)
-    output_schema: dict
-    handler: Callable
-    source_tier: int            # reliability tier of what this tool returns
-    cost: Literal["free_local", "free_remote"]
-    rate_limit: RateLimit       # token bucket, per provider
-    cache_ttl_s: int
-    fallbacks: list[str]        # ordered fallback tool or provider names
+    handler: Callable | None    # resolved from x-ara.handlers["mock" | "live" | "any"]
+    output_schema: dict | None  # validated on every result ("malformed response" detection)
+    source_tier: int | None     # reliability tier of what this tool returns
+    cache_ttl_s: int            # 0 = never cached
+    fallbacks: list[str]        # ordered fallback tools
+    domains: list[str]          # for future multi-agent tool assignment (section 20)
     unlock: UnlockRule | None   # e.g. after_challenge=2 (B4.4)
 ```
+
+Rate limiting is applied per data provider inside the live HTTP clients (Day 5), not per tool,
+because several tools share one provider (for example, three tools call `data.sec.gov`).
 
 **Dispatch pipeline** (the same for every tool):
 
@@ -301,9 +314,10 @@ class ToolSpec:
 handler with retry and backoff → normalise output to Evidence → on failure, walk the fallback chain →
 log everything`
 
-**Dynamic unlocks (B4.4).** Tools are registered from `config/tools.yaml`. An `UnlockRule` is
-evaluated against a progress file (`results/progress.json`) when the registry is built, so a new tool
-appears in the system prompt with no code change. ERROR_LOG #7 notes that the spec's unlock schedule
+**Dynamic unlocks (B4.4).** Adding a tool means adding a schema file; no code changes. An
+`UnlockRule` is evaluated against the number of completed challenges, and
+`ToolRegistry.set_progress()` returns the tools that have just unlocked, so they appear in the next
+system prompt. ERROR_LOG #7 notes that the spec's unlock schedule
 contradicts the tools each challenge expects. ARA-1 implements the mechanism, but the default
 configuration unlocks everything, so every challenge can use the tools the spec says it expects.
 
@@ -397,8 +411,11 @@ and `evidence_id`, so the provenance survives into later sessions.
 | Financial statements | Not embedded. Stored as JSON in the SQLite facts table. |
 
 **Embeddings.** The default is Chroma's built-in ONNX `all-MiniLM-L6-v2` (384 dimensions). It runs
-on the CPU, is free, and has no PyTorch dependency. The collection name includes the embedding model
-id, so vectors of different dimensions are never mixed.
+on the CPU, is free, and has no PyTorch dependency. The model (~80 MB) downloads once, on first use.
+A deterministic feature-hashing embedding (`embedding_model = "hashing"`) needs no download. It serves
+the tests, and works as an offline fallback, but it is lexical only. The collection name includes the
+embedding model id, so vectors of different dimensions are never mixed. Dates are also stored as an
+integer ordinal, because Chroma's range filters only work on numbers.
 
 **Write policy.** Only claims that are verified or high-confidence (≥ 0.7) are stored. Unverified
 claims are stored with `verified=false`, and retrieval ranks them lower. This stops ARA-1 from
@@ -664,7 +681,7 @@ Following the "radical transparency" principle in C5.4, every event is written t
 | `llm_call` | provider, model, tokens in/out, latency |
 | `metric` | name, value (at the end of the run) |
 
-A small CLI (`python -m ara trace <session>`) pretty-prints a trace with `rich`. This is also how the
+A small CLI (planned for Day 14) pretty-prints a trace with `rich`, using `agent.tracing.format_event`. This is also how the
 **Trace Gallery** (5–8 annotated traces) is curated on Day 14.
 
 ## 17. Evaluation Framework
@@ -728,9 +745,18 @@ plus trends).
 | `local` | Ollama | Live free sources | Ollama installed | Offline or unlimited development |
 | `free` *(default)* | Gemini → Groq → Ollama | Live free sources | Free Gemini and/or Groq keys (no card) | Challenge runs |
 
-Configuration is layered: `config/default.yaml` < `config/{mode}.yaml` < environment variables from
-`.env`. Secrets live only in `.env` (git-ignored); `.env.example` documents every variable. The SEC
-User-Agent contact email is a required setting.
+`ARA_DATA_MODE=mock|live` overrides the data source independently of the LLM, so the real LLM can be
+developed against mock data before the live tools exist.
+
+Configuration is layered: `config/default.toml` < `config/{mode}.toml` < environment variables
+(including those loaded from `.env`). TOML is used because Python reads it natively (`tomllib`), so
+configuration adds no dependency. Secrets live only in `.env` (git-ignored); `.env.example` documents
+every variable. API keys are excluded from every `repr`, and redacted from traces. The SEC User-Agent
+contact email is required from Day 5.
+
+`python -m config.doctor` checks the whole environment. It covers packages, `.env`, configuration,
+the tool registry and the vector store. For each LLM provider it also checks that the model exists,
+that it answers, and that it accepts the real tool schemas in a full tool-call round trip.
 
 ## 20. Extensibility Toward Multi-Agent
 

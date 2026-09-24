@@ -25,6 +25,8 @@ import importlib
 import itertools
 import json
 import logging
+import math
+import re
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -269,18 +271,12 @@ class ToolRegistry:
         if not isinstance(args, dict):
             raise ToolValidationError(f"{name}: arguments must be a JSON object", tool=name)
 
-        filled = copy.deepcopy(args)
+        filled = coerce_to_schema(copy.deepcopy(args), spec.parameters)
         for prop, prop_schema in spec.parameters.get("properties", {}).items():
             if prop not in filled and "default" in prop_schema:
                 filled[prop] = copy.deepcopy(prop_schema["default"])
-            elif isinstance(filled.get(prop), str) and prop_schema.get("type") in ("object", "array"):
-                # Some providers only accept free-form objects as strings (see agent/llm.py), and
-                # models sometimes stringify nested JSON anyway. Decode it; if it is not JSON, leave it
-                # for the validator to reject with a clear message.
-                try:
-                    filled[prop] = json.loads(filled[prop])
-                except json.JSONDecodeError:
-                    pass
+        if isinstance(filled.get("ticker"), str):
+            filled["ticker"] = filled["ticker"].strip().upper()  # one cache entry per company
 
         errors = sorted(self._validators[name].iter_errors(filled), key=lambda e: list(e.path))
         if errors:
@@ -405,6 +401,54 @@ class ToolRegistry:
                 logging.getLogger("ara").exception("Tool-call listener failed")
 
 
+_INTEGER = re.compile(r"[+-]?\d+")
+_BOOLEANS = {"true": True, "false": False}
+
+
+def coerce_to_schema(value: Any, schema: dict[str, Any]) -> Any:
+    """Repair the harmless mistakes LLMs make in tool arguments, guided by the schema.
+
+    * ``null`` for an optional property means "not given": the property is dropped.
+    * Scalars sent as strings (``"5"``, ``"true"``) become the declared type when unambiguous.
+    * Objects and arrays sent as JSON-encoded strings are decoded. Some providers only accept
+      free-form objects as strings (see ``agent/llm.py``), and models stringify nested JSON anyway.
+
+    Anything that cannot be repaired is left alone for the validator to reject with a clear message.
+    """
+    kind = schema.get("type")
+    if isinstance(value, str):
+        text = value.strip()
+        if kind in ("object", "array"):
+            try:
+                value = json.loads(text)
+            except json.JSONDecodeError:
+                return value
+        elif kind == "integer" and _INTEGER.fullmatch(text):
+            return int(text)
+        elif kind == "number":
+            try:
+                number = float(text)
+            except ValueError:
+                return value
+            return number if math.isfinite(number) else value
+        elif kind == "boolean" and text.lower() in _BOOLEANS:
+            return _BOOLEANS[text.lower()]
+        else:
+            return value
+
+    if isinstance(value, dict) and kind == "object":
+        properties = schema.get("properties", {})
+        required = set(schema.get("required", []))
+        return {
+            key: coerce_to_schema(item, properties[key]) if key in properties else item
+            for key, item in value.items()
+            if not (item is None and key in properties and key not in required)
+        }
+    if isinstance(value, list) and kind == "array" and isinstance(schema.get("items"), dict):
+        return [coerce_to_schema(item, schema["items"]) for item in value]
+    return value
+
+
 def build_default_registry(mode: str = "mock", **kwargs: Any) -> ToolRegistry:
     """A registry with every tool in ``tools/schemas/`` loaded."""
     registry = ToolRegistry(mode, **kwargs)
@@ -426,6 +470,7 @@ __all__ = [
     "SCHEMA_DIR",
     "ToolRegistry",
     "build_default_registry",
+    "coerce_to_schema",
     "resolve_handler",
     "spec_from_schema",
 ]

@@ -25,13 +25,19 @@ _SCALES = {
     "trillion": 1e12, "tn": 1e12, "t": 1e12,
 }
 
-# The lookbehind skips numbers glued to letters ("Q4", "FY24"); the lookahead skips form names
-# such as "10-K" and "8-K", and stops the engine backtracking to a partial number ("1" of "10-K").
+# The lookbehind skips numbers glued to letters or hyphens ("Q4", "FY24", "3-for-1"); the lookahead
+# skips form names such as "10-K" and "8-K", and stops the engine backtracking to a partial number
+# ("1" of "10-K"). Percentage points count as percentages; basis points are hundredths of a percent.
 _QUANTITY = re.compile(
-    r"(?<![\w.])(?P<neg>-)?\$?(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?!\d|[.,]\d|-[A-Za-z])\s*"
-    r"(?:(?P<pct>%|percent\b)|(?P<scale>thousand|million|billion|trillion|mn|bn|tn|[kmbt])\b)?",
+    r"(?<![\w.\-])(?P<neg>-)?\$?(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?!\d|[.,]\d|-[A-Za-z])\s*"
+    r"(?:(?P<pct>%|percent\b|percentage\s+points?\b|pp\b|ppts?\b)"
+    r"|(?P<bps>basis\s+points?|bps|bp)\b"
+    r"|(?P<scale>thousand|million|billion|trillion|mn|bn|tn|[kmbt])\b)?",
     re.IGNORECASE,
 )
+
+# "10-12%" or "10 to 12 percent": the first number of a percentage range is a percentage too.
+_PERCENT_RANGE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:-|–|—|to)\s*(?=\d+(?:\.\d+)?\s*(?:%|percent\b))", re.IGNORECASE)
 
 # Numbers that are almost always labels rather than measured quantities.
 _YEAR = re.compile(r"^(19|20)\d{2}$")
@@ -47,16 +53,19 @@ class Quantity:
 
 def extract_quantities(text: str) -> list[Quantity]:
     """Find numeric quantities in text, skipping bare years such as 2024."""
+    text = _PERCENT_RANGE.sub(r"\1% to ", text)
     found = []
     for m in _QUANTITY.finditer(text):
         raw = m.group("num")
-        if not m.group("pct") and not m.group("scale") and _YEAR.match(raw):
+        if not (m.group("pct") or m.group("bps") or m.group("scale")) and _YEAR.match(raw):
             continue
         value = float(raw.replace(",", ""))
         if m.group("neg"):
             value = -value
         if m.group("pct"):
             found.append(Quantity(value / 100, "percent", True, m.group(0).strip()))
+        elif m.group("bps"):
+            found.append(Quantity(value / 10_000, "percent", True, m.group(0).strip()))
         else:
             scale = m.group("scale")
             factor = _SCALES[scale.lower()] if scale else 1.0

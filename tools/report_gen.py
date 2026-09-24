@@ -28,7 +28,14 @@ STANDARD_SECTIONS = ["data_gaps_and_limitations", "research_methodology"]
 
 _LOWERCASE_WORDS = {"vs", "and", "the", "of"}
 
-_CITATION = re.compile(r"\[(E\d+)\]")
+# A citation group: [E1], [E1, E2], [E1; E2] or [E1 E2]. LLMs use all of these.
+_CITATION_GROUP = re.compile(r"\[\s*E\d+(?:\s*[,;]?\s*E\d+)*\s*\]")
+_EVIDENCE_ID = re.compile(r"E\d+")
+
+
+def cited_ids(text: str) -> set[str]:
+    """Every evidence id cited anywhere in ``text``."""
+    return {eid for group in _CITATION_GROUP.findall(text) for eid in _EVIDENCE_ID.findall(group)}
 
 
 def section_title(key: str) -> str:
@@ -85,7 +92,7 @@ def report_generator(
         lines.append("_No sources._")
 
     markdown = "\n".join(lines).rstrip() + "\n"
-    cited = set(_CITATION.findall(" ".join(provided.values())))
+    cited = cited_ids(" ".join(provided.values()))
     return {
         "template": template,
         "markdown": markdown,

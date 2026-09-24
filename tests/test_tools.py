@@ -157,6 +157,35 @@ def test_defaults_are_filled(registry):
     assert args == {"ticker": "MSFT", "statement_type": "income_statement", "period": "annual", "years": 3}
 
 
+def test_harmless_llm_argument_mistakes_are_repaired(registry):
+    # null for an optional argument means "not given"
+    args = {"ticker": "AAPL", "filing_type": "10-K", "year": None}
+    assert registry.validate_args("sec_filing_search", args) == {"ticker": "AAPL", "filing_type": "10-K"}
+    assert registry.dispatch("sec_filing_search", args).data["period_of_report"] == "2024-09-28"
+    # scalars sent as strings, including inside nested objects
+    assert registry.validate_args("web_search", {"query": "nvidia", "num_results": " 5 "})["num_results"] == 5
+    nested = registry.validate_args("vector_db_search", {"query": "supply chain",
+                                                         "filter": {"verified": "TRUE", "min_confidence": "0.8", "ticker": None}})
+    assert nested["filter"] == {"verified": True, "min_confidence": 0.8}
+    # tickers are normalised, so both spellings share one cache entry
+    registry.dispatch("company_profile", {"ticker": " msft "})
+    assert registry.dispatch("company_profile", {"ticker": "MSFT"}).cache_hit
+
+
+@pytest.mark.parametrize(
+    "tool, args, message",
+    [
+        ("web_search", {"query": "nvidia", "num_results": "five"}, "num_results"),  # not a number
+        ("web_search", {"query": "nvidia", "num_results": "5.5"}, "num_results"),  # not an integer
+        ("sec_filing_search", {"ticker": None, "filing_type": "10-K"}, "ticker"),  # null for a required argument
+        ("web_search", {"query": "nvidia", "bogus": None}, "bogus"),  # unknown arguments are still rejected
+    ],
+)
+def test_unrepairable_arguments_are_still_rejected(registry, tool, args, message):
+    with pytest.raises(ToolValidationError, match=message):
+        registry.validate_args(tool, args)
+
+
 def test_json_string_arguments_from_llm(registry):
     result = registry.dispatch("company_profile", '{"ticker": "MSFT"}')
     assert result.data["name"] == "Microsoft Corporation"
@@ -518,6 +547,29 @@ def test_quantity_extraction_ignores_labels():
     assert [q.value for q in quantities] == [pytest.approx(94.9e9)]
 
 
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Operating margin expanded 150 bps.", [("percent", 0.015)]),
+        ("up 25 basis points", [("percent", 0.0025)]),
+        ("margin rose 1.5 percentage points", [("percent", 0.015)]),
+        ("Guidance of 10-12% growth", [("percent", 0.10), ("percent", 0.12)]),
+        ("growth of 10 to 12 percent", [("percent", 0.10), ("percent", 0.12)]),
+        ("a 3-for-1 stock split", []),
+        ("margin of -5%", [("percent", -0.05)]),
+    ],
+)
+def test_quantity_units(text, expected):
+    got = [(q.kind, q.value) for q in extract_quantities(text)]
+    assert [k for k, _ in got] == [k for k, _ in expected]
+    assert [v for _, v in got] == pytest.approx([v for _, v in expected])
+
+
+def test_basis_points_and_percentage_points_agree(registry):
+    out = check(registry, "Operating margin expanded 150 bps.", "Operating margin rose 1.5 percentage points.")
+    assert out["status"] == "supported"
+
+
 def test_quantity_extraction_keeps_numbers_before_punctuation():
     quantities = extract_quantities("Sales rose to 500, while costs fell to 1,200. Margin was 12.5%.")
     assert [q.value for q in quantities] == [500, 1200, pytest.approx(0.125)]
@@ -564,6 +616,15 @@ def test_report_flags_missing_sections_and_bad_citations(registry):
     assert data["uncited_sources"] == ["E3"]
     assert data["contains_mock_data"] and "MOCK data" in md
     assert "- [E2] Form 10-K. https://www.sec.gov/example" in md
+
+
+def test_citation_lists_in_every_llm_format_are_recognised(registry):
+    data = registry.dispatch("report_generator", {
+        "template": "company_profile",
+        "sections": {"executive_summary": "Grew [E1, E2]; margin [E3][E4]; see [E5; E6] and [E7 E8]. Not a cite: [Exhibit 1]."},
+        "sources": [{"id": f"E{i}", "title": "t"} for i in range(1, 9)],
+    }).data
+    assert data["uncited_sources"] == [] and data["unknown_citations"] == []
 
 
 def test_complete_report_has_no_gaps(registry):

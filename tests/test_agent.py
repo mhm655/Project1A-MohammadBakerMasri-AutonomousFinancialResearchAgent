@@ -101,6 +101,17 @@ def test_client_explains_how_to_get_a_free_key_when_nothing_is_configured():
         LLMClient.from_settings(s)
 
 
+def test_mock_mode_runs_end_to_end_without_network_or_keys():
+    s = load_settings(env={"ARA_MODE": "mock"})
+    tracer = TraceLogger()
+    client = LLMClient.from_settings(s, tracer=tracer)
+    registry = build_default_registry(s.data_mode)
+    registry.add_listener(tracer.on_tool_call)
+    assert client.complete([{"role": "user", "content": "hi"}], tools=registry.openai_tools()).provider == "mock"
+    assert registry.dispatch("company_profile", {"ticker": "NVDA"}).is_mock
+    assert [e["type"] for e in tracer.events] == ["llm_call", "action", "observation"]
+
+
 def test_client_from_settings_builds_the_configured_chain():
     s = load_settings(env={"GROQ_API_KEY": "gsk-test"})
     client = LLMClient.from_settings(s)

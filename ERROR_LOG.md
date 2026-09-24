@@ -25,8 +25,8 @@ the end, in case any of the seven turns out to be unintended.
 
 - **Location:** Part A, Section A6.2, "Tiered Source Trustworthiness".
 - **Text:** *"Tier 4: Social media posts and anonymous forum discussions – crowd-sourced but
-  unverified and subject to manipulation. Tier 5: Major news outlets (Reuters, Bloomberg News,
-  Financial Times) – professional journalism with editorial oversight…"*
+  unverified and subject to manipulation."* followed by *"Tier 5: Major news outlets (Reuters,
+  Bloomberg News, Financial Times) – professional journalism with editorial oversight…"*
 - **Why it is wrong:** The list is ordered from highest to lowest reliability. By its own
   descriptions, unverified, manipulable, anonymous content is less reliable than journalism with
   editorial oversight. With this ordering, the "apply the highest-tier rule" step in A6.3 would pick
@@ -97,7 +97,7 @@ the end, in case any of the seven turns out to be unintended.
 - **Location:** Part B, Section B4.4 ("Progression Unlocks"), compared with Section B2.1 (challenge
   definitions).
 - **Text (B4.4):** *"After Challenge 2: The agent gains access to the earnings_transcript tool …
-  After Challenge 4: … the peer_comparison tool … After Challenge 6: … the calculation_engine tool."*
+  After Challenge 4: … the peer_comparison tool … After Challenge 6: … the calculation_engine tool …"*
 - **Why it is wrong:** The challenge definitions require these tools *before* they are unlocked:
   - Challenge 2 (earnings analysis) lists `earnings_transcript` as an expected tool and is judged on
     the "quality of transcript analysis", yet the tool is only unlocked *after* Challenge 2.
