@@ -123,6 +123,23 @@ These are also inaccurate, but they are less likely to be the *deliberate* error
   matrix has only **four** (Accuracy, Completeness, Insight, Architecture) plus a Total column. The
   row and column totals are otherwise arithmetically correct (the columns sum to 205 + 165 + 190 +
   140 = 700).
+- **Appendix (Glossary), "League Tables":** *"Used in Challenge 4 for competitive analysis."*
+  League tables rank investment banks by M&A and underwriting market share. Challenge 4 compares
+  the cloud divisions of Amazon, Microsoft and Google, where league tables play no part. League
+  tables belong to the Plan-and-Execute example in A1.4 (JPMorgan, Goldman Sachs, Morgan Stanley).
+- **A7.1, system prompt example:** *"5. Do not make investment recommendations or predictions."*
+  This contradicts metric AD-4 (A5.2), which rewards *"reasoned projections or scenario analyses"*
+  and targets at least two forward-looking sections. An agent following the example prompt would
+  score zero on AD-4. ARA-1 forbids recommendations but allows clearly labelled scenarios
+  (architecture spec, principle P10).
+- **A2.4, tool schema format:** *"Each tool schema must follow the OpenAI function calling
+  specification (which is also used by Anthropic's Claude tool use)."* Anthropic's tool format is
+  different: it uses `input_schema` instead of `parameters`, and has no `{"type": "function"}`
+  wrapper. The same JSON Schema content fits both, but the definitions must be converted, as
+  ARA-1's Anthropic adapter does. Relatedly, the ReAct examples in A1.3 call
+  `search_sec_filings`, `get_earnings_transcript` and `generate_report`. Those names don't match
+  the tool registry in A2.2 (`sec_filing_search`, `earnings_transcript`, `report_generator`), so the
+  example actions would fail against the specified registry.
 - **A6.2, Tier 1 described as "audited":** *"SEC filings (10-K, 10-Q) – legally mandated,
   audited…"*. Financial statements in a **10-Q are reviewed, not audited**. Only the 10-K contains
   audited statements, and the document's own glossary says the 10-Q "contains unaudited financial

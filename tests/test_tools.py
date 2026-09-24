@@ -398,6 +398,24 @@ def test_calculation_input_errors(registry, calculation_type, inputs, message):
         registry.dispatch("calculation_engine", {"calculation_type": calculation_type, "inputs": inputs})
 
 
+def test_numbers_sent_as_strings_inside_calculation_inputs(registry):
+    assert calc(registry, "ratio", numerator="3", denominator=" 4 ")["result"] == 0.75
+
+
+@pytest.mark.parametrize(
+    "calculation_type, inputs, message",
+    [
+        ("ratio", {"numerator": 1e300, "denominator": 1e-300}, "non-finite"),  # overflow must not return inf
+        ("ratio", {"numerator": "245,122", "denominator": 1}, "plain number"),  # ambiguous separator
+        ("dcf", {"cash_flows": [100], "discount_rate": 9, "terminal_growth_rate": 0.02}, "fraction"),  # 9 meant 9 %
+        ("dcf", {"cash_flows": [100], "discount_rate": -0.5, "terminal_growth_rate": -0.6}, "between 0 and 1"),
+    ],
+)
+def test_calculation_guards_against_unit_mistakes(registry, calculation_type, inputs, message):
+    with pytest.raises(ToolValidationError, match=message):
+        registry.dispatch("calculation_engine", {"calculation_type": calculation_type, "inputs": inputs})
+
+
 # ==================================================================================================
 # financial_data_api, company_profile, peer_comparison
 # ==================================================================================================
@@ -555,6 +573,10 @@ def test_quantity_extraction_ignores_labels():
         ("margin rose 1.5 percentage points", [("percent", 0.015)]),
         ("Guidance of 10-12% growth", [("percent", 0.10), ("percent", 0.12)]),
         ("growth of 10 to 12 percent", [("percent", 0.10), ("percent", 0.12)]),
+        ("guidance of $10-12 billion", [("amount", 10e9), ("amount", 12e9)]),
+        ("150 to 200 bps", [("percent", 0.015), ("percent", 0.02)]),
+        ("filed on 2024-09-28", []),
+        ("FY2023-2024 revenue", []),
         ("a 3-for-1 stock split", []),
         ("margin of -5%", [("percent", -0.05)]),
     ],
@@ -563,6 +585,10 @@ def test_quantity_units(text, expected):
     got = [(q.kind, q.value) for q in extract_quantities(text)]
     assert [k for k, _ in got] == [k for k, _ in expected]
     assert [v for _, v in got] == pytest.approx([v for _, v in expected])
+
+
+def test_a_range_claim_matches_a_spelled_out_range(registry):
+    assert check(registry, "Guidance was $10-12 billion.", "Guided to $10 billion to $12 billion.")["status"] == "supported"
 
 
 def test_basis_points_and_percentage_points_agree(registry):
@@ -625,6 +651,16 @@ def test_citation_lists_in_every_llm_format_are_recognised(registry):
         "sources": [{"id": f"E{i}", "title": "t"} for i in range(1, 9)],
     }).data
     assert data["uncited_sources"] == [] and data["unknown_citations"] == []
+
+
+def test_headings_inside_sections_are_nested_under_the_section(registry):
+    md = registry.dispatch("report_generator", {
+        "template": "company_profile", "title": "Report",
+        "sections": {"executive_summary": "# Big claim\nText [E1]\n## Detail\nMore"},
+        "sources": [{"id": "E1", "title": "t"}],
+    }).data["markdown"]
+    assert md.count("\n# ") + md.startswith("# ") == 1  # only the report title is an H1
+    assert "### Big claim" in md and "#### Detail" in md
 
 
 def test_complete_report_has_no_gaps(registry):

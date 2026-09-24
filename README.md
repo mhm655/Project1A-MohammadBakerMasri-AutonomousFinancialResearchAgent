@@ -18,20 +18,22 @@ Zetheta Project 1A · Mohammad Baker Masri
 **Runs at zero cost.** Every dependency and data source is free, and no credit card is required
 anywhere.
 
-## Highlights
+## What is built and what is planned
 
-- **Hybrid agent loop.** A Plan-and-Execute outer graph (LangGraph) runs a bounded ReAct executor for
-  each step and re-plans as it learns.
-- **12 tools** behind one dispatch pipeline: schema validation, caching, provenance, retries,
-  per-provider circuit breakers and fallback chains.
-- **LLM fallback chain.** Gemini free tier → Groq free tier → local Ollama, all called through the
-  official `openai` SDK, with retries, token accounting and a full trace.
-- **Three-layer memory:**
-  - short-term context management;
-  - long-term vector store (Chroma, local embeddings);
-  - episodic strategy memory.
-- **A claim ledger** in which every number carries a period, a unit, evidence ids and a confidence
-  score. Conflicts are resolved with a tiered source hierarchy and always disclosed.
+| Component | Status |
+|---|---|
+| **Tool registry**: 12 tools, schema validation, repair of common LLM argument mistakes, caching, evidence ids, call log | Built (Day 2) |
+| **Local tools**: `calculation_engine`, `fact_checker`, `report_generator` | Built (Day 2) |
+| **Network tools** (SEC, market data, search, news, transcripts, peers) | Mock data now; live on Days 5–7 |
+| **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
+| **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
+| **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) running a bounded ReAct executor per step | Day 4 |
+| **Short-term context management and episodic memory** | Day 6 |
+| **Synthesis**: a claim ledger (period, unit, evidence, confidence) and tiered conflict resolution | Day 8 |
+| **Tool fallback chains, circuit breakers, failure injection** | Day 9 (fallbacks are already declared per tool) |
+| **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |
+
+The full design is in the [architecture specification](docs/architecture_specification.md).
 
 ## Setup
 

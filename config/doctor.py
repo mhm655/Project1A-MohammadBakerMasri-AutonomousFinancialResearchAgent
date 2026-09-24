@@ -155,11 +155,11 @@ def check_provider(name: str) -> list[Check]:
     client = LLMClient([provider], max_retries=3)  # free tiers return transient 503s under load
     checks = []
 
-    # 1. Does the model exist? (Not every server implements /models; that is only a warning.)
-    raw = getattr(provider, "_client", None)
-    if settings.kind == "openai_compatible" and raw is not None:
+    # 1. Is the model listed? (Not every server implements /models; that is only a warning. Being
+    #    listed does not prove the model is usable: Gemini lists retired models. Step 2 confirms.)
+    if hasattr(provider, "list_models"):
         try:
-            ids = [m.id.removeprefix("models/") for m in raw.models.list()]
+            ids = provider.list_models()
             present = settings.model in ids
             sample = ", ".join(sorted(i for i in ids if any(w in i for w in ("flash", "llama", "qwen", "gpt")))[:6])
             checks.append(Check(f"{label} model", "ok" if present else "fail",

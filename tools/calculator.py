@@ -22,6 +22,14 @@ def _num(inputs: dict[str, Any], key: str, *, positive: bool = False, nonzero: b
     if key not in inputs:
         raise ToolValidationError(f"{TOOL}: missing input {key!r}", tool=TOOL)
     value = inputs[key]
+    if isinstance(value, str):
+        # LLMs often send numbers as strings. Accept plain numerals only: "245,122" is ambiguous
+        # (thousands separator or decimal comma) and "10%" should be sent as 0.10.
+        try:
+            value = float(value.strip())
+        except ValueError:
+            raise ToolValidationError(f"{TOOL}: input {key!r} must be a plain number, got {inputs[key]!r}",
+                                      tool=TOOL) from None
     if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
         raise ToolValidationError(f"{TOOL}: input {key!r} must be a finite number, got {value!r}", tool=TOOL)
     if positive and value <= 0:
@@ -75,8 +83,14 @@ def _dcf(inputs: dict[str, Any]) -> tuple[dict[str, float], list[str]]:
     flows = _num_list(inputs, "cash_flows")
     rate = _num(inputs, "discount_rate")
     growth = _num(inputs, "terminal_growth_rate")
-    if rate <= -1:
-        raise ToolValidationError(f"{TOOL}: discount_rate must be greater than -1", tool=TOOL)
+    # Rates are fractions. A value of 1 or more almost always means a percentage was sent ("10"
+    # for 10 %), which would silently produce a wildly wrong valuation.
+    if not 0 < rate < 1:
+        raise ToolValidationError(
+            f"{TOOL}: discount_rate must be a fraction between 0 and 1 (0.09 for 9 %), got {rate}", tool=TOOL)
+    if not -0.5 < growth < 0.5:
+        raise ToolValidationError(
+            f"{TOOL}: terminal_growth_rate must be a fraction (0.02 for 2 %), got {growth}", tool=TOOL)
     if rate <= growth:
         raise ToolValidationError(
             f"{TOOL}: discount_rate ({rate}) must exceed terminal_growth_rate ({growth}) for a finite terminal value",
@@ -155,5 +169,12 @@ def calculation_engine(calculation_type: str, inputs: dict[str, Any]) -> dict[st
         fn = _CALCULATIONS[calculation_type]
     except KeyError:
         raise ToolValidationError(f"{TOOL}: unknown calculation_type {calculation_type!r}", tool=TOOL) from None
-    result, steps = fn(inputs)
+    try:
+        result, steps = fn(inputs)
+    except (OverflowError, ZeroDivisionError) as exc:
+        raise ToolValidationError(f"{TOOL}: {calculation_type} failed on these inputs: {exc}", tool=TOOL) from None
+    values = result.values() if isinstance(result, dict) else [result]
+    if not all(math.isfinite(v) for v in values):
+        raise ToolValidationError(f"{TOOL}: {calculation_type} produced a non-finite result; check the inputs' units",
+                                  tool=TOOL)
     return {"calculation_type": calculation_type, "inputs": inputs, "result": result, "steps": steps}

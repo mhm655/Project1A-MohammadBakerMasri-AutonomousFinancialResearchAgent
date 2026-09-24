@@ -43,6 +43,15 @@ def section_title(key: str) -> str:
     return " ".join(w if (i and w in _LOWERCASE_WORDS) else w.capitalize() for i, w in enumerate(words))
 
 
+_HEADING = re.compile(r"^(#{1,6})(?=\s)", re.MULTILINE)
+
+
+def nest_headings(body: str) -> str:
+    """Push headings inside a section body below the section's own ``##`` heading (``#`` -> ``###``),
+    so a model-written heading cannot break the report's structure."""
+    return _HEADING.sub(lambda m: "#" * min(len(m.group(1)) + 2, 6), body)
+
+
 def _evidence_order(evidence_id: str) -> tuple[int, str]:
     digits = evidence_id[1:]
     return (int(digits) if digits.isdigit() else 0, evidence_id)
@@ -55,7 +64,7 @@ def report_generator(
     title: str | None = None,
 ) -> dict[str, Any]:
     required = TEMPLATES[template]
-    provided = {k: v.strip() for k, v in sections.items() if isinstance(v, str) and v.strip()}
+    provided = {k: nest_headings(v.strip()) for k, v in sections.items() if isinstance(v, str) and v.strip()}
     missing = [s for s in required if s not in provided]
     extra = [s for s in provided if s not in required and s not in STANDARD_SECTIONS]
     source_ids = {s["id"] for s in sources}

@@ -36,8 +36,12 @@ _QUANTITY = re.compile(
     re.IGNORECASE,
 )
 
-# "10-12%" or "10 to 12 percent": the first number of a percentage range is a percentage too.
-_PERCENT_RANGE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:-|–|—|to)\s*(?=\d+(?:\.\d+)?\s*(?:%|percent\b))", re.IGNORECASE)
+# "10-12%", "$10-12 billion", "150 to 200 bps": the unit after a range applies to both ends, so it is
+# copied to the first number ("10% to 12%"). A unit is required, so dates such as 2024-09-28 are
+# left alone (the hyphen lookbehind above then keeps their parts from being read as numbers).
+_UNIT = (r"%|percent\b|percentage\s+points?\b|pp\b|ppts?\b|basis\s+points?\b|bps\b|bp\b"
+         r"|thousand\b|million\b|billion\b|trillion\b|mn\b|bn\b|tn\b|[kmbt]\b")
+_RANGE = re.compile(rf"(\d+(?:\.\d+)?)\s*(?:-|–|—|to)\s*\$?(\d+(?:\.\d+)?)\s*({_UNIT})", re.IGNORECASE)
 
 # Numbers that are almost always labels rather than measured quantities.
 _YEAR = re.compile(r"^(19|20)\d{2}$")
@@ -53,7 +57,7 @@ class Quantity:
 
 def extract_quantities(text: str) -> list[Quantity]:
     """Find numeric quantities in text, skipping bare years such as 2024."""
-    text = _PERCENT_RANGE.sub(r"\1% to ", text)
+    text = _RANGE.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else f"{m.group(1)} {m.group(3)} to {m.group(2)} {m.group(3)}", text)
     found = []
     for m in _QUANTITY.finditer(text):
         raw = m.group("num")

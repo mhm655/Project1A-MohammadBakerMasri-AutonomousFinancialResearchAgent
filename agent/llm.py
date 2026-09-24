@@ -287,6 +287,10 @@ class OpenAICompatibleProvider:
             )
         self._client = client
 
+    def list_models(self) -> list[str]:
+        """Model ids the server offers. A listed model may still be retired for new keys (Gemini)."""
+        return [m.id.removeprefix("models/") for m in self._client.models.list()]
+
     def complete(self, request: LLMRequest) -> LLMResponse:
         kwargs: dict[str, Any] = {
             "model": self.model,
