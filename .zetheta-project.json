@@ -1,0 +1,30 @@
+{
+  "intern_identifier": "[Your OAuth Login ID]",
+  "intern_name": "Mohammad Baker Masri",
+  "intern_email": "[Your Email]",
+  "project_code": "1A",
+  "project_title": "Autonomous Financial Research Agent with Multi-Source Synthesis",
+  "submission_type": "github",
+  "submission_date": "[YYYY-MM-DDTHH:MM:SSZ]",
+  "tech_stack": [
+    "Python",
+    "LangGraph",
+    "OpenAI-compatible API (Gemini / Groq / Ollama)",
+    "Chroma",
+    "SEC EDGAR API",
+    "SEC XBRL API",
+    "yfinance"
+  ],
+  "duration_days": 15,
+  "github_repo_url": "https://github.com/ZethetaIntern/Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent",
+  "assessment_criteria": {
+    "architecture_design": true,
+    "tool_orchestration": true,
+    "memory_system": true,
+    "error_handling": true,
+    "evaluation_framework": true,
+    "research_output_quality": true,
+    "code_quality": true,
+    "documentation": true
+  }
+}
