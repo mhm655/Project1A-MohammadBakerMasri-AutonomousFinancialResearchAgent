@@ -35,16 +35,21 @@ class ToolCall:
     id: str
     name: str
     arguments: str  # JSON text, exactly as the model produced it; the tool registry validates it
+    #: Provider-specific fields that must be sent back unchanged on the next turn. Gemini 3 puts a
+    #: ``thought_signature`` here and rejects the follow-up request if it is missing.
+    extra: dict[str, Any] | None = None
 
 
 @dataclass
 class TokenUsage:
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    #: Hidden "thinking" tokens. Billed and counted against quotas, but not part of the visible reply.
+    reasoning_tokens: int = 0
 
     @property
     def total_tokens(self) -> int:
-        return self.prompt_tokens + self.completion_tokens
+        return self.prompt_tokens + self.completion_tokens + self.reasoning_tokens
 
 
 @dataclass
@@ -55,6 +60,8 @@ class LLMRequest:
     json_mode: bool = False
     temperature: float = 0.0
     max_tokens: int = 4096
+    #: "none", "minimal", "low", "medium" or "high"; None = the provider's configured default.
+    reasoning_effort: str | None = None
 
 
 @dataclass
@@ -218,7 +225,8 @@ def assistant_message(response: LLMResponse) -> dict[str, Any]:
     message: dict[str, Any] = {"role": "assistant", "content": response.content}
     if response.tool_calls:
         message["tool_calls"] = [
-            {"id": tc.id, "type": "function", "function": {"name": tc.name, "arguments": tc.arguments}}
+            {"id": tc.id, "type": "function", "function": {"name": tc.name, "arguments": tc.arguments},
+             **(tc.extra or {})}  # e.g. Gemini's thought signature, echoed back verbatim
             for tc in response.tool_calls
         ]
     return message
@@ -234,6 +242,25 @@ def _estimate_tokens(text: str) -> int:
     return max(1, len(text) // 4)
 
 
+def _usage_from_openai(usage: Any) -> TokenUsage:
+    """Token usage, including hidden reasoning tokens.
+
+    Providers report reasoning differently: in ``completion_tokens_details.reasoning_tokens``, or
+    (Gemini) only as the gap between ``total_tokens`` and prompt + completion. Both are handled.
+    """
+    if usage is None:
+        return TokenUsage()
+    prompt = getattr(usage, "prompt_tokens", 0) or 0
+    completion = getattr(usage, "completion_tokens", 0) or 0
+    details = getattr(usage, "completion_tokens_details", None)
+    reasoning = getattr(details, "reasoning_tokens", 0) or 0
+    if reasoning:
+        completion = max(0, completion - reasoning)  # some providers include reasoning in completion_tokens
+    else:
+        reasoning = max(0, (getattr(usage, "total_tokens", 0) or 0) - prompt - completion)
+    return TokenUsage(prompt, completion, reasoning)
+
+
 # --------------------------------------------------------------------------------------------------
 # Providers
 # --------------------------------------------------------------------------------------------------
@@ -246,6 +273,8 @@ class OpenAICompatibleProvider:
         self.name = settings.name
         self.model = settings.model
         self.dialect = settings.schema_dialect
+        # Only sent to providers configured with a default, since others reject the parameter.
+        self.reasoning_effort = settings.reasoning_effort or None
         self._uses_openai_api = "api.openai.com" in (settings.base_url or "")
         if client is None:
             from openai import OpenAI
@@ -273,6 +302,8 @@ class OpenAICompatibleProvider:
                 kwargs["tool_choice"] = request.tool_choice
         if request.json_mode:
             kwargs["response_format"] = {"type": "json_object"}
+        if self.reasoning_effort:
+            kwargs["reasoning_effort"] = request.reasoning_effort or self.reasoning_effort
 
         started = time.perf_counter()
         try:
@@ -290,19 +321,16 @@ class OpenAICompatibleProvider:
                 id=tc.id or f"call_{uuid.uuid4().hex[:12]}",
                 name=tc.function.name,
                 arguments=tc.function.arguments or "{}",
+                extra=dict(tc.model_extra) if getattr(tc, "model_extra", None) else None,
             )
             for tc in (message.tool_calls or [])
         ]
-        usage = getattr(response, "usage", None)
         return LLMResponse(
             content=message.content,
             tool_calls=tool_calls,
             provider=self.name,
             model=getattr(response, "model", None) or self.model,
-            usage=TokenUsage(
-                prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
-                completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
-            ),
+            usage=_usage_from_openai(getattr(response, "usage", None)),
             latency_ms=latency,
             finish_reason=choice.finish_reason,
         )
@@ -441,6 +469,7 @@ class MockProvider:
                 id=tc.get("id") or f"call_{i + 1}",
                 name=tc["name"],
                 arguments=tc["arguments"] if isinstance(tc.get("arguments"), str) else json.dumps(tc.get("arguments", {})),
+                extra=tc.get("extra"),
             )
             for i, tc in enumerate(item.get("tool_calls", []))
         ]
@@ -477,11 +506,12 @@ class UsageStats:
     failures: int = 0
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    reasoning_tokens: int = 0
     latency_ms: float = 0.0
 
     @property
     def total_tokens(self) -> int:
-        return self.prompt_tokens + self.completion_tokens
+        return self.prompt_tokens + self.completion_tokens + self.reasoning_tokens
 
 
 class UsageTracker:
@@ -498,6 +528,7 @@ class UsageTracker:
         stats.calls += 1
         stats.prompt_tokens += response.usage.prompt_tokens
         stats.completion_tokens += response.usage.completion_tokens
+        stats.reasoning_tokens += response.usage.reasoning_tokens
         stats.latency_ms += response.latency_ms
 
     def record_failure(self, provider: str, model: str) -> None:
@@ -510,6 +541,7 @@ class UsageTracker:
             total.failures += s.failures
             total.prompt_tokens += s.prompt_tokens
             total.completion_tokens += s.completion_tokens
+            total.reasoning_tokens += s.reasoning_tokens
             total.latency_ms += s.latency_ms
         return total
 
@@ -585,6 +617,7 @@ class LLMClient:
         json_mode: bool = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        reasoning_effort: str | None = None,
         purpose: str = "",
     ) -> LLMResponse:
         """Send one chat request, falling back through the provider chain.
@@ -599,6 +632,7 @@ class LLMClient:
             json_mode=json_mode,
             temperature=self.temperature if temperature is None else temperature,
             max_tokens=max_tokens or self.max_output_tokens,
+            reasoning_effort=reasoning_effort,
         )
         errors: list[LLMProviderError] = []
         for depth, provider in enumerate(self.providers):
@@ -625,6 +659,7 @@ class LLMClient:
                 self._trace(
                     "llm_call", provider=response.provider, model=response.model, purpose=purpose,
                     prompt_tokens=response.usage.prompt_tokens, completion_tokens=response.usage.completion_tokens,
+                    reasoning_tokens=response.usage.reasoning_tokens,
                     latency_ms=response.latency_ms, fallback_depth=depth, attempt=attempt + 1,
                     finish_reason=response.finish_reason, tool_calls=[tc.name for tc in response.tool_calls],
                     preview=(response.content or "")[:200],

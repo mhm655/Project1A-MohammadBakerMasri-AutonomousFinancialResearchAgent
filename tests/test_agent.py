@@ -291,6 +291,68 @@ def test_openai_compatible_provider_request_and_response():
     assert response.finish_reason == "tool_calls"
 
 
+def test_gemini_thought_signatures_survive_the_round_trip():
+    """Gemini 3 rejects a follow-up turn whose tool calls lack the thought signature it issued."""
+    signature = {"extra_content": {"google": {"thought_signature": "EtsCCtgC-opaque"}}}
+    completions = FakeCompletions(chat_completion(
+        {"content": None, "tool_calls": [{"id": "call_1", "type": "function",
+                                          "function": {"name": "company_profile", "arguments": '{"ticker":"MSFT"}'},
+                                          **signature}]},
+        finish_reason="tool_calls"))
+    response = OpenAICompatibleProvider(GEMINI, client=fake_openai_client(completions)).complete(
+        LLMRequest(messages=[{"role": "user", "content": "x"}]))
+    assert response.tool_calls[0].extra == signature
+    echoed = assistant_message(response)["tool_calls"][0]
+    assert echoed["extra_content"] == signature["extra_content"] and echoed["function"]["name"] == "company_profile"
+
+
+@pytest.mark.parametrize(
+    "usage, expected",
+    [
+        # Gemini: hidden thinking shows up only in total_tokens
+        ({"prompt_tokens": 6, "completion_tokens": 0, "total_tokens": 22}, (6, 0, 16)),
+        # OpenAI style: reasoning reported inside completion_tokens
+        ({"prompt_tokens": 10, "completion_tokens": 50, "total_tokens": 60,
+          "completion_tokens_details": {"reasoning_tokens": 30}}, (10, 20, 30)),
+        # no reasoning at all
+        ({"prompt_tokens": 12, "completion_tokens": 3, "total_tokens": 15}, (12, 3, 0)),
+    ],
+)
+def test_reasoning_tokens_are_counted(usage, expected):
+    response = openai.types.chat.ChatCompletion.model_validate({
+        "id": "x", "object": "chat.completion", "created": 0, "model": "m",
+        "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "OK"}}],
+        "usage": usage,
+    })
+    out = OpenAICompatibleProvider(GEMINI, client=fake_openai_client(FakeCompletions(response))).complete(
+        LLMRequest(messages=[{"role": "user", "content": "x"}]))
+    u = out.usage
+    assert (u.prompt_tokens, u.completion_tokens, u.reasoning_tokens) == expected
+    assert u.total_tokens == usage["total_tokens"]
+
+
+def test_reasoning_effort_is_only_sent_to_providers_configured_for_it():
+    thinking = ProviderSettings(**{**vars(GEMINI), "reasoning_effort": "minimal"})
+    completions = FakeCompletions(chat_completion({"content": "OK"}))
+    provider = OpenAICompatibleProvider(thinking, client=fake_openai_client(completions))
+    provider.complete(LLMRequest(messages=[{"role": "user", "content": "x"}]))
+    assert completions.kwargs["reasoning_effort"] == "minimal"
+    provider.complete(LLMRequest(messages=[{"role": "user", "content": "x"}], reasoning_effort="medium"))
+    assert completions.kwargs["reasoning_effort"] == "medium"  # per-call override, e.g. for planning
+
+    plain = FakeCompletions(chat_completion({"content": "OK"}))
+    OpenAICompatibleProvider(GEMINI, client=fake_openai_client(plain)).complete(
+        LLMRequest(messages=[{"role": "user", "content": "x"}], reasoning_effort="medium"))
+    assert "reasoning_effort" not in plain.kwargs  # providers that do not support it never see it
+
+
+def test_reasoning_effort_setting_and_override():
+    assert load_settings(env={}).llm.providers["gemini"].reasoning_effort == "minimal"
+    assert load_settings(env={}).llm.providers["groq"].reasoning_effort == ""
+    s = load_settings(env={"ARA_GEMINI_REASONING_EFFORT": "low"})
+    assert s.llm.providers["gemini"].reasoning_effort == "low"
+
+
 def test_openai_compatible_provider_maps_sdk_errors():
     completions = FakeCompletions(error=_status_error(openai.RateLimitError, 429))
     provider = OpenAICompatibleProvider(GEMINI, client=fake_openai_client(completions))

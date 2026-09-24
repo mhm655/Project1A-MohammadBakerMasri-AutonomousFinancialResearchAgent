@@ -255,6 +255,18 @@ configuration only. Provider quirks are handled per provider through configurati
   whichever provider made the call.
 - **Parameter names**: OpenAI's own API uses `max_completion_tokens`; compatible servers use
   `max_tokens`.
+- **Thought signatures (Gemini 3)**: every tool call carries an opaque `thought_signature`, which
+  must be echoed back unchanged in the next request. Otherwise Gemini rejects the turn with HTTP 400,
+  which was verified against the live API. `ToolCall.extra` preserves it, and `assistant_message()`
+  re-attaches it.
+- **Reasoning effort**: Gemini 3 "thinks" before answering, and hidden thinking tokens count against
+  the output budget and the free quota. With a 20-token budget, a one-word reply came back empty.
+  Providers that support it get a configured default (`reasoning_effort = "minimal"` for Gemini).
+  Individual calls, such as planning, can ask for more. Hidden reasoning tokens are counted separately
+  in `TokenUsage.reasoning_tokens`, so the token-usage analysis is not under-reported.
+- **Model retirement**: `gemini-2.5-flash` was withdrawn for new API keys during development, so the
+  default is now `gemini-3.6-flash`, pinned rather than the `-latest` alias to keep evaluation runs
+  reproducible. `python -m config.doctor` detects a retired model on the first run.
 
 ### 8.2 Free provider fallback chain
 

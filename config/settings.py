@@ -41,6 +41,9 @@ class ProviderSettings:
     base_url: str = ""
     api_key_env: str = ""
     schema_dialect: str = "openai"
+    #: Default thinking level for reasoning models ("none", "minimal", "low", "medium", "high").
+    #: Empty = never send the parameter, for providers that do not accept it.
+    reasoning_effort: str = ""
     api_key: str | None = field(default=None, repr=False)
 
     @property
@@ -198,6 +201,7 @@ def _llm_settings(raw: dict[str, Any], mode: str, env: Mapping[str, str]) -> LLM
             base_url=env.get(prefix + "BASE_URL") or p.get("base_url", ""),
             api_key_env=key_env,
             schema_dialect=dialect,
+            reasoning_effort=env.get(prefix + "REASONING_EFFORT") or p.get("reasoning_effort", ""),
             api_key=(env.get(key_env) or None) if key_env else None,
         )
     providers["mock"] = ProviderSettings(name="mock", kind="mock", model="mock-llm")

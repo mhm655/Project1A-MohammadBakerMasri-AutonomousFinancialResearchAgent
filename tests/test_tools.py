@@ -660,6 +660,14 @@ def test_memory_round_trip_with_filters(registry):
     assert len(verified["results"]) == 1
 
 
+def test_memory_search_accepts_a_top_level_ticker(registry):
+    for ticker in ("TSLA", "AAPL"):
+        registry.dispatch("vector_db_store", {"content": f"{ticker} supply chain finding.",
+                                              "metadata": {"ticker": ticker, "date": "2025-01-01", "source_type": "news"}})
+    hits = registry.dispatch("vector_db_search", {"query": "supply chain", "ticker": "tsla"}).data["results"]
+    assert [h["metadata"]["ticker"] for h in hits] == ["TSLA"]
+
+
 def test_memory_store_requires_provenance(registry):
     with pytest.raises(ToolValidationError, match="source_type"):
         registry.dispatch("vector_db_store", {"content": "A finding without a source.", "metadata": {"ticker": "X", "date": "2025-01-01"}})

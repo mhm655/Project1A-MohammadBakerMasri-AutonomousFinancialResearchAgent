@@ -152,7 +152,7 @@ def check_provider(name: str) -> list[Check]:
         return [Check(label, "skip", f"{settings.api_key_env} not set")]
 
     provider = build_provider(settings, timeout_s=s.llm.timeout_s)
-    client = LLMClient([provider], max_retries=0)
+    client = LLMClient([provider], max_retries=3)  # free tiers return transient 503s under load
     checks = []
 
     # 1. Does the model exist? (Not every server implements /models; that is only a warning.)
@@ -174,8 +174,15 @@ def check_provider(name: str) -> list[Check]:
 
     # 2. Plain completion.
     try:
-        reply = client.complete([{"role": "user", "content": "Reply with exactly: OK"}], max_tokens=20)
-        checks.append(Check(f"{label} chat", "ok", f"replied {reply.content!r} in {reply.latency_ms:.0f} ms"))
+        reply = client.complete([{"role": "user", "content": "Reply with exactly: OK"}], max_tokens=256)
+        if not (reply.content or "").strip():
+            checks.append(Check(f"{label} chat", "warn",
+                                f"empty reply (finish_reason={reply.finish_reason}, {reply.usage.reasoning_tokens} "
+                                "hidden reasoning tokens): lower reasoning_effort or raise max_output_tokens"))
+        else:
+            thinking = f", {reply.usage.reasoning_tokens} reasoning tokens" if reply.usage.reasoning_tokens else ""
+            checks.append(Check(f"{label} chat", "ok",
+                                f"replied {reply.content.strip()!r} in {reply.latency_ms:.0f} ms{thinking}"))
     except Exception as exc:
         return checks + [Check(f"{label} chat", "fail", str(exc)[:300])]
 
@@ -187,20 +194,34 @@ def check_provider(name: str) -> list[Check]:
         {"role": "user", "content": "Get the company profile for ticker MSFT."},
     ]
     try:
-        first = client.complete(messages, tools=tools, tool_choice="auto", max_tokens=300)
+        first = client.complete(messages, tools=tools, tool_choice="auto", max_tokens=1024)
     except Exception as exc:
         return checks + [Check(f"{label} tools", "fail", f"provider rejected the tool schemas: {str(exc)[:300]}")]
     if not first.tool_calls:
         return checks + [Check(f"{label} tools", "warn", f"accepted {len(tools)} tool schemas but made no tool call: {first.content!r:.120}")]
-    call = first.tool_calls[0]
+    # Like the real agent: every tool call gets a result, and a tool error goes back to the model as
+    # the result so it can correct itself. What is under test here is the protocol (tool-call ids,
+    # Gemini thought signatures), not whether the model's first guess was valid.
+    from tools import ToolError
+
+    messages.append(assistant_message(first))
+    outcomes = []
+    for call in first.tool_calls:
+        try:
+            content = registry.dispatch(call.name, call.arguments).data
+            outcomes.append(f"{call.name}: ok")
+        except ToolError as exc:
+            content = {"error": str(exc)}
+            outcomes.append(f"{call.name}: tool error returned to the model")
+        messages.append(tool_result_message(call.id, content))
     try:
-        result = registry.dispatch(call.name, call.arguments)
-        messages += [assistant_message(first), tool_result_message(call.id, result.data)]
-        final = client.complete(messages, tools=tools, max_tokens=200)
-        checks.append(Check(f"{label} tools", "ok",
-                            f"called {call.name}({call.arguments}); round trip answer: {(final.content or '').strip()[:80]!r}"))
+        final = client.complete(messages, tools=tools, max_tokens=1024)
     except Exception as exc:
-        checks.append(Check(f"{label} tools", "warn", f"called {call.name} but the round trip failed: {str(exc)[:200]}"))
+        return checks + [Check(f"{label} tools", "fail", f"the follow-up turn was rejected: {str(exc)[:250]}")]
+    follow_up = (f"then called {', '.join(tc.name for tc in final.tool_calls)}" if final.tool_calls
+                 else f"answered {(final.content or '').strip()[:60]!r}")
+    checks.append(Check(f"{label} tools", "ok",
+                        f"accepted {len(tools)} tool schemas; round trip OK ({'; '.join(outcomes)}); {follow_up}"))
     return checks
 
 

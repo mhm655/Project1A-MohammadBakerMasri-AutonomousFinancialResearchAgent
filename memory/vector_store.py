@@ -315,16 +315,23 @@ def set_live_store(store: ChromaVectorStore | None) -> None:
         _live_store = store
 
 
-def vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None) -> dict[str, Any]:
-    return DEFAULT_STORE.search(query, top_k, filter)
+def _with_ticker(filter: dict[str, Any] | None, ticker: str | None) -> dict[str, Any] | None:
+    """Merge the top-level ``ticker`` shortcut into the filter (models reach for it naturally)."""
+    return {**(filter or {}), "ticker": ticker} if ticker else filter
+
+
+def vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None,
+                     ticker: str | None = None) -> dict[str, Any]:
+    return DEFAULT_STORE.search(query, top_k, _with_ticker(filter, ticker))
 
 
 def vector_db_store(content: str, metadata: dict[str, Any]) -> dict[str, Any]:
     return DEFAULT_STORE.store(content, metadata)
 
 
-def live_vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None) -> dict[str, Any]:
-    return get_live_store().search(query, top_k, filter)
+def live_vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None,
+                          ticker: str | None = None) -> dict[str, Any]:
+    return get_live_store().search(query, top_k, _with_ticker(filter, ticker))
 
 
 def live_vector_db_store(content: str, metadata: dict[str, Any]) -> dict[str, Any]:

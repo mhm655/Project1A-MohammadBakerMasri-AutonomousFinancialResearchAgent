@@ -32,9 +32,13 @@ max_retries = 2
 kind = "openai_compatible"
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
 api_key_env = "GEMINI_API_KEY"
-model = "gemini-2.5-flash"
+# gemini-2.5-flash was retired for new API keys (Sept 2026); Google recommends 3.6 Flash.
+model = "gemini-3.6-flash"
 # Gemini accepts only a subset of JSON Schema in tool definitions.
 schema_dialect = "gemini"
+# Gemini 3 "thinks" before answering, and thinking tokens count against the free quota and the
+# output budget. "minimal" keeps routine calls fast; the planner can ask for more per call.
+reasoning_effort = "minimal"
 
 [llm.providers.groq]
 kind = "openai_compatible"
