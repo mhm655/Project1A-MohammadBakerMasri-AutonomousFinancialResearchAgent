@@ -7,13 +7,14 @@ needs no step-by-step guidance.
 
 Zetheta Project 1A · Mohammad Baker Masri
 
-> **Status: Day 5.** Done so far:
+> **Status: Day 6.** Done so far:
 > - the architecture specification;
 > - the tool registry (12 tools);
 > - configuration, the LLM client with its provider fallback chain, the Chroma vector store, and
 >   tracing;
 > - the agent loop, which runs Challenge 1 end to end ([sample report on mock data](results/dev/day04_challenge1_mock.md));
-> - live data: SEC EDGAR filings, SEC XBRL financials (yfinance as backup), web search and Google News sentiment.
+> - live data: SEC EDGAR filings, SEC XBRL financials (yfinance as backup), web search and Google News sentiment;
+> - memory: semantic chunking into Chroma, a structured facts store, episodic lessons, and prompt budgeting.
 
 **Runs at zero cost.** Every dependency and data source is free, and no credit card is required
 anywhere.
@@ -29,7 +30,7 @@ anywhere.
 | **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
 | **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
 | **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |
-| **Short-term context management and episodic memory** | Day 6 |
+| **Memory**: chunking per source type (one chunk per risk factor, Q&A pairs kept together); financial statements in a SQLite facts store; episodic lessons fed to the planner; prompts fitted to a token budget (40/30 primary/supporting); Challenge 7 recalls earlier research | Built (Day 6) |
 | **Synthesis**: a claim ledger (period, unit, evidence, confidence) and tiered conflict resolution | Day 8 |
 | **Tool fallback chains, circuit breakers, failure injection** | Day 9 (fallbacks are already declared per tool) |
 | **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |

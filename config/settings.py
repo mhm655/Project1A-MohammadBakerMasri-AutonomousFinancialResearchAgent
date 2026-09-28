@@ -89,6 +89,8 @@ class AgentSettings:
     max_calls_per_step: int = 3
     max_replans: int = 3
     max_reflections: int = 2
+    #: Prompt budget for the largest prompts (synthesis). Groq free tier: ~7,000 input tokens per minute.
+    max_prompt_tokens: int = 6000
 
 
 @dataclass(frozen=True)

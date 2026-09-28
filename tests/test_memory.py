@@ -107,3 +107,192 @@ def test_live_tool_handlers_use_chroma(tmp_path):
         assert get_live_store().count() == 1
     finally:
         set_live_store(None)
+
+
+# ==================================================================================================
+# Day 6: chunking, facts, episodic memory, context budget, and the memory manager
+# ==================================================================================================
+
+from memory.chunking import (  # noqa: E402
+    MAX_CHARS,
+    chunk_filing,
+    chunk_findings,
+    chunk_news,
+    chunk_transcript,
+    split_paragraphs,
+)
+from memory.context_manager import count_tokens, fit_evidence  # noqa: E402
+from memory.episodic import EpisodicMemory, derive_lessons  # noqa: E402
+from memory.facts import FactsStore  # noqa: E402
+from memory.manager import MemoryManager  # noqa: E402
+from memory.vector_store import InMemoryVectorStore  # noqa: E402
+
+BASE = {"ticker": "MSFT", "source_type": "10-K", "date": "2026-06-30"}
+
+
+def test_long_text_is_split_at_paragraphs_and_sentences():
+    text = "\n".join(f"Paragraph {i}. " + "word " * 120 for i in range(6))
+    chunks = split_paragraphs(text)
+    assert all(len(c) <= MAX_CHARS for c in chunks) and len(chunks) >= 3
+    assert all(c.startswith("Paragraph") for c in chunks)  # no chunk starts mid-paragraph
+
+
+def test_filing_risk_factors_become_one_chunk_per_risk_even_with_split_words():
+    filing = {"company_name": "MICROSOFT CORP", "filing_type": "10-K", "period_of_report": "2026-06-30",
+              "risk_factors": ["We face intense competition across all markets.", "Cyberattacks could harm our reputation."],
+              "sections": [
+                  {"item": "1", "title": "Business", "text": "Microsoft builds cloud and AI platforms for everyone."},
+                  # the filing splits "competition" across elements: "compe tition"
+                  {"item": "1A", "title": "Risk Factors", "text": "Intro text about risks in general here.\n"
+                   "We face intense compe tition across all markets. Rivals may cut prices and gain share.\n"
+                   "Cyberattacks could harm our reputation. " + "Breaches are costly. " * 120},
+              ]}
+    risks = [r for r in chunk_filing(filing, BASE) if r.metadata.get("kind") == "risk_factor"]
+    assert risks[0].content.endswith("gain share.") and "compe tition" in risks[0].content
+    assert len(risks) >= 3  # the long cyber risk is split, nothing truncated away
+    assert all("Cyberattacks could harm our reputation." in r.content for r in risks[1:])  # heading on every piece
+    assert all(r.metadata["section"] == "Item 1A" for r in risks)
+
+
+def test_transcript_keeps_each_question_with_its_answer():
+    transcript = {"ticker": "AAPL", "quarter": "Q4", "fiscal_year": 2025, "source_kind": "transcript", "segments": [
+        {"speaker": "Tim Cook", "role": "CEO", "section": "prepared", "text": "Record quarter."},
+        {"speaker": "Analyst", "role": "Analyst", "section": "qa", "text": "What about margins?"},
+        {"speaker": "CFO", "role": "CFO", "section": "qa", "text": "Margins will be stable."},
+        {"speaker": "Analyst", "role": "Analyst", "section": "qa", "text": "And China?"},
+    ]}
+    records = chunk_transcript(transcript, {"ticker": "AAPL", "source_type": "earnings_call", "date": "2025-10-30"})
+    assert [r.metadata["kind"] for r in records] == ["prepared", "qa", "qa"]
+    assert "What about margins?" in records[1].content and "Margins will be stable." in records[1].content
+    assert "And China?" in records[2].content  # an unanswered question is still kept
+
+
+def test_news_and_findings_chunks():
+    news = chunk_news({"articles": [{"title": "Microsoft beats", "source": "Reuters", "published": "2026-09-20",
+                                     "url": "https://x", "sentiment_score": 0.69}]},
+                      {"ticker": "MSFT", "source_type": "news", "date": "2026-09-28"})
+    assert news[0].metadata["date"] == "2026-09-20" and "+0.69" in news[0].content
+    findings = chunk_findings({"executive_summary": "Revenue grew 17.8% [E2].\n\nMargins were 99% [E3]. *(unverified)*",
+                               "research_methodology": "not stored"},
+                              {"ticker": "MSFT", "source_type": "analysis", "date": "2026-09-28", "verified": True})
+    assert [f.metadata["verified"] for f in findings] == [True, False]  # a flagged paragraph is never "verified"
+
+
+def test_facts_store_upserts_and_queries_by_exact_period():
+    facts = FactsStore(None)
+    statement = {"ticker": "MSFT", "period": "annual", "unit": "millions", "provider": "sec_xbrl", "data": [
+        {"fiscal_year": 2026, "fiscal_period": "FY", "period_end": "2026-06-30",
+         "values": {"revenue": 331839.0, "eps_diluted": 17.95}},
+        {"fiscal_year": 2025, "fiscal_period": "FY", "period_end": "2025-06-30",
+         "values": {"revenue": 281724.0, "eps_diluted": 13.64}},
+    ]}
+    assert facts.store_statement(statement, evidence_id="E2") == 4
+    statement["data"][1]["values"]["revenue"] = 285000.0  # a restatement in a newer filing
+    facts.store_statement(statement, evidence_id="E9")
+    assert facts.value("MSFT", "revenue", "2025-06-30") == 285000.0
+    rows = facts.query("msft", items=["eps_diluted"], limit_periods=1)
+    assert [(r["period_end"], r["value"], r["unit"]) for r in rows] == [("2026-06-30", 17.95, "per_share")]
+    assert "annual FY2025-FY2026" in facts.summary("MSFT") and facts.tickers() == ["MSFT"]
+    assert facts.summary("TSLA") is None
+
+
+def test_facts_persist_on_disk(tmp_path):
+    path = tmp_path / "facts.sqlite"
+    FactsStore(path).store_statement({"ticker": "NVDA", "data": [
+        {"fiscal_year": 2026, "fiscal_period": "FY", "period_end": "2026-01-25", "values": {"revenue": 1.0}}]})
+    assert FactsStore(path).value("NVDA", "revenue", "2026-01-25") == 1.0
+
+
+def test_episodic_lessons_and_hints(tmp_path):
+    lessons = derive_lessons(
+        {"financial_data_api": {"steps": 2, "done": 2, "failed": 0, "cited": 2},
+         "web_search": {"steps": 1, "done": 1, "failed": 0, "cited": 0}},
+        [{"tool": "sec_filing_search", "summary": "sec_filing_search did not finish within the 200 s left"}],
+        {"stop_reason": "completed", "uncited": 2})
+    text = " ".join(lessons)
+    assert "financial_data_api was useful (2 of 2" in text
+    assert "web_search returned data 1 time(s) but was never cited" in text
+    assert "too slow on this connection" in text and "2 figure(s) were left uncited" in text
+
+    memory = EpisodicMemory(tmp_path / "ep.sqlite")
+    for sid, score in (("s-low", 0.4), ("s-high", 0.9)):
+        memory.record({"session_id": sid, "query": "q", "template": "company_profile", "plan": [], "errors": [],
+                       "metrics": {}, "lessons": [f"lesson from {sid}"], "score": score,
+                       "tool_stats": {"financial_data_api": {"steps": 1, "done": 1, "failed": 0, "cited": 1}}})
+    hints = EpisodicMemory(tmp_path / "ep.sqlite").hints("company_profile")
+    assert hints.index("s-high") < hints.index("s-low")  # the best episode first, and it persisted on disk
+    assert EpisodicMemory(tmp_path / "ep.sqlite").hints("risk_assessment") == ""
+
+
+class _Result:
+    def __init__(self, tool, eid, tier=1):
+        self.tool, self.evidence_id, self.source_tier = tool, eid, tier
+
+
+def test_context_budget_shrinks_then_drops_the_least_important_evidence():
+    evidence = {"E1": _Result("financial_data_api", "E1"), "E2": _Result("sec_filing_search", "E2"),
+                "E3": _Result("news_sentiment", "E3", 4), "E4": _Result("web_search", "E4", 4)}
+
+    def digest(result, limit):
+        return f"[{result.evidence_id}] {result.tool} " + ("data " * 2000)[: limit - 30]
+
+    roomy = fit_evidence(evidence, 5000, digest)
+    assert roomy.dropped == [] and roomy.tokens <= 5000
+    shrunk = fit_evidence(evidence, 450, digest)  # shrinking every digest is enough here
+    assert shrunk.dropped == [] and shrunk.tokens <= 450
+    tight = fit_evidence(evidence, 200, digest)  # too small even at minimum size: items must go
+    assert tight.tokens <= 200 + 60  # the note about dropped items is the only overflow
+    assert tight.included == ["E1", "E3"]  # the financial statement and the news survive
+    assert set(tight.dropped) == {"E2", "E4"}  # the long filing and the web snippet go first
+    assert "do not cite" in tight.text
+
+
+def test_count_tokens_is_close_to_reality():
+    assert 10 <= count_tokens("Microsoft revenue was $245,122 million in FY2024 [E3].") <= 20
+
+
+def test_mock_mode_memory_is_never_persistent(tmp_path):
+    from config.settings import load_settings
+
+    manager = MemoryManager.for_settings(load_settings(env={"ARA_MODE": "mock", "ARA_DATA_DIR": str(tmp_path)}))
+    assert isinstance(manager.vectors, InMemoryVectorStore)
+    assert not any(tmp_path.iterdir())  # nothing was written to disk
+
+
+def _tesla_evidence():
+    from tools import build_default_registry
+
+    registry = build_default_registry("mock")
+    return {r.evidence_id: r for r in (
+        registry.dispatch("sec_filing_search", {"ticker": "TSLA", "filing_type": "10-K"}),
+        registry.dispatch("financial_data_api", {"ticker": "TSLA", "statement_type": "income_statement"}),
+        registry.dispatch("news_sentiment", {"query": "Tesla", "num_articles": 3}),
+        registry.dispatch("calculation_engine", {"calculation_type": "ratio", "inputs": {"numerator": 1, "denominator": 2}}),
+    )}
+
+
+def test_manager_ingests_sources_and_facts_and_files_news_under_the_company():
+    store = InMemoryVectorStore()
+    manager = MemoryManager(store, FactsStore(None), EpisodicMemory(None))
+    counts = manager.ingest_evidence(_tesla_evidence(), "s1", ["TSLA"])
+    assert counts["facts"] == 15 and counts["chunks"] > 5
+    assert set(store.companies()) == {"TSLA"}  # news searched as "Tesla" is filed under TSLA, not "TESLA"
+    risk = store.search("battery cell suppliers", filter={"ticker": "TSLA", "source_type": "10-K"})["results"][0]
+    assert risk["metadata"]["confidence"] == 0.95 and risk["metadata"]["evidence_id"]
+    assert "TSLA financial statements in memory" in manager.planning_notes("risk_assessment", ["TSLA"])
+
+
+def test_news_is_not_stored_when_the_company_is_ambiguous():
+    store = InMemoryVectorStore()
+    MemoryManager(store, FactsStore(None), EpisodicMemory(None)).ingest_evidence(_tesla_evidence(), "s1", ["TSLA", "F"])
+    assert store.search("Tesla", filter={"source_type": "news"})["results"] == []  # better none than misattributed
+
+
+def test_storing_the_same_material_twice_does_not_duplicate_it():
+    store = InMemoryVectorStore()
+    manager = MemoryManager(store, FactsStore(None), EpisodicMemory(None))
+    evidence = _tesla_evidence()
+    manager.ingest_evidence(evidence, "s1", ["TSLA"])
+    size = len(store.records)
+    manager.ingest_evidence(evidence, "s2", ["TSLA"])
+    assert len(store.records) == size

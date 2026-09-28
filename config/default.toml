@@ -85,6 +85,7 @@ max_tool_calls = 20         # spec A7.1
 max_calls_per_step = 3      # bounded ReAct inside each plan step
 max_replans = 3
 max_reflections = 2
+max_prompt_tokens = 6000   # fits free tiers such as Groq (about 7,000 input tokens per minute)
 
 [retry]                     # spec A4.3
 base_delay_s = 1.0

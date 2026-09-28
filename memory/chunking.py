@@ -1,0 +1,157 @@
+"""Semantic chunking of research material before it goes into long-term memory (spec A3.3).
+
+Fixed-size chunking cuts risk factors and Q&A exchanges in half, so each source type is split along its
+own structure:
+
+* **SEC filings**: one chunk per item. Within Risk Factors, one chunk per individual risk (split at
+  the risk headings the filing parser extracted); long items are split at paragraph boundaries.
+* **Earnings calls**: one chunk per prepared-remarks turn; each analyst question is kept together
+  with the management answers that follow it.
+* **News**: one chunk per article (headline, source, date, sentiment).
+* **Report findings**: one chunk per paragraph of a finished report section.
+* **Financial statements** are *not* chunked or embedded. They go to the structured facts store
+  (:mod:`memory.facts`), because numbers are retrieved by exact metadata, not by similarity.
+
+Every chunk carries the metadata of spec A3.3 (ticker, source type, date, confidence, verified) plus
+its provenance (evidence id, source URL, section).
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from typing import Any
+
+MAX_CHARS = 1500  # about 350 tokens: small enough to retrieve precisely, large enough to stand alone
+MIN_CHARS = 20  # short findings such as "Revenue grew 17.8% [E2]." still carry information
+
+#: Confidence by the source reliability tier (architecture spec, section 12.3).
+TIER_CONFIDENCE = {1: 0.95, 2: 0.85, 3: 0.70, 4: 0.60, 5: 0.30}
+
+
+@dataclass
+class MemoryRecord:
+    content: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+def split_paragraphs(text: str, max_chars: int = MAX_CHARS) -> list[str]:
+    """Group paragraphs into chunks of at most ``max_chars``; oversize paragraphs are split at sentences."""
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n|\n", text) if p.strip()]
+    chunks: list[str] = []
+    current = ""
+    for para in paragraphs:
+        pieces = [para] if len(para) <= max_chars else re.split(r"(?<=[.!?])\s+", para)
+        for piece in pieces:
+            if current and len(current) + len(piece) + 1 > max_chars:
+                chunks.append(current)
+                current = ""
+            current = f"{current}\n{piece}".strip() if current else piece[:max_chars]
+    if current:
+        chunks.append(current)
+    return [c for c in chunks if len(c) >= MIN_CHARS]
+
+
+def chunk_filing(data: dict[str, Any], base: dict[str, Any]) -> list[MemoryRecord]:
+    """Chunks of a ``sec_filing_search`` result."""
+    header = f"{data.get('company_name', data.get('ticker'))} Form {data.get('filing_type')} " \
+             f"(period ended {data.get('period_of_report')})"
+    records: list[MemoryRecord] = []
+    for section in data.get("sections", []):
+        label = f"{header}, Item {section['item']} {section['title']}"
+        meta = {**base, "section": f"Item {section['item']}"}
+        if section["item"] == "1A" and data.get("risk_factors"):
+            for risk_text in _split_risks(section["text"], data["risk_factors"]):
+                records.append(MemoryRecord(f"{label}: {risk_text}", {**meta, "kind": "risk_factor"}))
+        else:
+            for chunk in split_paragraphs(section["text"]):
+                records.append(MemoryRecord(f"{label}: {chunk}", meta))
+    return records
+
+
+def _split_risks(section_text: str, headings: list[str]) -> list[str]:
+    """Chunks per risk factor: each heading with the text up to the next heading.
+
+    Filings often split words across HTML elements ("RIS K FACTORS"), so headings are located while
+    ignoring whitespace. A long risk becomes several chunks, each prefixed with its heading so it still
+    stands alone; nothing is truncated away.
+    """
+    flat = " ".join(section_text.split())
+    squeezed_chars, index = [], []  # whitespace-free text, and each character's offset in ``flat``
+    for i, ch in enumerate(flat):
+        if not ch.isspace():
+            squeezed_chars.append(ch)
+            index.append(i)
+    squeezed = "".join(squeezed_chars)
+    positions = []
+    for heading in headings:
+        needle = "".join(heading.split())[:60]
+        pos = squeezed.find(needle)
+        if pos != -1:
+            positions.append((index[pos], heading))
+    positions.sort()
+    if not positions:
+        return split_paragraphs(section_text)
+    chunks = []
+    for i, (pos, heading) in enumerate(positions):
+        end = positions[i + 1][0] if i + 1 < len(positions) else len(flat)
+        risk = flat[pos:end].strip()
+        if len(risk) < MIN_CHARS:
+            continue
+        if len(risk) <= MAX_CHARS:
+            chunks.append(risk)
+            continue
+        label = " ".join(heading.split())[:200]
+        body = risk[len(label):].strip() if risk.startswith(label[:40]) else risk
+        for j, piece in enumerate(split_paragraphs(body, MAX_CHARS - len(label) - 20)):
+            chunks.append(f"{label} {'(continued) ' if j else ''}{piece}")
+    return chunks
+
+
+def chunk_transcript(data: dict[str, Any], base: dict[str, Any]) -> list[MemoryRecord]:
+    """Chunks of an ``earnings_transcript`` result: prepared turns, and Q&A question-answer pairs."""
+    header = f"{data.get('ticker')} {data.get('quarter')} FY{data.get('fiscal_year')} " \
+             f"{'earnings call' if data.get('source_kind') == 'transcript' else 'earnings release'}"
+    records: list[MemoryRecord] = []
+    pending_question: str | None = None
+    for seg in data.get("segments", []):
+        turn = f"{seg['speaker']} ({seg.get('role', '')}): {seg['text']}"
+        if seg.get("section") == "qa" and seg.get("role", "").lower() == "analyst":
+            if pending_question:  # a question with no answer still gets stored
+                records.append(MemoryRecord(f"{header}, Q&A: {pending_question}", {**base, "kind": "qa"}))
+            pending_question = turn
+        elif seg.get("section") == "qa" and pending_question:
+            records.append(MemoryRecord(f"{header}, Q&A: {pending_question} | {turn}"[:MAX_CHARS], {**base, "kind": "qa"}))
+            pending_question = None
+        else:
+            records.append(MemoryRecord(f"{header}, prepared remarks: {turn}"[:MAX_CHARS], {**base, "kind": "prepared"}))
+    if pending_question:
+        records.append(MemoryRecord(f"{header}, Q&A: {pending_question}", {**base, "kind": "qa"}))
+    return records
+
+
+def chunk_news(data: dict[str, Any], base: dict[str, Any]) -> list[MemoryRecord]:
+    records = []
+    for article in data.get("articles", []):
+        text = (f"News ({article.get('source') or 'unknown source'}, {article.get('published') or 'undated'}): "
+                f"{article['title']} [sentiment {article.get('sentiment_score', 0):+.2f}]")
+        meta = {**base, "date": article.get("published") or base["date"], "source_url": article.get("url", "")}
+        records.append(MemoryRecord(text, meta))
+    return records
+
+
+def chunk_findings(sections: dict[str, str], base: dict[str, Any]) -> list[MemoryRecord]:
+    """Paragraphs of a finished report. Paragraphs flagged by the verifier are stored as unverified."""
+    records = []
+    for key, body in sections.items():
+        if key in ("data_gaps_and_limitations", "research_methodology"):
+            continue
+        # One chunk per paragraph, never merged: merging a verified paragraph with a flagged one
+        # would make the verified one look unverified (or the reverse).
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n|\n", body) if len(p.strip()) >= MIN_CHARS]
+        for chunk in (piece for p in paragraphs for piece in (split_paragraphs(p) if len(p) > MAX_CHARS else [p])):
+            unverified = "*(unverified" in chunk
+            meta = {**base, "section": key, "verified": not unverified and base.get("verified", False),
+                    "confidence": 0.4 if unverified else base.get("confidence", 0.6)}
+            records.append(MemoryRecord(chunk, meta))
+    return records

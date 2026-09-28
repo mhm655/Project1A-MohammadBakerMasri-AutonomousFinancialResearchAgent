@@ -33,9 +33,7 @@ CONSTRAINTS
 - At most {max_tool_calls} tool calls per research task.
 - Data marked MOCK is for development only; say so if you see it.
 
-AVAILABLE TOOLS
-{tools}
-"""
+{tools}"""
 
 PLAN_PROMPT = """[ARA:PLAN]
 Research request: {query}
@@ -137,10 +135,12 @@ SECTION_GUIDANCE: dict[str, str] = {
 
 
 def system_prompt(tools_description: str, max_tool_calls: int, today: date | None = None) -> str:
+    """The system prompt. Pass ``tools_description=""`` for writing stages, which call no tools: the
+    tool list is about 1,000 tokens, a large share of a free-tier per-minute input allowance."""
     return SYSTEM_PROMPT.format(
         today=(today or date.today()).isoformat(),
         max_tool_calls=max_tool_calls,
-        tools=tools_description,
+        tools=f"AVAILABLE TOOLS\n{tools_description}\n" if tools_description else "",
     )
 
 

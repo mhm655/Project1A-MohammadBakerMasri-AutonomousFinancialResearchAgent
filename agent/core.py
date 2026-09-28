@@ -47,6 +47,7 @@ from agent.parser import (
 )
 from agent.tracing import TraceLogger
 from config.settings import AgentSettings, Settings
+from memory.context_manager import count_tokens, fit_evidence
 from tools import ToolError, ToolExecutionError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
 from tools.fact_checker import extract_quantities, fact_checker
 from tools.report_gen import TEMPLATES, cited_ids, section_title
@@ -265,6 +266,7 @@ class ResearchAgent:
         max_workers: int = 4,
         clock: Callable[[], float] = time.monotonic,
         today: date | None = None,
+        memory: Any = None,
     ) -> None:
         self.llm = llm
         self.registry_factory = registry_factory
@@ -274,6 +276,8 @@ class ResearchAgent:
         self.max_workers = max_workers
         self._clock = clock
         self._today = today
+        #: :class:`memory.manager.MemoryManager`; None disables memory writes (recall still uses the tools).
+        self.memory = memory
         self._graph = self._build_graph()
         self._pool = ThreadPoolExecutor(max_workers=8, thread_name_prefix="ara-tool")  # bounded tool calls
 
@@ -282,6 +286,10 @@ class ResearchAgent:
         options: dict[str, Any] = {"agent_settings": settings.agent, "traces_dir": str(settings.paths.traces_dir)}
         options.update(overrides)
         llm = options.pop("llm", None) or LLMClient.from_settings(settings)
+        if "memory" not in options:
+            from memory.manager import MemoryManager
+
+            options["memory"] = MemoryManager.for_settings(settings)
         return cls(llm, lambda: build_default_registry(settings.data_mode), **options)
 
     # ------------------------------------------------------------------ public API
@@ -305,6 +313,7 @@ class ResearchAgent:
 
         self.tracer.log("session_start", query=query, max_tool_calls=self.cfg.max_tool_calls,
                         max_seconds=self.max_seconds)
+        self._writing_system = prompts.system_prompt("", self.cfg.max_tool_calls, self._today)
         self._system = prompts.system_prompt(self.registry.describe(exclude=SYSTEM_TOOLS), self.cfg.max_tool_calls,
                                              self._today)
         try:
@@ -317,7 +326,7 @@ class ResearchAgent:
 
         usage_after = self.llm.usage.totals()
         report = state.get("report", {})
-        return ResearchResult(
+        result = ResearchResult(
             session_id=self.tracer.session_id,
             query=query,
             template=state["profile"].template,
@@ -340,6 +349,12 @@ class ResearchAgent:
             trace_path=str(self.tracer.path) if self.tracer.path else None,
             report_checks={k: report.get(k) for k in ("missing_sections", "unknown_citations", "uncited_sources")},
         )
+        if self.memory is not None:
+            try:
+                self.memory.record_episode(result, state["profile"].tickers)
+            except Exception as exc:  # memory must never break a finished run
+                self.tracer.log("note", text=f"Could not record the episode: {exc}")
+        return result
 
     # ------------------------------------------------------------------ graph
 
@@ -408,7 +423,8 @@ class ResearchAgent:
     def _llm(self, user: str, *, purpose: str, writing: bool = False, **kwargs: Any) -> Any:
         """An LLM call bounded by the research deadline, or by the final deadline when writing."""
         deadline = self._deadline if writing else self._research_deadline
-        return self.llm.complete([{"role": "system", "content": self._system}, {"role": "user", "content": user}],
+        system = self._writing_system if writing else self._system
+        return self.llm.complete([{"role": "system", "content": system}, {"role": "user", "content": user}],
                                  purpose=purpose, deadline=deadline, **kwargs)
 
     # ------------------------------------------------------------------ nodes
@@ -422,8 +438,14 @@ class ResearchAgent:
     def _node_recall(self, state: ResearchState) -> ResearchState:
         """Memory first (principle P3): look for prior findings before any external call."""
         profile, notes = state["profile"], []
-        for ticker in profile.tickers or [None]:
-            args: dict[str, Any] = {"query": state["query"][:400], "top_k": 5}
+        targets: list[str | None] = list(profile.tickers)
+        if not targets and self.memory is not None:
+            # "Based on the companies you've already researched..." (Challenge 7): recall each known company.
+            targets = self.memory.known_companies()
+            if targets:
+                self.tracer.thought(f"No company named; memory holds research on {', '.join(targets)}.", node="recall")
+        for ticker in targets or [None]:
+            args: dict[str, Any] = {"query": state["query"][:400], "top_k": 5 if len(targets) <= 2 else 3}
             if ticker:
                 args["ticker"] = ticker
             try:
@@ -435,8 +457,10 @@ class ResearchAgent:
             if hits:
                 self.evidence[result.evidence_id] = result
                 notes += [f"[{result.evidence_id}] {h['metadata'].get('date')}: {h['content'][:200]}" for h in hits]
-        self.tracer.thought(f"Memory recall found {len(notes)} prior finding(s).", node="recall")
-        return {"memory_notes": "\n".join(notes)}
+        planning = self.memory.planning_notes(profile.template, profile.tickers) if self.memory else ""
+        self.tracer.thought(f"Memory recall found {len(notes)} prior finding(s)"
+                            f"{' and strategy notes from earlier runs' if planning else ''}.", node="recall")
+        return {"memory_notes": "\n".join([*notes, planning]).strip()}
 
     def _node_plan(self, state: ResearchState) -> ResearchState:
         profile = state["profile"]
@@ -581,8 +605,13 @@ class ResearchAgent:
         if not self.evidence:
             self.gaps.append("No evidence was gathered, so no section could be written.")
             return {"sections": {}}
-        digest = "\n\n".join(evidence_digest(r) for r in self.evidence.values())
-        prompt = prompts.synthesize_prompt(query=state["query"], evidence=digest, sections=sections_needed)
+        overhead = count_tokens(self._writing_system) + count_tokens(
+            prompts.synthesize_prompt(query=state["query"], evidence="", sections=sections_needed))
+        fitted = fit_evidence(self.evidence, max(300, self.cfg.max_prompt_tokens - overhead), evidence_digest)
+        if fitted.dropped:
+            self.tracer.log("note", text=f"Context budget: left {len(fitted.dropped)} evidence item(s) out of the "
+                                         f"synthesis prompt: {', '.join(fitted.dropped)}")
+        prompt = prompts.synthesize_prompt(query=state["query"], evidence=fitted.text, sections=sections_needed)
         try:
             reply = self._llm(prompt, purpose="synthesize", writing=True, reasoning_effort="low", max_tokens=6000)
         except LLMError as exc:
@@ -676,15 +705,19 @@ class ResearchAgent:
         return "\n".join(lines)
 
     def _node_remember(self, state: ResearchState) -> ResearchState:
-        summary = state.get("sections", {}).get("executive_summary")
+        """Write this run to long-term memory: source material, statement facts, and the verified findings."""
+        if self.memory is None:
+            return {}
         tickers = state["profile"].tickers
-        if summary and len(tickers) == 1:
-            try:
-                self.registry.dispatch("vector_db_store", {"content": summary[:4000], "metadata": {
-                    "ticker": tickers[0], "date": date.today().isoformat(), "source_type": "analysis",
-                    "confidence": 0.5, "verified": False}})
-            except ToolError as exc:
-                self.tracer.log("note", text=f"Could not store the summary in memory: {exc}")
+        research = {e: r for e, r in self.evidence.items() if r.tool != "vector_db_search"}
+        try:
+            counts = self.memory.ingest_evidence(research, self.tracer.session_id, tickers)
+            counts["findings"] = self.memory.ingest_findings(
+                {k: v for k, v in state.get("sections", {}).items()}, state.get("verification", {}), tickers,
+                self.tracer.session_id)
+            self.tracer.log("note", text="Stored in memory", **counts)
+        except Exception as exc:  # memory must never break a finished run
+            self.tracer.log("note", text=f"Could not write to memory: {exc}")
         return {}
 
     # ------------------------------------------------------------------ routing

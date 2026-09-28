@@ -89,6 +89,24 @@ class InMemoryVectorStore:
         scored.sort(key=lambda r: r["score"], reverse=True)
         return {"query": query, "results": scored[:top_k], "searched_records": len(self.records)}
 
+    def add_many(self, records: list[Any]) -> int:
+        """Store many chunks at once; content-hash ids make re-storing a chunk an update."""
+        written = set()
+        for record in records:
+            meta = {"confidence": 0.5, "verified": False, **record.metadata,
+                    "ticker": str(record.metadata["ticker"]).upper()}
+            _parse_date(meta["date"])
+            rid = content_id(record.content, meta)
+            self.records[rid] = {"id": rid, "content": record.content, "metadata": meta}
+            written.add(rid)
+        return len(written)
+
+    def companies(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for record in self.records.values():
+            counts[record["metadata"]["ticker"]] = counts.get(record["metadata"]["ticker"], 0) + 1
+        return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
+
     def clear(self) -> None:
         self.records.clear()
 
@@ -212,21 +230,7 @@ class ChromaVectorStore:
         return self._collection.count()
 
     def store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
-        stored_on = _parse_date(metadata["date"])
-        meta: dict[str, Any] = {
-            "ticker": str(metadata["ticker"]).upper(),
-            "source_type": str(metadata["source_type"]),
-            "date": stored_on.isoformat(),
-            "date_ord": stored_on.toordinal(),
-            "confidence": float(metadata.get("confidence", 0.5)),
-            "verified": bool(metadata.get("verified", False)),
-            "researcher_session": str(metadata.get("researcher_session", "")),
-            "stored_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        }
-        for optional in ("source_url", "evidence_id"):
-            if metadata.get(optional):
-                meta[optional] = str(metadata[optional])
-
+        meta = _normalize_meta(metadata)
         prefix = record_id_prefix(meta)
         with self._lock:
             existing = self._collection.get(
@@ -256,10 +260,65 @@ class ChromaVectorStore:
             results.append({"id": rid, "content": doc, "score": round(1.0 - float(dist), 4), "metadata": clean_meta})
         return {"query": query, "results": results, "searched_records": total}
 
+    def add_many(self, records: list[Any]) -> int:
+        """Store many chunks at once. Ids are content hashes, so storing the same chunk again updates
+        it instead of duplicating it. Returns the number of records written."""
+        if not records:
+            return 0
+        ids, docs, metas = [], [], []
+        for record in records:
+            meta = _normalize_meta(record.metadata)
+            rid = content_id(record.content, meta)
+            if rid in ids:
+                continue
+            ids.append(rid)
+            docs.append(record.content)
+            metas.append(meta)
+        with self._lock:
+            for start in range(0, len(ids), 200):  # keep batches small for the embedding model
+                self._collection.upsert(ids=ids[start:start + 200], documents=docs[start:start + 200],
+                                        metadatas=metas[start:start + 200])
+        return len(ids)
+
+    def companies(self) -> dict[str, int]:
+        """``ticker -> number of records``: which companies memory knows about (Challenge 7)."""
+        counts: dict[str, int] = {}
+        for meta in self._collection.get(include=["metadatas"])["metadatas"]:
+            counts[meta["ticker"]] = counts.get(meta["ticker"], 0) + 1
+        return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
+
     def clear(self) -> None:
         ids = self._collection.get(include=[])["ids"]
         if ids:
             self._collection.delete(ids=ids)
+
+
+#: Metadata keys stored as plain strings when present (Chroma accepts only flat scalar values).
+_OPTIONAL_KEYS = ("source_url", "evidence_id", "section", "kind")
+
+
+def _normalize_meta(metadata: dict[str, Any]) -> dict[str, Any]:
+    stored_on = _parse_date(metadata["date"])
+    meta: dict[str, Any] = {
+        "ticker": str(metadata["ticker"]).upper(),
+        "source_type": str(metadata["source_type"]),
+        "date": stored_on.isoformat(),
+        "date_ord": stored_on.toordinal(),
+        "confidence": float(metadata.get("confidence", 0.5)),
+        "verified": bool(metadata.get("verified", False)),
+        "researcher_session": str(metadata.get("researcher_session", "")),
+        "stored_at": datetime.now(UTC).isoformat(timespec="seconds"),
+    }
+    for key in _OPTIONAL_KEYS:
+        if metadata.get(key):
+            meta[key] = str(metadata[key])
+    return meta
+
+
+def content_id(content: str, meta: dict[str, Any]) -> str:
+    """Readable prefix plus a hash of the content, e.g. ``msft-10-k-2026-06-30-3f2a9c1b04``."""
+    digest = hashlib.sha1(f"{meta['ticker']}|{meta['source_type']}|{content}".encode()).hexdigest()[:10]
+    return f"{record_id_prefix(meta)}-{digest}"
 
 
 def _chroma_where(flt: dict[str, Any]) -> dict[str, Any] | None:

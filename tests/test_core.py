@@ -20,6 +20,9 @@ from agent.parser import (
     step_done_note,
 )
 from config.settings import AgentSettings
+from memory.episodic import EpisodicMemory
+from memory.facts import FactsStore
+from memory.manager import MemoryManager
 from memory.vector_store import DEFAULT_STORE
 from tools import build_default_registry
 
@@ -91,7 +94,8 @@ class ScriptedLLM:
 
 def make_agent(script, *, max_tool_calls=20, clock=None, providers=None, **kw):
     llm = LLMClient(providers or [MockProvider(script)], max_retries=0, sleep=lambda s: None)
-    options = {"agent_settings": AgentSettings(max_tool_calls=max_tool_calls), "max_workers": 4}
+    options = {"agent_settings": AgentSettings(max_tool_calls=max_tool_calls), "max_workers": 4,
+               "memory": MemoryManager(DEFAULT_STORE, FactsStore(None), EpisodicMemory(None))}
     if clock:
         options["clock"] = clock
     options.update(kw)
@@ -210,8 +214,8 @@ def test_challenge_1_end_to_end_on_mock_data():
     assert result.report_checks == {"missing_sections": [], "unknown_citations": [], "uncited_sources": []}
     v = result.verification
     assert v["checked"] >= 3 and v["unsupported"] == 0 and v["uncited"] == 0
-    # memory: the executive summary is stored for future sessions
-    assert DEFAULT_STORE.search("Microsoft revenue", filter={"ticker": "MSFT"})["results"]
+    # memory: findings and source material are stored for future sessions
+    assert DEFAULT_STORE.search("Microsoft revenue", filter={"ticker": "MSFT", "source_type": "analysis"})["results"]
 
 
 def test_the_trace_records_decisions_actions_and_llm_calls(tmp_path):
@@ -449,3 +453,67 @@ def test_planner_is_told_not_to_assume_the_current_year():
     text = prompts.plan_prompt(query="q", template="company_profile", sections=["executive_summary"], entities=["MSFT"],
                                memory="", tool_names=["sec_filing_search"], max_steps=5)
     assert "Omit \"year\"" in text and "training data is older" in text
+
+
+# ==================================================================================================
+# Day 6: memory across runs (spec task: run Challenge 1, store, then Challenge 7 retrieves it)
+# ==================================================================================================
+
+C7_QUERY = ("Based on the companies you've already researched, what themes emerge across the technology sector? "
+            "Identify cross-cutting risks and opportunities.")
+
+
+class RecordingLLM(ScriptedLLM):
+    """A scripted LLM that also keeps every prompt, to check what the planner was told."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.prompts: list[str] = []
+
+    def __call__(self, request):
+        self.prompts.append(request.messages[-1]["content"])
+        return super().__call__(request)
+
+
+def test_challenge_7_retrieves_what_challenge_1_stored():
+    memory = MemoryManager(DEFAULT_STORE, FactsStore(None), EpisodicMemory(None))
+    first = make_agent(ScriptedLLM(), memory=memory).run(QUERY)
+    assert first.stop_reason == "completed"
+    assert "MSFT" in memory.known_companies()
+    assert memory.facts.value("MSFT", "revenue", "2024-06-30") == 245122
+
+    thematic_plan = {"steps": [{"id": "s1", "goal": "Sector news", "tool": "web_search",
+                                "args": {"query": "technology sector themes 2026"}}]}
+    script = RecordingLLM(plan=json.dumps(thematic_plan),
+                          synthesis="=== SECTION: executive_summary ===\nThemes from memory [E1].")
+    second = make_agent(script, memory=memory).run(C7_QUERY)
+
+    assert second.template == "thematic"
+    recalled = [r for r in second.evidence.values() if r.tool == "vector_db_search"]
+    assert recalled and recalled[0].args.get("ticker") == "MSFT"  # no company named, so memory supplied one
+    assert any("Microsoft" in hit["content"] for r in recalled for hit in r.data["results"])
+    plan_prompt = next(p for p in script.prompts if "[ARA:PLAN]" in p)
+    assert "Microsoft" in plan_prompt  # the planner was shown the recalled research
+
+
+def test_the_second_run_of_a_report_type_gets_lessons_from_the_first():
+    memory = MemoryManager(DEFAULT_STORE, FactsStore(None), EpisodicMemory(None))
+    make_agent(ScriptedLLM(), memory=memory).run(QUERY)
+    script = RecordingLLM()
+    make_agent(script, memory=memory).run(QUERY)
+    plan_prompt = next(p for p in script.prompts if "[ARA:PLAN]" in p)
+    assert "Lessons from 1 earlier company profile run" in plan_prompt
+    assert "financial_data_api was useful" in plan_prompt
+    assert "MSFT financial statements in memory" in plan_prompt
+
+
+def test_synthesis_prompt_respects_the_token_budget():
+    from memory.context_manager import count_tokens
+
+    script = RecordingLLM()
+    agent = make_agent(script, agent_settings=AgentSettings(max_prompt_tokens=1500))
+    agent.run(QUERY)
+    synthesis_prompt = next(p for p in script.prompts if "[ARA:SYNTHESIZE]" in p)
+    total = count_tokens(agent._writing_system) + count_tokens(synthesis_prompt)
+    assert total <= 1500 + 60  # only the "left out" note may overflow
+    assert count_tokens(agent._writing_system) < count_tokens(agent._system) - 500  # no tool list when writing
