@@ -55,8 +55,19 @@ class Quantity:
     text: str
 
 
+_MONTH = (r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|"
+          r"Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?")
+# "June 1 2025", "June 1st, 2025", "1 June 2025", "June 2025": dates, not quantities.
+_DATE = re.compile(
+    rf"\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?,?\s+\d{{4}}\b|\b\d{{1,2}}(?:st|nd|rd|th)?\s+{_MONTH}\s+\d{{4}}\b"
+    rf"|\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?\b(?!\s*(?:%|million|billion|thousand))",
+    re.IGNORECASE,
+)
+
+
 def extract_quantities(text: str) -> list[Quantity]:
-    """Find numeric quantities in text, skipping bare years such as 2024."""
+    """Find numeric quantities in text, skipping dates and bare years such as 2024."""
+    text = _DATE.sub(" ", text)
     text = _RANGE.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else f"{m.group(1)} {m.group(3)} to {m.group(2)} {m.group(3)}", text)
     found = []
     for m in _QUANTITY.finditer(text):

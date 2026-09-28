@@ -188,7 +188,8 @@ def test_transient_errors_are_retried_with_backoff_then_succeed():
 
 
 def test_exhausted_retries_fall_back_to_the_next_provider():
-    gemini = MockProvider([rate_limited()] * 3, name="gemini")
+    # server errors (503) are retried; rate limits move on at once (see the cooldown test below)
+    gemini = MockProvider([LLMProviderError("gemini", "server", "503 high demand")] * 3, name="gemini")
     groq = MockProvider(["from groq"], name="groq")
     client, sleeps = make_client(gemini, groq)
     response = client.complete([{"role": "user", "content": "hi"}])
@@ -480,3 +481,37 @@ def test_cached_results_are_isolated_from_caller_mutation():
     first = registry.dispatch("company_profile", {"ticker": "MSFT"})
     first.data["name"] = "tampered"
     assert registry.dispatch("company_profile", {"ticker": "MSFT"}).data["name"] == "Microsoft Corporation"
+
+
+def test_rate_limited_provider_cools_down_while_others_are_available():
+    now = [0.0]
+    gemini = MockProvider([rate_limited(), "gemini is back"], name="gemini")
+    groq = MockProvider(["groq 1", "groq 2"], name="groq")
+    sleeps: list[float] = []
+    client = LLMClient([gemini, groq], max_retries=2, sleep=sleeps.append, rng=lambda: 0.0,
+                       clock=lambda: now[0], cooldown_s=30)
+    assert client.complete([{"role": "user", "content": "a"}]).provider == "groq"
+    assert len(gemini.requests) == 1 and sleeps == []  # no retries or waiting on the rate-limited provider
+    now[0] = 10
+    assert client.complete([{"role": "user", "content": "b"}]).provider == "groq"  # gemini still cooling
+    assert len(gemini.requests) == 1
+    now[0] = 31
+    assert client.complete([{"role": "user", "content": "c"}]).provider == "gemini"  # cooled down
+
+
+def test_the_last_provider_is_still_retried_on_rate_limits():
+    client, sleeps = make_client(MockProvider([rate_limited(), "ok"], name="groq"))
+    assert client.complete([{"role": "user", "content": "x"}]).content == "ok" and sleeps == [1.0]
+
+
+def test_cooling_providers_remain_a_last_resort():
+    """Every provider is rate-limited except an unreachable one: the cooled providers are retried last."""
+    now = [0.0]
+    groq = MockProvider([rate_limited("groq"), rate_limited("groq"), "groq recovered"], name="groq")
+    ollama = MockProvider([ConnectionError("refused")] * 5, name="ollama")
+    sleeps: list[float] = []
+    client = LLMClient([groq, ollama], max_retries=2, sleep=sleeps.append, rng=lambda: 0.0,
+                       clock=lambda: now[0], cooldown_s=30)
+    assert client.complete([{"role": "user", "content": "a"}]).content == "groq recovered"
+    # groq cooled down at once, ollama was tried and cooled too, then groq was retried as the last resort
+    assert len(ollama.requests) == 1 and len(groq.requests) == 3

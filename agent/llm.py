@@ -575,6 +575,8 @@ class LLMClient:
         tracer: Any = None,
         sleep: Callable[[float], None] = time.sleep,
         rng: Callable[[], float] = random.random,
+        clock: Callable[[], float] = time.monotonic,
+        cooldown_s: float = 30.0,
     ) -> None:
         if not providers:
             raise ConfigError("LLMClient needs at least one provider")
@@ -588,6 +590,10 @@ class LLMClient:
         self.usage = UsageTracker()
         self._sleep = sleep
         self._rng = rng
+        self._clock = clock
+        #: A rate-limited provider is skipped until this time while another provider is available.
+        self.cooldown_s = cooldown_s
+        self._cooldown_until: dict[str, float] = {}
 
     @classmethod
     def from_settings(cls, settings: Settings, *, tracer: Any = None, **overrides: Any) -> LLMClient:
@@ -639,7 +645,19 @@ class LLMClient:
             reasoning_effort=reasoning_effort,
         )
         errors: list[LLMProviderError] = []
-        for depth, provider in enumerate(self.providers):
+        now = self._clock()
+        # Providers cooling down after a rate limit or an unreachable server go last rather than being
+        # dropped: per-minute limits clear within seconds, and a last resort beats no answer.
+        ready = [p for p in self.providers if self._cooldown_until.get(p.name, 0.0) <= now]
+        queue = ready + [p for p in self.providers if p not in ready]
+        final_pass: set[str] = set()  # providers cooled during this call get one last full try
+        i = 0
+        while i < len(queue):
+            provider = queue[i]
+            depth = self.providers.index(provider)
+            is_last = i == len(queue) - 1
+            final = provider.name in final_pass
+            i += 1
             for attempt in range(self.max_retries + 1):
                 try:
                     response = provider.complete(request)
@@ -647,10 +665,18 @@ class LLMClient:
                     error = classify_exception(provider.name, exc)
                     errors.append(error)
                     self.usage.record_failure(provider.name, provider.model)
-                    will_retry = error.retryable and attempt < self.max_retries
+                    # A rate limit or an unreachable server rarely clears within a few seconds: with
+                    # another provider still to try, move on at once and give this one a cooling-off
+                    # period (a light circuit breaker; the full breaker arrives on Day 9).
+                    cool = error.kind in ("rate_limit", "connection") and not is_last and not final
+                    if cool:
+                        self._cooldown_until[provider.name] = now + max(error.retry_after or 0.0, self.cooldown_s)
+                        final_pass.add(provider.name)
+                        queue.append(provider)
+                    will_retry = error.retryable and attempt < self.max_retries and not cool
                     self._trace("error", source="llm", provider=provider.name, model=provider.model,
                                 error_kind=error.kind, message=str(error), attempt=attempt + 1,
-                                will_retry=will_retry, purpose=purpose)
+                                will_retry=will_retry, cooling_down=cool, purpose=purpose)
                     if not will_retry:
                         break  # permanent error or retries exhausted: next provider
                     self._sleep(backoff_delay(attempt, base_s=self.base_delay_s, max_jitter_s=self.max_jitter_s,

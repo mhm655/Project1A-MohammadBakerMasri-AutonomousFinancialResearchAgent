@@ -243,13 +243,16 @@ class ToolRegistry:
         """Available tools in OpenAI function-calling format, ready to pass as ``tools=``."""
         return [copy.deepcopy(spec.to_openai()) for spec in self.available()]
 
-    def describe(self) -> str:
-        """A compact plain-text listing of the available tools, for injection into the system prompt."""
+    def describe(self, exclude: set[str] | frozenset[str] = frozenset()) -> str:
+        """Plain-text tool signatures for the system prompt, with exact argument names, allowed values
+        and defaults. Without these, models guess argument names and the calls fail validation."""
         lines = []
         for spec in self.available():
+            if spec.name in exclude:
+                continue
             props = spec.parameters.get("properties", {})
             required = set(spec.parameters.get("required", []))
-            args = ", ".join(f"{p}{'' if p in required else '?'}: {props[p].get('type', 'any')}" for p in props)
+            args = ", ".join(_signature(name, schema, name in required) for name, schema in props.items())
             lines.append(f"- {spec.name}({args}): {spec.description}")
         return "\n".join(lines)
 
@@ -399,6 +402,20 @@ class ToolRegistry:
                 listener(record)
             except Exception:  # a broken listener must never break a tool call
                 logging.getLogger("ara").exception("Tool-call listener failed")
+
+
+def _signature(name: str, schema: dict[str, Any], required: bool) -> str:
+    """``statement_type: income_statement|balance_sheet``, ``years?: integer = 3``, ``metrics?: [revenue|roe]``."""
+    kind = schema.get("type", "any")
+    if "enum" in schema:
+        kind = "|".join(str(v) for v in schema["enum"])
+    elif kind == "array" and isinstance(schema.get("items"), dict):
+        items = schema["items"]
+        kind = "[" + ("|".join(str(v) for v in items["enum"]) if "enum" in items else items.get("type", "any")) + "]"
+    elif kind == "object" and schema.get("properties"):
+        kind = "{" + ", ".join(schema["properties"]) + "}"
+    default = f" = {json.dumps(schema['default'])}" if "default" in schema else ""
+    return f"{name}{'' if required else '?'}: {kind}{default}"
 
 
 _INTEGER = re.compile(r"[+-]?\d+")

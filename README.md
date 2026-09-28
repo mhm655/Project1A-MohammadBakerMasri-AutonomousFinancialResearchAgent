@@ -7,13 +7,12 @@ needs no step-by-step guidance.
 
 Zetheta Project 1A · Mohammad Baker Masri
 
-> **Status: Day 3.** Done so far:
+> **Status: Day 4.** Done so far:
 > - the architecture specification;
 > - the tool registry (12 tools);
 > - configuration, the LLM client with its provider fallback chain, the Chroma vector store, and
->   tracing.
->
-> The agent loop itself arrives on Day 4.
+>   tracing;
+> - the agent loop, which runs Challenge 1 end to end ([sample report on mock data](results/dev/day04_challenge1_mock.md)).
 
 **Runs at zero cost.** Every dependency and data source is free, and no credit card is required
 anywhere.
@@ -27,7 +26,7 @@ anywhere.
 | **Network tools** (SEC, market data, search, news, transcripts, peers) | Mock data now; live on Days 5–7 |
 | **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
 | **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
-| **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) running a bounded ReAct executor per step | Day 4 |
+| **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |
 | **Short-term context management and episodic memory** | Day 6 |
 | **Synthesis**: a claim ledger (period, unit, evidence, confidence) and tiered conflict resolution | Day 8 |
 | **Tool fallback chains, circuit breakers, failure injection** | Day 9 (fallbacks are already declared per tool) |
@@ -105,7 +104,16 @@ For each LLM provider it also checks that:
 
 Use `--offline` to skip the network checks.
 
-### 5. Run the tests
+### 5. Run a research task
+
+```bash
+python -m agent "Create a comprehensive profile of Microsoft Corporation" --data mock --out report.md
+```
+
+`--data mock` uses mock tool data (the live data tools arrive on Day 5); `--mode mock` needs no network
+at all. Every run writes a full trace to `traces/`.
+
+### 6. Run the tests
 
 ```bash
 python -m pytest

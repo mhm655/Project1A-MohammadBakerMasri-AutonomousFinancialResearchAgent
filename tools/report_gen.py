@@ -47,9 +47,14 @@ _HEADING = re.compile(r"^(#{1,6})(?=\s)", re.MULTILINE)
 
 
 def nest_headings(body: str) -> str:
-    """Push headings inside a section body below the section's own ``##`` heading (``#`` -> ``###``),
-    so a model-written heading cannot break the report's structure."""
-    return _HEADING.sub(lambda m: "#" * min(len(m.group(1)) + 2, 6), body)
+    """Push headings inside a section body below the section's own ``##`` heading, so a model-written
+    heading cannot break the report's structure. The shallowest heading becomes ``###``; deeper ones
+    keep their relative depth."""
+    levels = [len(m.group(1)) for m in _HEADING.finditer(body)]
+    if not levels:
+        return body
+    shift = max(0, 3 - min(levels))
+    return _HEADING.sub(lambda m: "#" * min(len(m.group(1)) + shift, 6), body)
 
 
 def _evidence_order(evidence_id: str) -> tuple[int, str]:
