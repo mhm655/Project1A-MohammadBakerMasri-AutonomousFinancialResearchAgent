@@ -21,7 +21,7 @@ traces_dir = "traces"
 
 [llm]
 # Tried in order; a provider is skipped when its API key is missing.
-provider_order = ["gemini", "groq", "ollama"]
+provider_order = ["gemini", "groq", "groq_qwen", "ollama"]
 temperature = 0.0
 max_output_tokens = 4096
 timeout_s = 60.0
@@ -40,11 +40,21 @@ schema_dialect = "gemini"
 # output budget. "minimal" keeps routine calls fast; the planner can ask for more per call.
 reasoning_effort = "minimal"
 
+# Groq rate limits apply per model, so two Groq models give two independent fallbacks from one key.
+# (llama-3.3-70b-versatile was retired; both models below were verified with config.doctor.)
 [llm.providers.groq]
 kind = "openai_compatible"
 base_url = "https://api.groq.com/openai/v1"
 api_key_env = "GROQ_API_KEY"
-model = "llama-3.3-70b-versatile"
+model = "openai/gpt-oss-120b"
+schema_dialect = "openai"
+reasoning_effort = "low"      # gpt-oss accepts low / medium / high
+
+[llm.providers.groq_qwen]
+kind = "openai_compatible"
+base_url = "https://api.groq.com/openai/v1"
+api_key_env = "GROQ_API_KEY"
+model = "qwen/qwen3.8-27b"
 schema_dialect = "openai"
 
 [llm.providers.ollama]

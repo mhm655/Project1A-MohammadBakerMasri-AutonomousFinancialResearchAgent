@@ -39,7 +39,7 @@ from tools import ToolExecutionError, build_default_registry
 def test_defaults_without_any_environment():
     s = load_settings(env={})
     assert s.mode == "free" and s.data_mode == "live"
-    assert s.llm.provider_order == ("gemini", "groq", "ollama")
+    assert s.llm.provider_order == ("gemini", "groq", "groq_qwen", "ollama")
     assert [p.name for p in s.llm.configured_chain()] == ["ollama"]  # the only provider needing no key
     assert s.agent.max_tool_calls == 20
     assert (s.retry.base_delay_s, s.retry.max_retries, s.retry.max_jitter_s) == (1.0, 5, 0.5)
@@ -115,7 +115,7 @@ def test_mock_mode_runs_end_to_end_without_network_or_keys():
 def test_client_from_settings_builds_the_configured_chain():
     s = load_settings(env={"GROQ_API_KEY": "gsk-test"})
     client = LLMClient.from_settings(s)
-    assert [p.name for p in client.providers] == ["groq", "ollama"]  # gemini skipped: no key
+    assert [p.name for p in client.providers] == ["groq", "groq_qwen", "ollama"]  # gemini skipped: no key
     assert client.max_retries == s.llm.max_retries
 
 
@@ -348,7 +348,8 @@ def test_reasoning_effort_is_only_sent_to_providers_configured_for_it():
 
 def test_reasoning_effort_setting_and_override():
     assert load_settings(env={}).llm.providers["gemini"].reasoning_effort == "minimal"
-    assert load_settings(env={}).llm.providers["groq"].reasoning_effort == ""
+    assert load_settings(env={}).llm.providers["groq"].reasoning_effort == "low"
+    assert load_settings(env={}).llm.providers["groq_qwen"].reasoning_effort == ""
     s = load_settings(env={"ARA_GEMINI_REASONING_EFFORT": "low"})
     assert s.llm.providers["gemini"].reasoning_effort == "low"
 

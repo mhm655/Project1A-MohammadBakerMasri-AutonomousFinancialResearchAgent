@@ -264,6 +264,9 @@ configuration only. Provider quirks are handled per provider through configurati
   Providers that support it get a configured default (`reasoning_effort = "minimal"` for Gemini).
   Individual calls, such as planning, can ask for more. Hidden reasoning tokens are counted separately
   in `TokenUsage.reasoning_tokens`, so the token-usage analysis is not under-reported.
+- **Verified failover** (live APIs): with Gemini deliberately broken, the chain answered from Groq after one
+  non-retried attempt. A conversation begun on Gemini, including its thought signatures, was continued by
+  both Groq models, so a provider can fail mid-task without losing the conversation.
 - **Model retirement**: `gemini-2.5-flash` was withdrawn for new API keys during development, so the
   default is now `gemini-3.6-flash`, pinned rather than the `-latest` alias to keep evaluation runs
   reproducible. `python -m config.doctor` detects a retired model on the first run.
@@ -273,8 +276,9 @@ configuration only. Provider quirks are handled per provider through configurati
 | Order | Provider | Cost | Role |
 |---|---|---|---|
 | 1 | Google Gemini API, free tier (a Flash-class model) | Free; needs a Google account and an API key, no card | Primary reasoning and synthesis. Handles long context well, which suits filings. |
-| 2 | Groq, free tier (an open-weight model with tool calling) | Free; needs an account, no card | Used when Gemini hits a rate limit or goes down. Very low latency. |
-| 3 | Ollama running locally (a 3–4B model that fits in 4 GB of VRAM) | Free, offline, no account | Last resort, plus cheap sub-tasks such as summarising chunks and classifying queries. |
+| 2 | Groq, free tier: `openai/gpt-oss-120b` | Free; needs an account, no card | Used when Gemini hits a rate limit or goes down. Strong tool use. |
+| 3 | Groq, free tier: `qwen/qwen3.8-27b` | Same key | Groq rate-limits per model, so a second model is an independent fallback. Very low latency. |
+| 4 | Ollama running locally (a 3–4B model that fits in 4 GB of VRAM) | Free, offline, no account | Last resort, plus cheap sub-tasks such as summarising chunks and classifying queries. |
 | — | `MockLLM` (scripted responses) | Free | Unit tests and CI. Fully deterministic. |
 
 Paid OpenAI models (same adapter, default `base_url`) and Anthropic models (their own adapter) remain
