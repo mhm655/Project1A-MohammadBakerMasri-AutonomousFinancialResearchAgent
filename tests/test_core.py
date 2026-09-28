@@ -234,28 +234,49 @@ def test_unusable_plan_falls_back_to_the_default_plan():
     assert result.stop_reason == "completed" and result.report_markdown
 
 
-def test_a_failed_step_is_repaired_by_the_react_loop():
+def test_invalid_arguments_are_repaired_by_the_react_loop():
+    plan = {"steps": [{"id": "s1", "goal": "Income statements", "tool": "financial_data_api",
+                       "args": {"ticker": "MSFT"}}]}  # statement_type missing: the LLM repairs it
+    script = ScriptedLLM(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
+    result = make_agent(script).run(QUERY)
+    step = result.plan.get("s1")
+    assert step.status == "done" and step.args["statement_type"] == "income_statement"
+    assert "EXECUTE" in script.stages and result.tool_calls == 1
+
+
+def test_data_errors_are_not_sent_to_the_llm_for_repair():
+    """'No data for ticker' cannot be fixed by changing arguments; repairing it only burns budget."""
     plan = {"steps": [{"id": "s1", "goal": "Income statements", "tool": "financial_data_api",
                        "args": {"ticker": "ZZZZ", "statement_type": "income_statement"}}]}
     script = ScriptedLLM(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
     result = make_agent(script).run(QUERY)
-    step = result.plan.get("s1")
-    assert step.status == "done" and step.attempts == 2 and step.args["ticker"] == "MSFT"
-    assert result.tool_calls == 2
+    assert result.plan.get("s1").status == "failed" and result.tool_calls == 1
+    assert "EXECUTE" not in script.stages
+    assert any("ZZZZ" in g for g in result.gaps)
 
 
 def test_tool_budget_is_enforced_and_reported():
+    """The planner caps the plan at the budget, so the budget can only run out at run time through
+    repairs: here a repair needs two calls, leaving nothing for the second step."""
     plan = {"steps": [
-        {"id": "s1", "goal": "Income statements", "tool": "financial_data_api",
-         "args": {"ticker": "ZZZZ", "statement_type": "income_statement"}},
-        {"id": "s2", "goal": "Company profile", "tool": "company_profile", "args": {"ticker": "MSFT"}},
+        {"id": "s1", "goal": "Income", "tool": "financial_data_api", "args": {"ticker": "MSFT"}},  # needs repair
+        {"id": "s2", "goal": "Profile", "tool": "company_profile", "args": {"ticker": "MSFT"}},
     ]}
-    script = ScriptedLLM(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
-    # sequential, so the order in which steps claim the budget is deterministic
-    result = make_agent(script, max_tool_calls=2, max_workers=1).run(QUERY)
+
+    class Script(ScriptedLLM):
+        def __call__(self, request):
+            if "[ARA:EXECUTE]" in request.messages[-1]["content"]:
+                self.stages.append("EXECUTE")
+                return {"tool_calls": [  # first attempt still invalid, second one right
+                    {"name": "financial_data_api", "arguments": {"ticker": "MSFT"}},
+                    {"name": "financial_data_api", "arguments": {"ticker": "MSFT", "statement_type": "income_statement"}},
+                ]}
+            return super().__call__(request)
+
+    script = Script(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
+    result = make_agent(script, max_tool_calls=2, max_workers=1).run(QUERY)  # sequential: deterministic
     assert result.tool_calls == 2 and result.stop_reason == "tool-call budget exhausted"
-    assert result.plan.get("s1").status == "done"  # failed, then repaired with the second call
-    assert result.plan.get("s2").status == "skipped"  # nothing left in the budget
+    assert [s.status for s in result.plan.steps] == ["done", "skipped"]
     assert any("budget ran out" in g for g in result.gaps)
     assert "## Data Gaps and Limitations" in result.report_markdown
 
@@ -368,3 +389,30 @@ def test_verifier_repairs_a_missing_citation_only_when_one_source_matches():
     assert v["auto_cited"] == 1
     assert "5%. *(unverified: no source cited)*" in body  # a lone round number is never auto-cited
     assert "added by the verifier" in result.report_markdown
+
+
+@pytest.mark.parametrize("query, template", [
+    ("Analyze Apple Inc.'s most recent quarterly earnings. Compare actual results to consensus estimates.",
+     "earnings_analysis"),
+])
+def test_compare_to_consensus_is_an_earnings_analysis(query, template):
+    assert analyze_query(query).template == template
+
+
+def test_sections_are_found_from_markdown_headings_when_markers_are_missing():
+    text = "## Executive Summary\nA [E1].\n## Financial Risks\nB.\n### Detail\nC.\n## Risk Matrix\nD"
+    assert parse_sections(text, ["executive_summary", "financial_risks", "risk_matrix"]) == {
+        "executive_summary": "A [E1].", "financial_risks": "B.\n### Detail\nC.", "risk_matrix": "D"}
+
+
+def test_fullwidth_citation_brackets_are_normalised():
+    assert parse_sections("=== SECTION: x ===\nGrowth 114.2% 【E8】.", ["x"]) == {"x": "Growth 114.2% [E8]."}
+
+
+def test_peer_ratios_are_shown_as_percentages_so_claims_verify():
+    registry = build_default_registry("mock")
+    peers = registry.dispatch("peer_comparison", {"ticker": "NVDA", "metrics": ["revenue_growth"]})
+    digest = evidence_digest(peers)
+    assert "revenue_growth=114.20%" in digest
+    from tools.fact_checker import fact_checker
+    assert fact_checker("NVIDIA revenue grew 114.2% [E1].", [digest])["status"] == "supported"

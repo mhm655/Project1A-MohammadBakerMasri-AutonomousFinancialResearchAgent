@@ -733,3 +733,8 @@ def test_evidence_flows_from_tools_into_a_cited_report(registry):
     }).data
     assert report["unknown_citations"] == [] and report["uncited_sources"] == []
     assert [r.tool for r in registry.call_log] == ["financial_data_api", "calculation_engine", "fact_checker", "report_generator"]
+
+
+def test_a_claim_in_billions_matches_a_source_in_millions(registry):
+    out = check(registry, "| FY2022 | 198.3 |", "FY2022 revenue=198,270 (USD millions)")
+    assert out["status"] == "supported" and out["evidence"][0]["scale_inferred"]

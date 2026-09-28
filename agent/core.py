@@ -47,7 +47,7 @@ from agent.parser import (
 )
 from agent.tracing import TraceLogger
 from config.settings import AgentSettings, Settings
-from tools import ToolError, ToolRegistry, ToolResult, build_default_registry
+from tools import ToolError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
 from tools.fact_checker import extract_quantities, fact_checker
 from tools.report_gen import TEMPLATES, cited_ids, section_title
 
@@ -65,10 +65,10 @@ KNOWN_COMPANIES = {
 TEMPLATE_RULES: list[tuple[str, tuple[str, ...]]] = [
     ("full_report", ("investment research report", "full research report", "complete investment")),
     ("investigative", ("contradict", "investigate", "apparent contradiction")),
+    ("earnings_analysis", ("earnings", "quarterly results", "consensus")),  # before "compare": "compare to consensus"
     ("comparative_analysis", ("compare", "comparison", " versus ", " vs ")),
     ("thematic", ("themes", "cross-cutting", "across the")),
     ("risk_assessment", ("risk assessment", "risks")),
-    ("earnings_analysis", ("earnings", "quarterly results", "consensus")),
 ]
 
 _TICKER_HINT = re.compile(r"\((NASDAQ:|NYSE:)?\s*([A-Z]{1,5})\)|\bticker\s+([A-Z]{1,5})\b")
@@ -142,6 +142,13 @@ def evidence_digest(result: ToolResult, limit: int = 2500) -> str:
             values = "; ".join(f"{k}={_fmt_ratio(v) if unit == 'ratio' else _fmt_amount(v)}"
                                for k, v in row["values"].items())
             lines.append(f"{row['fiscal_period']} {row['fiscal_year']} (period ended {row['period_end']}): {values}")
+        body = "\n".join(lines)
+    elif result.tool == "peer_comparison":
+        lines = [f"Peer comparison for {data.get('ticker')} (ratios as percentages; revenue in USD millions)"]
+        for row in data.get("matrix", []):
+            values = "; ".join(f"{k}={_fmt_ratio(v) if _PERCENT_KEYS.search(k) else _fmt_amount(v)}"
+                               for k, v in row["values"].items())
+            lines.append(f"{row['ticker']} ({row.get('name', '')}): {values}")
         body = "\n".join(lines)
     elif result.tool == "calculation_engine":
         r = data.get("result")
@@ -363,7 +370,7 @@ class ResearchAgent:
 
     def _llm(self, user: str, *, purpose: str, **kwargs: Any) -> Any:
         return self.llm.complete([{"role": "system", "content": self._system}, {"role": "user", "content": user}],
-                                 purpose=purpose, **kwargs)
+                                 purpose=purpose, deadline=self._deadline, **kwargs)
 
     # ------------------------------------------------------------------ nodes
 
@@ -451,8 +458,12 @@ class ResearchAgent:
             try:
                 result = self.registry.dispatch(step.tool, step.args)
                 return self._finish(step, "done", f"{step.tool} returned {result.evidence_id}", result)
+            except ToolValidationError as exc:
+                problem = str(exc)  # wrong arguments: the LLM can repair these
             except ToolError as exc:
-                problem = str(exc)
+                # The call was well-formed but the data is not there ("no filings for PLTR"). Changing
+                # the arguments cannot fix that, so do not spend LLM calls and budget trying.
+                return self._finish(step, "failed", f"{exc}")
 
         dependencies = "\n\n".join(
             evidence_digest(self.evidence[eid], 1800)

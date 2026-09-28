@@ -132,6 +132,11 @@ def classify_exception(provider: str, exc: BaseException) -> LLMProviderError:
     if "Connection" in name:
         return LLMProviderError(provider, "connection", message)
     if status == 429:
+        lowered = message.lower()
+        if "request too large" in lowered:  # larger than the per-minute allowance: retrying cannot help
+            return LLMProviderError(provider, "request_too_large", message)
+        if any(marker in lowered for marker in _DAILY_QUOTA_MARKERS):
+            return LLMProviderError(provider, "quota_exhausted", message)
         return LLMProviderError(provider, "rate_limit", message, retry_after=_retry_after(exc))
     if status in (401, 403):
         return LLMProviderError(provider, "auth", message)
@@ -142,6 +147,11 @@ def classify_exception(provider: str, exc: BaseException) -> LLMProviderError:
     if isinstance(status, int) and status >= 500:
         return LLMProviderError(provider, "server", message)
     return LLMProviderError(provider, "other", f"{name}: {message}")
+
+
+# Phrases that mean a daily (not per-minute) quota is used up; it will not clear by waiting seconds.
+_DAILY_QUOTA_MARKERS = ("tokens per day", "requests per day", "(tpd)", "(rpd)", "exceeded your current quota",
+                        "per day")
 
 
 def _retry_after(exc: BaseException) -> float | None:
@@ -275,6 +285,8 @@ class OpenAICompatibleProvider:
         self.dialect = settings.schema_dialect
         # Only sent to providers configured with a default, since others reject the parameter.
         self.reasoning_effort = settings.reasoning_effort or None
+        # Some free tiers reject any request asking for more output than their per-minute allowance.
+        self.max_output_tokens = settings.max_output_tokens or None
         self._uses_openai_api = "api.openai.com" in (settings.base_url or "")
         if client is None:
             from openai import OpenAI
@@ -298,7 +310,8 @@ class OpenAICompatibleProvider:
             "temperature": request.temperature,
         }
         # OpenAI's own API has renamed the parameter; compatible servers still use max_tokens.
-        kwargs["max_completion_tokens" if self._uses_openai_api else "max_tokens"] = request.max_tokens
+        max_tokens = min(request.max_tokens, self.max_output_tokens) if self.max_output_tokens else request.max_tokens
+        kwargs["max_completion_tokens" if self._uses_openai_api else "max_tokens"] = max_tokens
         tools = adapt_tools(request.tools, self.dialect)
         if tools:
             kwargs["tools"] = tools
@@ -593,6 +606,8 @@ class LLMClient:
         self._clock = clock
         #: A rate-limited provider is skipped until this time while another provider is available.
         self.cooldown_s = cooldown_s
+        #: A provider whose daily quota is exhausted is set aside for this long.
+        self.quota_cooldown_s = 3600.0
         self._cooldown_until: dict[str, float] = {}
 
     @classmethod
@@ -629,11 +644,16 @@ class LLMClient:
         max_tokens: int | None = None,
         reasoning_effort: str | None = None,
         purpose: str = "",
+        deadline: float | None = None,
     ) -> LLMResponse:
         """Send one chat request, falling back through the provider chain.
 
+        Args:
+            deadline: a ``clock()`` time after which no further attempt or wait is started, so the
+                agent's time limit also bounds retries and backoff inside this call.
+
         Raises:
-            AllProvidersFailedError: if every provider failed.
+            AllProvidersFailedError: if every provider failed or the deadline passed.
         """
         request = LLMRequest(
             messages=messages,
@@ -649,7 +669,14 @@ class LLMClient:
         # Providers cooling down after a rate limit or an unreachable server go last rather than being
         # dropped: per-minute limits clear within seconds, and a last resort beats no answer.
         ready = [p for p in self.providers if self._cooldown_until.get(p.name, 0.0) <= now]
-        queue = ready + [p for p in self.providers if p not in ready]
+        # Cooling providers go last, except those out of daily quota (cooled for longer than a minute
+        # limit could explain), which are skipped until their cooldown ends.
+        cooling = [p for p in self.providers if p not in ready
+                   and self._cooldown_until[p.name] - now <= self.cooldown_s + 60]
+        queue = ready + cooling
+        if not queue:
+            raise AllProvidersFailedError([LLMProviderError(p.name, "quota_exhausted", "daily quota used up; skipped")
+                                           for p in self.providers])
         final_pass: set[str] = set()  # providers cooled during this call get one last full try
         i = 0
         while i < len(queue):
@@ -659,6 +686,9 @@ class LLMClient:
             final = provider.name in final_pass
             i += 1
             for attempt in range(self.max_retries + 1):
+                if deadline is not None and self._clock() >= deadline:
+                    errors.append(LLMProviderError(provider.name, "deadline", "time limit reached before this attempt"))
+                    raise AllProvidersFailedError(errors)
                 try:
                     response = provider.complete(request)
                 except Exception as exc:  # providers raise LLMProviderError; anything else is classified
@@ -668,6 +698,13 @@ class LLMClient:
                     # A rate limit or an unreachable server rarely clears within a few seconds: with
                     # another provider still to try, move on at once and give this one a cooling-off
                     # period (a light circuit breaker; the full breaker arrives on Day 9).
+                    if error.kind == "quota_exhausted":
+                        # A daily quota: set the provider aside for an hour and do not retry it.
+                        self._cooldown_until[provider.name] = now + self.quota_cooldown_s
+                        self._trace("error", source="llm", provider=provider.name, model=provider.model,
+                                    error_kind=error.kind, message=str(error), attempt=attempt + 1,
+                                    will_retry=False, cooling_down=True, purpose=purpose)
+                        break
                     cool = error.kind in ("rate_limit", "connection") and not is_last and not final
                     if cool:
                         self._cooldown_until[provider.name] = now + max(error.retry_after or 0.0, self.cooldown_s)
@@ -679,8 +716,11 @@ class LLMClient:
                                 will_retry=will_retry, cooling_down=cool, purpose=purpose)
                     if not will_retry:
                         break  # permanent error or retries exhausted: next provider
-                    self._sleep(backoff_delay(attempt, base_s=self.base_delay_s, max_jitter_s=self.max_jitter_s,
-                                              retry_after=error.retry_after, rng=self._rng))
+                    wait = backoff_delay(attempt, base_s=self.base_delay_s, max_jitter_s=self.max_jitter_s,
+                                         retry_after=error.retry_after, rng=self._rng)
+                    if deadline is not None:
+                        wait = min(wait, max(0.0, deadline - self._clock()))
+                    self._sleep(wait)
                     continue
 
                 response.fallback_depth = depth

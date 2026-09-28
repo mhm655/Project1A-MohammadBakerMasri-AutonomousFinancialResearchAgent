@@ -32,6 +32,7 @@ _TRANSLATION = {
     **dict.fromkeys(map(ord, "​‌‍⁠﻿"), None),  # zero-width characters
     **dict.fromkeys(map(ord, "    "), " "),  # non-breaking and thin spaces
     **dict.fromkeys(map(ord, "‐‑"), "-"),  # typographic hyphens
+    ord("【"): "[", ord("】"): "]",  # fullwidth brackets: gpt-oss writes citations as 【E8】
 }
 
 
@@ -277,9 +278,33 @@ def parse_sections(text: str | None, expected: list[str]) -> dict[str, str]:
         body = text[m.end():end].strip()
         if body:
             sections[key] = body
+    if len(sections) <= 1 and expected:
+        # The model ignored the markers and used Markdown headings ("## Financial Risks"): split on
+        # headings that name an expected section, so the text lands in the right sections.
+        by_heading = _split_on_headings(text, expected)
+        if len(by_heading) > len(sections):
+            return by_heading
     if not sections and text.strip() and expected:
-        # No markers at all: keep the text rather than lose it, under the first section.
+        # No structure at all: keep the text rather than lose it, under the first section.
         sections[expected[0]] = text.strip()
+    return sections
+
+
+def _split_on_headings(text: str, expected: list[str]) -> dict[str, str]:
+    wanted = {key.replace("_", " "): key for key in expected}
+    heading = re.compile(r"^\s*#{1,4}\s*(.+?)\s*#*\s*$", re.MULTILINE)
+    starts = []
+    for m in heading.finditer(text):
+        name = re.sub(r"[^a-z0-9 ]+", " ", m.group(1).lower())
+        name = re.sub(r"\s+", " ", name).strip()
+        if name in wanted:
+            starts.append((m.start(), m.end(), wanted[name]))
+    sections: dict[str, str] = {}
+    for i, (_, end, key) in enumerate(starts):
+        stop = starts[i + 1][0] if i + 1 < len(starts) else len(text)
+        body = text[end:stop].strip()
+        if body:
+            sections[key] = body
     return sections
 
 

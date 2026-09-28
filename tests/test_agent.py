@@ -515,3 +515,57 @@ def test_cooling_providers_remain_a_last_resort():
     assert client.complete([{"role": "user", "content": "a"}]).content == "groq recovered"
     # groq cooled down at once, ollama was tried and cooled too, then groq was retried as the last resort
     assert len(ollama.requests) == 1 and len(groq.requests) == 3
+
+
+# ==================================================================================================
+# Free-tier quota handling (found when the daily quotas ran out during the Day 4 evaluation)
+# ==================================================================================================
+
+
+@pytest.mark.parametrize("message, kind", [
+    ("Rate limit reached for model `openai/gpt-oss-120b` on tokens per day (TPD): Limit 200000", "quota_exhausted"),
+    ("You exceeded your current quota, please check your plan and billing details.", "quota_exhausted"),
+    ("Request too large for model `qwen/qwen3.8-27b` on output tokens per minute (OTPM): Limit 1000", "request_too_large"),
+    ("Rate limit reached on tokens per minute (TPM): Limit 8000", "rate_limit"),
+])
+def test_429s_are_told_apart(message, kind):
+    error = classify_exception("groq", type("E", (Exception,), {"status_code": 429, "__str__": lambda s: message})())
+    assert error.kind == kind and error.retryable == (kind == "rate_limit")
+
+
+def test_a_provider_out_of_daily_quota_is_skipped_not_retried():
+    now = [0.0]
+    daily = LLMProviderError("gemini", "quota_exhausted", "exceeded your current quota")
+    gemini = MockProvider([daily, "should not be reached"], name="gemini")
+    groq = MockProvider(["a", "b"], name="groq")
+    client = LLMClient([gemini, groq], max_retries=2, sleep=lambda s: None, clock=lambda: now[0])
+    assert client.complete([{"role": "user", "content": "1"}]).provider == "groq"
+    now[0] = 600  # ten minutes later: still out of quota, so not even tried
+    assert client.complete([{"role": "user", "content": "2"}]).provider == "groq"
+    assert len(gemini.requests) == 1
+
+
+def test_the_deadline_bounds_retries_and_waiting():
+    now = [0.0]
+    waits: list[float] = []
+
+    def sleep(seconds):
+        waits.append(seconds)
+        now[0] += seconds
+
+    busy = MockProvider([LLMProviderError("groq", "server", "503")] * 10, name="groq")
+    client = LLMClient([busy], max_retries=5, sleep=sleep, clock=lambda: now[0], base_delay_s=4.0)
+    with pytest.raises(AllProvidersFailedError) as info:
+        client.complete([{"role": "user", "content": "x"}], deadline=6.0)
+    assert info.value.errors[-1].kind == "deadline"
+    assert now[0] <= 6.0 and len(busy.requests) == 2  # waited 4 s, then only the 2 s left, then stopped
+
+
+def test_output_cap_shrinks_requests_to_the_free_tier_allowance():
+    qwen = ProviderSettings(name="groq_qwen", kind="openai_compatible", model="qwen/qwen3.8-27b",
+                            base_url="https://api.groq.com/openai/v1", api_key="k", max_output_tokens=1000)
+    completions = FakeCompletions(chat_completion({"content": "OK"}))
+    OpenAICompatibleProvider(qwen, client=fake_openai_client(completions)).complete(
+        LLMRequest(messages=[{"role": "user", "content": "x"}], max_tokens=6000))
+    assert completions.kwargs["max_tokens"] == 1000
+    assert load_settings(env={}).llm.providers["groq_qwen"].max_output_tokens == 1000

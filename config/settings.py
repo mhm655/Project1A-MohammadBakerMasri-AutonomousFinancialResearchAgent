@@ -44,6 +44,8 @@ class ProviderSettings:
     #: Default thinking level for reasoning models ("none", "minimal", "low", "medium", "high").
     #: Empty = never send the parameter, for providers that do not accept it.
     reasoning_effort: str = ""
+    #: Cap on output tokens per request (0 = no cap); some free tiers reject larger requests outright.
+    max_output_tokens: int = 0
     api_key: str | None = field(default=None, repr=False)
 
     @property
@@ -202,6 +204,7 @@ def _llm_settings(raw: dict[str, Any], mode: str, env: Mapping[str, str]) -> LLM
             api_key_env=key_env,
             schema_dialect=dialect,
             reasoning_effort=env.get(prefix + "REASONING_EFFORT") or p.get("reasoning_effort", ""),
+            max_output_tokens=int(p.get("max_output_tokens", 0)),
             api_key=(env.get(key_env) or None) if key_env else None,
         )
     providers["mock"] = ProviderSettings(name="mock", kind="mock", model="mock-llm")

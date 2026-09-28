@@ -103,11 +103,14 @@ def _match(claim_q: Quantity, source_q: Quantity) -> tuple[float, bool] | None:
         return diff, True
     # Tables often omit the unit ("245,122" meaning millions). Try the common scales, but mark the
     # match as scale-inferred so its confidence is lower.
-    if claim_q.kind == "amount" and not source_q.scaled:
+    if claim_q.kind == "amount" and not (source_q.scaled and claim_q.scaled):
+        # One side lacks a unit: tables often state "USD millions" or "USD billions" once, in a
+        # header. Try the usual scale steps in both directions; the match is marked as inferred.
         for factor in (1e3, 1e6, 1e9):
-            diff = _relative_diff(claim_q.value, source_q.value * factor)
-            if diff <= TOLERANCE:
-                return diff, False
+            for a, b in ((claim_q.value, source_q.value * factor), (claim_q.value * factor, source_q.value)):
+                diff = _relative_diff(a, b)
+                if diff <= TOLERANCE:
+                    return diff, False
     return None
 
 
