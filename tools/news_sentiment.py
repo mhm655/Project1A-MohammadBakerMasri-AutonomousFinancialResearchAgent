@@ -9,7 +9,7 @@ with VADER).
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import UTC, timedelta
 from statistics import fmean
 from typing import Any
 
@@ -80,3 +80,84 @@ def mock_news_sentiment(query: str, num_articles: int = 20, lookback_days: int =
         "articles": articles,
         "notes": ["MOCK DATA - synthetic articles and scores."],
     }
+
+
+# --------------------------------------------------------------------------------------------------
+# Live handler: Google News RSS + finance-tuned VADER
+# --------------------------------------------------------------------------------------------------
+
+GOOGLE_NEWS_RSS = "https://news.google.com/rss/search"
+
+#: VADER is a general-purpose sentiment model: out of the box it scores "Microsoft beats expectations
+#: as cloud demand soars" as negative (it reads "beats" as violence). These finance terms correct that.
+#: Scores use VADER's scale (-4 to +4).
+FINANCE_LEXICON = {
+    "beat": 2.0, "beats": 2.0, "outperform": 2.0, "outperforms": 2.0, "outperformed": 2.0,
+    "upgrade": 1.8, "upgrades": 1.8, "upgraded": 1.8, "downgrade": -1.8, "downgrades": -1.8, "downgraded": -1.8,
+    "miss": -1.8, "misses": -1.8, "missed": -1.8, "soar": 2.2, "soars": 2.2, "soared": 2.2,
+    "surge": 2.0, "surges": 2.0, "surged": 2.0, "jump": 1.4, "jumps": 1.4, "jumped": 1.4,
+    "rally": 1.8, "rallies": 1.8, "rallied": 1.8, "record": 1.2, "bullish": 2.0, "bearish": -2.0,
+    "plunge": -2.5, "plunges": -2.5, "plunged": -2.5, "tumble": -2.2, "tumbles": -2.2, "tumbled": -2.2,
+    "slump": -2.0, "slumps": -2.0, "slumped": -2.0, "sink": -1.8, "sinks": -1.8, "slides": -1.5,
+    "layoffs": -1.8, "lawsuit": -1.5, "probe": -1.5, "investigation": -1.5, "antitrust": -1.2,
+    "recall": -1.5, "recalls": -1.5, "bankruptcy": -3.0, "default": -2.0, "fraud": -3.0,
+    "cuts": -1.2, "slashes": -1.8, "raises": 1.0, "strong": 1.5, "weak": -1.5, "headwinds": -1.2, "tailwinds": 1.2,
+}
+
+_analyzer = None
+
+
+def finance_sentiment(text: str) -> float:
+    """VADER compound score (-1..+1) with the finance vocabulary above."""
+    global _analyzer
+    if _analyzer is None:
+        from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+        _analyzer = SentimentIntensityAnalyzer()
+        _analyzer.lexicon.update(FINANCE_LEXICON)
+    return round(_analyzer.polarity_scores(text)["compound"], 4)
+
+
+def google_news(query: str, *, lookback_days: int, limit: int) -> list[dict[str, Any]]:
+    """Recent headlines from Google News RSS (free, no key), newest first."""
+    from datetime import datetime
+    from email.utils import parsedate_to_datetime
+
+    import feedparser
+
+    from tools.http import get_http
+
+    body = get_http().get(GOOGLE_NEWS_RSS, params={"q": f"{query} when:{lookback_days}d", "hl": "en-US",
+                                                    "gl": "US", "ceid": "US:en"}, ttl_s=1800)
+    feed = feedparser.parse(body)
+    cutoff = datetime.now(UTC) - timedelta(days=lookback_days)
+    articles = []
+    for entry in feed.entries:
+        try:
+            published = parsedate_to_datetime(entry.published)
+        except (AttributeError, TypeError, ValueError):
+            published = None
+        if published and published < cutoff:
+            continue
+        source = entry.get("source", {}).get("title", "") if hasattr(entry, "get") else ""
+        title = entry.title
+        if source and title.endswith(f" - {source}"):
+            title = title[: -len(source) - 3]  # Google appends " - Publisher" to every headline
+        articles.append({"title": title, "url": entry.link, "source": source,
+                         "published": published.date().isoformat() if published else None})
+    articles.sort(key=lambda a: a["published"] or "", reverse=True)
+    return articles[:limit]
+
+
+def live_news_sentiment(query: str, num_articles: int = 20, lookback_days: int = 30) -> dict[str, Any]:
+    articles = google_news(query, lookback_days=lookback_days, limit=num_articles)
+    for article in articles:
+        article["summary"] = article["title"]
+        article["sentiment_score"] = finance_sentiment(article["title"])
+        article["sentiment_label"] = label(article["sentiment_score"])
+    notes = ["Source: Google News RSS; headlines scored with VADER plus a finance vocabulary.",
+             "Headline sentiment is a rough signal of the news narrative, not of the underlying facts."]
+    if not articles:
+        notes.append(f"No articles found in the last {lookback_days} days.")
+    return {"query": query, "lookback_days": lookback_days, "article_count": len(articles),
+            "overall": aggregate([a["sentiment_score"] for a in articles]), "articles": articles, "notes": notes}

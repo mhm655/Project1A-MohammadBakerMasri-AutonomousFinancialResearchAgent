@@ -42,7 +42,7 @@ config = ["*.toml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-q"
+addopts = "-q -m 'not network'"
 markers = [
     "network: needs internet access (deselect with -m 'not network')",
 ]

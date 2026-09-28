@@ -62,6 +62,8 @@ Rules:
 - Give complete "args" whenever you can. Set "args" to null ONLY when the arguments depend on the
   results of earlier steps (for example a calculation that needs retrieved figures); list those
   steps in "depends_on". At most 3 such calculation steps.
+- Omit "year" and similar period arguments to get the LATEST data, unless the request names a specific
+  period. Your training data is older than today's date, so do not assume which year is current.
 - Prefer one call that returns a whole statement over several calls for single numbers.
 - Plan calculation_engine steps for growth rates and margins the report will need (principle P2).
 - Do not plan report_generator, fact_checker, vector_db_search or vector_db_store steps: the system

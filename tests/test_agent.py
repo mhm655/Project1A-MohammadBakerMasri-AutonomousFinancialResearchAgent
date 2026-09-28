@@ -569,3 +569,19 @@ def test_output_cap_shrinks_requests_to_the_free_tier_allowance():
         LLMRequest(messages=[{"role": "user", "content": "x"}], max_tokens=6000))
     assert completions.kwargs["max_tokens"] == 1000
     assert load_settings(env={}).llm.providers["groq_qwen"].max_output_tokens == 1000
+
+
+def test_a_local_server_that_is_not_running_is_set_aside():
+    ollama_settings = ProviderSettings(name="ollama", kind="openai_compatible", model="qwen2.5:3b",
+                                       base_url="http://localhost:11434/v1")
+    completions = FakeCompletions(error=openai.APIConnectionError(request=httpx.Request("POST", "http://localhost")))
+    ollama = OpenAICompatibleProvider(ollama_settings, client=fake_openai_client(completions))
+    assert ollama.is_local
+    now = [0.0]
+    client = LLMClient([ollama], max_retries=3, sleep=lambda s: None, clock=lambda: now[0])
+    with pytest.raises(AllProvidersFailedError) as info:
+        client.complete([{"role": "user", "content": "x"}])
+    assert len(info.value.errors) == 1  # tried once, not retried
+    now[0] = 60
+    with pytest.raises(AllProvidersFailedError):
+        client.complete([{"role": "user", "content": "y"}])  # still set aside: not even attempted

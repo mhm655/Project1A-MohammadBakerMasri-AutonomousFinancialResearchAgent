@@ -47,7 +47,7 @@ from agent.parser import (
 )
 from agent.tracing import TraceLogger
 from config.settings import AgentSettings, Settings
-from tools import ToolError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
+from tools import ToolError, ToolExecutionError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
 from tools.fact_checker import extract_quantities, fact_checker
 from tools.report_gen import TEMPLATES, cited_ids, section_title
 
@@ -142,6 +142,20 @@ def evidence_digest(result: ToolResult, limit: int = 2500) -> str:
             values = "; ".join(f"{k}={_fmt_ratio(v) if unit == 'ratio' else _fmt_amount(v)}"
                                for k, v in row["values"].items())
             lines.append(f"{row['fiscal_period']} {row['fiscal_year']} (period ended {row['period_end']}): {values}")
+        body = "\n".join(lines)
+    elif result.tool == "sec_filing_search":
+        # A 10-K runs to hundreds of thousands of characters: show what the report needs most, namely
+        # the risk-factor headings and the opening of each section, within the digest's budget.
+        lines = [f"{data.get('company_name')} Form {data.get('filing_type')} for the period ended "
+                 f"{data.get('period_of_report')}, filed {data.get('filing_date')} (accession {data.get('accession_number')})"]
+        risks = data.get("risk_factors") or []
+        if risks:
+            lines.append(f"Risk factors ({len(risks)}): " + " | ".join(r[:140] for r in risks[:40]))
+        sections = data.get("sections", [])
+        share = max(300, (limit - sum(len(x) for x in lines) - 200) // max(1, len(sections)))
+        for s in sections:
+            text = " ".join(s["text"].split())
+            lines.append(f"Item {s['item']} {s['title']}: {text[:share]}")
         body = "\n".join(lines)
     elif result.tool == "peer_comparison":
         lines = [f"Peer comparison for {data.get('ticker')} (ratios as percentages; revenue in USD millions)"]
@@ -261,6 +275,7 @@ class ResearchAgent:
         self._clock = clock
         self._today = today
         self._graph = self._build_graph()
+        self._pool = ThreadPoolExecutor(max_workers=8, thread_name_prefix="ara-tool")  # bounded tool calls
 
     @classmethod
     def from_settings(cls, settings: Settings, **overrides: Any) -> ResearchAgent:
@@ -274,6 +289,9 @@ class ResearchAgent:
     def run(self, query: str) -> ResearchResult:
         started = self._clock()
         self._deadline = started + self.max_seconds
+        # Keep time to write the report with whatever was gathered: a quarter of the budget, at
+        # least a minute (but never more than half).
+        self._research_deadline = self._deadline - min(self.max_seconds / 2, max(60.0, self.max_seconds / 4))
         self.registry = self.registry_factory()
         self.tracer = TraceLogger(traces_dir=self.traces_dir)
         self.registry.add_listener(self.tracer.on_tool_call)
@@ -347,10 +365,29 @@ class ResearchAgent:
     # ------------------------------------------------------------------ budgets
 
     def _time_left(self) -> bool:
-        if self._clock() < self._deadline:
+        """True while there is time for more research; the rest is kept for writing the report."""
+        if self._clock() < self._research_deadline:
             return True
         self._stop("time limit reached")
         return False
+
+    def _dispatch(self, tool: str, args: Any) -> ToolResult:
+        """A research tool call bounded by the research deadline.
+
+        On a slow link one download (a 10-K can take minutes) could otherwise consume the whole run.
+        If the call overruns, the step fails and research moves on. The call keeps running in the
+        background, and whatever it downloads is cached for the next run.
+        """
+        from concurrent.futures import TimeoutError as FutureTimeout
+
+        timeout = max(1.0, self._research_deadline - self._clock())
+        future = self._pool.submit(self.registry.dispatch, tool, args)
+        try:
+            return future.result(timeout=timeout)
+        except FutureTimeout:
+            raise ToolExecutionError(f"{tool} did not finish within the {timeout:.0f} s left for research; the "
+                                     "download continues in the background and will be cached for the next run",
+                                     tool=tool) from None
 
     def _take_call(self) -> bool:
         with self._lock:
@@ -368,9 +405,11 @@ class ResearchAgent:
             self._stop_reason = reason
             self.tracer.log("note", text=f"Stopping early: {reason}")
 
-    def _llm(self, user: str, *, purpose: str, **kwargs: Any) -> Any:
+    def _llm(self, user: str, *, purpose: str, writing: bool = False, **kwargs: Any) -> Any:
+        """An LLM call bounded by the research deadline, or by the final deadline when writing."""
+        deadline = self._deadline if writing else self._research_deadline
         return self.llm.complete([{"role": "system", "content": self._system}, {"role": "user", "content": user}],
-                                 purpose=purpose, deadline=self._deadline, **kwargs)
+                                 purpose=purpose, deadline=deadline, **kwargs)
 
     # ------------------------------------------------------------------ nodes
 
@@ -456,7 +495,7 @@ class ResearchAgent:
                 return self._finish(step, "skipped", "not run: the time or tool budget ran out")
             step.attempts += 1
             try:
-                result = self.registry.dispatch(step.tool, step.args)
+                result = self._dispatch(step.tool, step.args)
                 return self._finish(step, "done", f"{step.tool} returned {result.evidence_id}", result)
             except ToolValidationError as exc:
                 problem = str(exc)  # wrong arguments: the LLM can repair these
@@ -486,7 +525,7 @@ class ResearchAgent:
                     break
                 step.attempts += 1
                 try:
-                    result = self.registry.dispatch(call.name, call.arguments)
+                    result = self._dispatch(call.name, call.arguments)
                     step.args = result.args
                     return self._finish(step, "done", f"{call.name} returned {result.evidence_id}", result)
                 except ToolError as exc:
@@ -545,7 +584,7 @@ class ResearchAgent:
         digest = "\n\n".join(evidence_digest(r) for r in self.evidence.values())
         prompt = prompts.synthesize_prompt(query=state["query"], evidence=digest, sections=sections_needed)
         try:
-            reply = self._llm(prompt, purpose="synthesize", reasoning_effort="low", max_tokens=6000)
+            reply = self._llm(prompt, purpose="synthesize", writing=True, reasoning_effort="low", max_tokens=6000)
         except LLMError as exc:
             self.gaps.append(f"The report text could not be written: {str(exc)[:200]}")
             return {"sections": {}}

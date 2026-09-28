@@ -416,3 +416,36 @@ def test_peer_ratios_are_shown_as_percentages_so_claims_verify():
     assert "revenue_growth=114.20%" in digest
     from tools.fact_checker import fact_checker
     assert fact_checker("NVIDIA revenue grew 114.2% [E1].", [digest])["status"] == "supported"
+
+
+def test_a_slow_tool_call_times_out_and_the_report_is_still_written():
+    """Live Day 5 run: one 10-K download took 350 s and left no time to write the report."""
+    import time as _time
+
+    plan = {"steps": [
+        {"id": "s1", "goal": "Slow filing", "tool": "sec_filing_search", "args": {"ticker": "MSFT", "filing_type": "10-K"}},
+        {"id": "s2", "goal": "Profile", "tool": "company_profile", "args": {"ticker": "MSFT"}},
+    ]}
+    script = ScriptedLLM(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nMicrosoft [E2].")
+
+    def factory():
+        registry = build_default_registry("mock")
+        registry.bind_handler("sec_filing_search", lambda **kw: _time.sleep(5) or {})
+        return registry
+
+    llm = LLMClient([MockProvider(script)], max_retries=0, sleep=lambda s: None)
+    agent = ResearchAgent(llm, factory, agent_settings=AgentSettings(), max_seconds=4, max_workers=2)
+    started = _time.monotonic()
+    result = agent.run(QUERY)
+    assert _time.monotonic() - started < 4.5  # the 5 s download did not hold the run hostage
+    assert result.plan.get("s1").status == "failed" and "background" in result.plan.get("s1").summary
+    assert result.plan.get("s2").status == "done"
+    assert "SYNTHESIZE" in script.stages and result.sections.get("executive_summary")  # time was kept for writing
+
+
+def test_planner_is_told_not_to_assume_the_current_year():
+    from agent import prompts
+
+    text = prompts.plan_prompt(query="q", template="company_profile", sections=["executive_summary"], entities=["MSFT"],
+                               memory="", tool_names=["sec_filing_search"], max_steps=5)
+    assert "Omit \"year\"" in text and "training data is older" in text

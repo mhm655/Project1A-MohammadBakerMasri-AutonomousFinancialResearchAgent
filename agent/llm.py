@@ -288,6 +288,8 @@ class OpenAICompatibleProvider:
         # Some free tiers reject any request asking for more output than their per-minute allowance.
         self.max_output_tokens = settings.max_output_tokens or None
         self._uses_openai_api = "api.openai.com" in (settings.base_url or "")
+        #: A local server (Ollama) that refuses connections is not running; it will not appear in seconds.
+        self.is_local = any(h in (settings.base_url or "") for h in ("localhost", "127.0.0.1", "[::1]"))
         if client is None:
             from openai import OpenAI
 
@@ -698,6 +700,14 @@ class LLMClient:
                     # A rate limit or an unreachable server rarely clears within a few seconds: with
                     # another provider still to try, move on at once and give this one a cooling-off
                     # period (a light circuit breaker; the full breaker arrives on Day 9).
+                    if error.kind == "connection" and getattr(provider, "is_local", False):
+                        # A local model server that refuses connections is not running: set it aside
+                        # for ten minutes instead of retrying it on every call.
+                        self._cooldown_until[provider.name] = now + 600
+                        self._trace("error", source="llm", provider=provider.name, model=provider.model,
+                                    error_kind=error.kind, message=str(error), attempt=attempt + 1,
+                                    will_retry=False, cooling_down=True, purpose=purpose)
+                        break
                     if error.kind == "quota_exhausted":
                         # A daily quota: set the provider aside for an hour and do not retry it.
                         self._cooldown_until[provider.name] = now + self.quota_cooldown_s

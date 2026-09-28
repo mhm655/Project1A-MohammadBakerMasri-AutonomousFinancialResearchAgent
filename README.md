@@ -7,12 +7,13 @@ needs no step-by-step guidance.
 
 Zetheta Project 1A · Mohammad Baker Masri
 
-> **Status: Day 4.** Done so far:
+> **Status: Day 5.** Done so far:
 > - the architecture specification;
 > - the tool registry (12 tools);
 > - configuration, the LLM client with its provider fallback chain, the Chroma vector store, and
 >   tracing;
-> - the agent loop, which runs Challenge 1 end to end ([sample report on mock data](results/dev/day04_challenge1_mock.md)).
+> - the agent loop, which runs Challenge 1 end to end ([sample report on mock data](results/dev/day04_challenge1_mock.md));
+> - live data: SEC EDGAR filings, SEC XBRL financials (yfinance as backup), web search and Google News sentiment.
 
 **Runs at zero cost.** Every dependency and data source is free, and no credit card is required
 anywhere.
@@ -23,7 +24,8 @@ anywhere.
 |---|---|
 | **Tool registry**: 12 tools, schema validation, repair of common LLM argument mistakes, caching, evidence ids, call log | Built (Day 2) |
 | **Local tools**: `calculation_engine`, `fact_checker`, `report_generator` | Built (Day 2) |
-| **Network tools** (SEC, market data, search, news, transcripts, peers) | Mock data now; live on Days 5–7 |
+| **Live data tools**: `sec_filing_search` (EDGAR, 10-K items and risk factors), `financial_data_api` (SEC XBRL, restatement detection, yfinance backup), `web_search` (Brave/Bing/DuckDuckGo, Google News fallback), `news_sentiment` (Google News + finance-tuned VADER); rate-limited and disk-cached | Built (Day 5) |
+| **Remaining network tools** (`company_profile`, `earnings_transcript`, `peer_comparison`) | Mock data now; live on Day 7 |
 | **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
 | **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
 | **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |
@@ -110,8 +112,9 @@ Use `--offline` to skip the network checks.
 python -m agent "Create a comprehensive profile of Microsoft Corporation" --data mock --out report.md
 ```
 
-`--data mock` uses mock tool data (the live data tools arrive on Day 5); `--mode mock` needs no network
-at all. Every run writes a full trace to `traces/`.
+`--data live` (the default) uses the free live sources; `--data mock` uses canned data; `--mode mock`
+needs no network at all. Responses are cached under `data/cache/`, so repeat research on a company is
+fast. The first download of a large 10-K can take minutes on a slow connection. Every run writes a full trace to `traces/`.
 
 ### 6. Run the tests
 

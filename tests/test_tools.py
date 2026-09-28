@@ -272,9 +272,10 @@ def test_call_log_records_successes_and_failures(registry):
 def test_live_mode_only_exposes_implemented_tools():
     live = build_default_registry("live")
     assert {s.name for s in live.available()} == {
-        "calculation_engine", "fact_checker", "report_generator", "vector_db_search", "vector_db_store"}
+        "calculation_engine", "fact_checker", "report_generator", "vector_db_search", "vector_db_store",
+        "sec_filing_search", "financial_data_api", "web_search", "news_sentiment"}  # live since Day 5
     with pytest.raises(ToolUnavailableError):
-        live.dispatch("web_search", {"query": "nvidia"})
+        live.dispatch("company_profile", {"ticker": "NVDA"})  # its live handler arrives on Day 7
 
 
 def test_invalid_mode():

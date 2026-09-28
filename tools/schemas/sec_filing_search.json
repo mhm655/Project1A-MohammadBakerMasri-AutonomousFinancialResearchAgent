@@ -11,7 +11,12 @@
       },
       "filing_type": {
         "type": "string",
-        "enum": ["10-K", "10-Q", "8-K", "DEF 14A"],
+        "enum": [
+          "10-K",
+          "10-Q",
+          "8-K",
+          "DEF 14A"
+        ],
         "description": "Type of SEC filing to retrieve."
       },
       "year": {
@@ -21,43 +26,99 @@
         "description": "Fiscal year of the report. Omit for the most recent filing."
       }
     },
-    "required": ["ticker", "filing_type"],
+    "required": [
+      "ticker",
+      "filing_type"
+    ],
     "additionalProperties": false
   },
   "x-ara": {
     "handlers": {
       "mock": "tools.sec_edgar:mock_sec_filing_search",
-      "live": null
+      "live": "tools.sec_edgar:live_sec_filing_search"
     },
     "source_tier": 1,
     "cache_ttl_s": 86400,
-    "fallbacks": ["web_search", "vector_db_search"],
-    "domains": ["financials", "risk"],
+    "fallbacks": [
+      "web_search",
+      "vector_db_search"
+    ],
+    "domains": [
+      "financials",
+      "risk"
+    ],
     "output_schema": {
       "type": "object",
-      "required": ["ticker", "cik", "filing_type", "filing_date", "accession_number", "url", "sections"],
+      "required": [
+        "ticker",
+        "cik",
+        "filing_type",
+        "filing_date",
+        "accession_number",
+        "url",
+        "sections"
+      ],
       "properties": {
-        "ticker": {"type": "string"},
-        "cik": {"type": "string", "pattern": "^\\d{10}$"},
-        "company_name": {"type": "string"},
-        "filing_type": {"type": "string"},
-        "filing_date": {"type": "string"},
-        "period_of_report": {"type": "string"},
-        "accession_number": {"type": "string", "pattern": "^\\d{10}-\\d{2}-\\d{6}$"},
-        "url": {"type": "string"},
+        "ticker": {
+          "type": "string"
+        },
+        "cik": {
+          "type": "string",
+          "pattern": "^\\d{10}$"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "filing_type": {
+          "type": "string"
+        },
+        "filing_date": {
+          "type": "string"
+        },
+        "period_of_report": {
+          "type": "string"
+        },
+        "accession_number": {
+          "type": "string",
+          "pattern": "^\\d{10}-\\d{2}-\\d{6}$"
+        },
+        "url": {
+          "type": "string"
+        },
         "sections": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["item", "title", "text"],
+            "required": [
+              "item",
+              "title",
+              "text"
+            ],
             "properties": {
-              "item": {"type": "string"},
-              "title": {"type": "string"},
-              "text": {"type": "string"}
+              "item": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
             }
           }
         },
-        "notes": {"type": "array", "items": {"type": "string"}}
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risk_factors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   }

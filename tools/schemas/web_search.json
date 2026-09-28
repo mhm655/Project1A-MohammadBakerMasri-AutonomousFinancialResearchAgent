@@ -19,43 +19,89 @@
       },
       "date_range": {
         "type": "string",
-        "enum": ["day", "week", "month", "year"],
+        "enum": [
+          "day",
+          "week",
+          "month",
+          "year"
+        ],
         "description": "Only return results published within this period. Omit for any date."
       }
     },
-    "required": ["query"],
+    "required": [
+      "query"
+    ],
     "additionalProperties": false
   },
   "x-ara": {
     "handlers": {
       "mock": "tools.web_search:mock_web_search",
-      "live": null
+      "live": "tools.web_search:live_web_search"
     },
     "source_tier": 4,
     "cache_ttl_s": 3600,
-    "fallbacks": ["news_sentiment", "vector_db_search"],
-    "domains": ["sentiment", "competition", "risk"],
+    "fallbacks": [
+      "news_sentiment",
+      "vector_db_search"
+    ],
+    "domains": [
+      "sentiment",
+      "competition",
+      "risk"
+    ],
     "output_schema": {
       "type": "object",
-      "required": ["query", "results"],
+      "required": [
+        "query",
+        "results"
+      ],
       "properties": {
-        "query": {"type": "string"},
-        "date_range": {"type": ["string", "null"]},
+        "query": {
+          "type": "string"
+        },
+        "date_range": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "results": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["title", "url", "snippet"],
+            "required": [
+              "title",
+              "url",
+              "snippet"
+            ],
             "properties": {
-              "title": {"type": "string"},
-              "url": {"type": "string"},
-              "snippet": {"type": "string"},
-              "source": {"type": "string"},
-              "published": {"type": ["string", "null"]}
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "snippet": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "published": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
             }
           }
         },
-        "notes": {"type": "array", "items": {"type": "string"}}
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   }
