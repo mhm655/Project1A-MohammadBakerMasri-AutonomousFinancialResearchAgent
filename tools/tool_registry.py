@@ -426,13 +426,18 @@ def coerce_to_schema(value: Any, schema: dict[str, Any]) -> Any:
     """Repair the harmless mistakes LLMs make in tool arguments, guided by the schema.
 
     * ``null`` for an optional property means "not given": the property is dropped.
-    * Scalars sent as strings (``"5"``, ``"true"``) become the declared type when unambiguous.
+    * Scalars sent as strings (``"5"``, ``"true"``) become the declared type when unambiguous, and
+      whole floats (``5.0``) become ints where an integer is declared.
     * Objects and arrays sent as JSON-encoded strings are decoded. Some providers only accept
       free-form objects as strings (see ``agent/llm.py``), and models stringify nested JSON anyway.
 
     Anything that cannot be repaired is left alone for the validator to reject with a clear message.
     """
     kind = schema.get("type")
+    if kind == "integer" and isinstance(value, float) and value.is_integer():
+        # Some providers send every JSON number as a float. JSON Schema accepts 3.0 as an integer,
+        # but handlers use the value as a count or slice bound, where a float raises TypeError.
+        return int(value)
     if isinstance(value, str):
         text = value.strip()
         if kind in ("object", "array"):

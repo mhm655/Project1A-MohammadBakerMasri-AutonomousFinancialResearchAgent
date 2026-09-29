@@ -34,6 +34,8 @@ PRIORITY = {"financial_data_api": 0, "calculation_engine": 1, "company_profile":
 
 MIN_ITEM_CHARS = 350
 MAX_ITEM_CHARS = 2500
+#: Items are joined with a blank line; each separator costs tokens too.
+SEPARATOR = "\n\n"
 
 
 @lru_cache(maxsize=1)
@@ -91,7 +93,7 @@ def fit_evidence(evidence: dict[str, Any], budget_tokens: int,
         rendered += kept
         dropped += lost
 
-    text = "\n\n".join(t for _, t in rendered)
+    text = SEPARATOR.join(t for _, t in rendered)
     if dropped:
         text += ("\n\n(Also retrieved but left out of this prompt for length, so do not cite: "
                  + ", ".join(dropped) + ".)")
@@ -105,7 +107,8 @@ def _fit_group(items: list[tuple[str, Any]], budget: int,
         limit = MAX_ITEM_CHARS
         while True:
             texts = [(eid, digest(r, limit)) for eid, r in kept]
-            used = sum(count_tokens(t) for _, t in texts)
+            # One separator per item: an upper bound on the joins, including the one between the groups.
+            used = sum(count_tokens(t) for _, t in texts) + len(texts) * count_tokens(SEPARATOR)
             if used <= budget or limit <= MIN_ITEM_CHARS:
                 break
             limit = max(MIN_ITEM_CHARS, int(limit * 0.8))

@@ -296,3 +296,124 @@ def test_storing_the_same_material_twice_does_not_duplicate_it():
     size = len(store.records)
     manager.ingest_evidence(evidence, "s2", ["TSLA"])
     assert len(store.records) == size
+
+
+# ==================================================================================================
+# Regression tests: chunk boundaries, metadata and store edge cases
+# ==================================================================================================
+
+
+def test_split_paragraphs_never_truncates_a_sentence_longer_than_a_chunk():
+    text = " ".join(f"w{i}" for i in range(600))  # ~2,900 characters and no sentence punctuation
+    chunks = split_paragraphs(text)
+    assert all(len(c) <= MAX_CHARS for c in chunks)
+    assert " ".join(chunks).split() == text.split()  # every word survives, in order
+
+
+def test_split_paragraphs_keeps_a_short_tail_of_a_long_text():
+    text = "Revenue rose sharply. " * 68 + "\nYes, indeed."  # the tail does not fit in the first chunk
+    chunks = split_paragraphs(text)
+    assert chunks[-1] == "Yes, indeed."
+
+
+def test_risk_body_starts_right_after_a_heading_whose_whitespace_differs_from_the_text():
+    heading = "Cyberattacks could harm our reputation and our busi ness res ults badly."  # split words
+    text = "Cyberattacks could harm our reputation and our business results badly. " + "Breaches are costly. " * 100
+    filing = {"company_name": "MICROSOFT CORP", "filing_type": "10-K", "period_of_report": "2026-06-30",
+              "risk_factors": [heading], "sections": [{"item": "1A", "title": "Risk Factors", "text": text}]}
+    risks = [r for r in chunk_filing(filing, BASE) if r.metadata.get("kind") == "risk_factor"]
+    assert f"{heading} Breaches are costly." in risks[0].content  # not "reaches are costly."
+
+
+def test_filing_text_before_the_first_found_risk_heading_is_kept():
+    filing = {"company_name": "MICROSOFT CORP", "filing_type": "10-K", "period_of_report": "2026-06-30",
+              "risk_factors": ["Cyberattacks could harm our reputation."],
+              "sections": [{"item": "1A", "title": "Risk Factors", "text":
+                            "Our AI investments may not pay off and could reduce margins.\n"
+                            "Cyberattacks could harm our reputation. Breaches are costly."}]}
+    contents = " ".join(r.content for r in chunk_filing(filing, BASE))
+    assert "Our AI investments may not pay off" in contents  # a risk whose heading was not matched
+    risks = [r for r in chunk_filing(filing, BASE) if r.metadata.get("kind") == "risk_factor"]
+    assert len(risks) == 1 and risks[0].content.endswith("Breaches are costly.")
+
+
+def test_transcript_keeps_every_answer_with_its_question():
+    transcript = {"ticker": "AAPL", "quarter": "Q4", "fiscal_year": 2025, "source_kind": "transcript", "segments": [
+        {"speaker": "Analyst", "role": "Analyst", "section": "qa", "text": "What about margins?"},
+        {"speaker": "Tim Cook", "role": "CEO", "section": "qa", "text": "Margins will be stable."},
+        {"speaker": "Kevan Parekh", "role": "CFO", "section": "qa", "text": "Services mix helps too."},
+    ]}
+    records = chunk_transcript(transcript, {"ticker": "AAPL", "source_type": "earnings_call", "date": "2025-10-30"})
+    assert [r.metadata["kind"] for r in records] == ["qa"]
+    assert "What about margins?" in records[0].content and "Services mix helps too." in records[0].content
+
+
+def test_long_transcript_turns_are_split_not_truncated():
+    long_text = "Our installed base reached a new record. " * 60 + "FINAL WORDS."
+    transcript = {"ticker": "AAPL", "quarter": "Q4", "fiscal_year": 2025, "source_kind": "transcript", "segments": [
+        {"speaker": "Tim Cook", "role": "CEO", "section": "prepared", "text": long_text},
+        {"speaker": "Analyst", "role": "Analyst", "section": "qa", "text": "How is China?"},
+        {"speaker": "Tim Cook", "role": "CEO", "section": "qa", "text": long_text},
+    ]}
+    records = chunk_transcript(transcript, {"ticker": "AAPL", "source_type": "earnings_call", "date": "2025-10-30"})
+    prepared = [r for r in records if r.metadata["kind"] == "prepared"]
+    qa = [r for r in records if r.metadata["kind"] == "qa"]
+    assert len(prepared) >= 2 and "FINAL WORDS." in prepared[-1].content
+    assert len(qa) >= 2 and "FINAL WORDS." in qa[-1].content
+    assert all("How is China?" in r.content for r in qa)  # every piece keeps its question
+    assert all(len(r.content) <= MAX_CHARS for r in records)
+
+
+def test_every_piece_of_a_long_flagged_paragraph_is_unverified():
+    paragraph = " ".join(f"Sentence {i} states a fact about revenue." for i in range(60))
+    paragraph += " Margin was 99% [E3]. *(unverified)*"
+    findings = chunk_findings({"risk_analysis": paragraph},
+                              {"ticker": "MSFT", "source_type": "analysis", "date": "2026-09-28", "verified": True})
+    assert len(findings) >= 2
+    assert all(f.metadata["verified"] is False and f.metadata["confidence"] == 0.4 for f in findings)
+
+
+def test_chroma_store_never_reuses_an_id(tmp_path):
+    s = make_store(tmp_path / "ids")
+    first = s.store("Tesla battery supply risk grows.", {"ticker": "TSLA", "date": "2025-01-29", "source_type": "10-K"})
+    second = s.store("Tesla margin compression continues.",
+                     {"ticker": "TSLA", "date": "2025-01-29", "source_type": "10-k"})  # same id prefix
+    assert first["id"] != second["id"] and s.count() == 2
+
+
+@pytest.mark.parametrize("top_k", [0, -1])
+def test_non_positive_top_k_returns_no_results(tmp_path, top_k):
+    chroma = make_store(tmp_path / "topk")
+    memory = InMemoryVectorStore()
+    for s in (chroma, memory):
+        s.store("Tesla battery supply risk grows.", {"ticker": "TSLA", "date": "2025-01-29", "source_type": "10-K"})
+        s.store("Tesla battery margins shrink.", {"ticker": "TSLA", "date": "2025-01-30", "source_type": "10-K"})
+        assert s.search("tesla battery", top_k=top_k)["results"] == []
+
+
+def test_in_memory_store_normalizes_timestamps_to_dates():
+    s = InMemoryVectorStore()
+    s.store("Tesla battery supply risk.", {"ticker": "TSLA", "date": "2025-01-29T15:00:00Z", "source_type": "news"})
+    hits = s.search("tesla battery", filter={"date_from": "2025-01-29", "date_to": "2025-01-29"})["results"]
+    assert len(hits) == 1 and hits[0]["metadata"]["date"] == "2025-01-29"  # same as the Chroma store
+
+
+def test_facts_period_limit_counts_only_periods_that_have_the_requested_items():
+    facts = FactsStore(None)
+    facts.store_statement({"ticker": "MSFT", "data": [
+        {"fiscal_year": 2026, "period_end": "2026-06-30", "values": {"revenue": 1.0}},
+        {"fiscal_year": 2025, "period_end": "2025-06-30", "values": {"revenue": 2.0, "eps_diluted": 3.0}}]})
+    rows = facts.query("MSFT", items=["eps_diluted"], limit_periods=1)
+    assert [(r["period_end"], r["value"]) for r in rows] == [("2025-06-30", 3.0)]
+
+
+def test_fitted_evidence_stays_within_the_budget_including_separators():
+    evidence = {f"E{i}": _Result(["financial_data_api", "news_sentiment", "sec_filing_search", "web_search"][i % 4],
+                                 f"E{i}") for i in range(1, 13)}
+
+    def digest(result, limit):
+        return (f"[{result.evidence_id}] " + "Revenue rose 12% to $4.2bn. " * 200)[:limit]
+
+    fitted = fit_evidence(evidence, 1043, digest)
+    body = fitted.text.split("\n\n(Also retrieved")[0]  # the dropped-items note is the only allowed overflow
+    assert count_tokens(body) <= 1043

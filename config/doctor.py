@@ -244,18 +244,22 @@ def run(offline: bool = False, only_provider: str | None = None) -> list[Check]:
 
         s = load_settings()
         names = [only_provider] if only_provider else [n for n in s.llm.provider_order if n != "mock"]
-        provider_checks: list[Check] = []
+        by_provider: dict[str, list[Check]] = {}
         for name in names:
             try:
-                provider_checks.extend(check_provider(name))
+                by_provider[name] = check_provider(name)
             except Exception as exc:
-                provider_checks.append(Check(f"llm:{name}", "fail", f"{type(exc).__name__}: {exc}"))
+                by_provider[name] = [Check(f"llm:{name}", "fail", f"{type(exc).__name__}: {exc}")]
         # One working provider is enough to run; a broken fallback is then a warning, not a failure.
-        if any(c.name.endswith(" chat") and c.status == "ok" for c in provider_checks):
-            for c in provider_checks:
-                if c.status == "fail":
-                    c.status, c.detail = "warn", f"{c.detail} (a fallback provider; another provider works)"
-        checks.extend(provider_checks)
+        # A provider's failures are downgraded only if ANOTHER provider works: when the only working
+        # provider rejects the tool schemas, nothing covers for it.
+        working = {n for n, cs in by_provider.items() if any(c.name.endswith(" chat") and c.status == "ok" for c in cs)}
+        for name, provider_checks in by_provider.items():
+            if working - {name}:
+                for c in provider_checks:
+                    if c.status == "fail":
+                        c.status, c.detail = "warn", f"{c.detail} (a fallback provider; another provider works)"
+            checks.extend(provider_checks)
     except Exception as exc:
         checks.append(Check("llm providers", "fail", str(exc)))
     return checks

@@ -197,16 +197,18 @@ def _is_quarter(f: dict[str, Any]) -> bool:
 
 def _quarter_label(end: date, fy_ends: list[date]) -> tuple[int, str]:
     """(fiscal year, "Q1".."Q4") for a quarter ending on ``end``."""
+    from tools.sec_edgar import fiscal_year_of
+
     fy_end = next((e for e in sorted(fy_ends) if e >= end - timedelta(days=5)), None)
     if fy_end is None:  # a quarter of the fiscal year still in progress
         last = max(fy_ends)
         fy_end = date(last.year + 1, last.month, min(last.day, 28))
     quarters_before = round((fy_end - end).days / 91.3)
-    return fy_end.year, f"Q{max(1, 4 - quarters_before)}"
+    return fiscal_year_of(fy_end), f"Q{max(1, 4 - quarters_before)}"
 
 
 def live_financial_data_api(ticker: str, statement_type: str, period: str = "annual", years: int = 3) -> dict[str, Any]:
-    from tools.sec_edgar import resolve_cik, submissions
+    from tools.sec_edgar import fiscal_year_of, resolve_cik, submissions
 
     ticker = ticker.upper()
     try:
@@ -253,7 +255,7 @@ def live_financial_data_api(ticker: str, statement_type: str, period: str = "ann
             balance = {k: values.get(k) for k in STATEMENTS["balance_sheet"]} if period == "annual" else None
             cash = {"free_cash_flow": values.get("free_cash_flow")} if period == "annual" else None
             values = key_ratios(income, balance, cash)
-        fiscal_year, fiscal_period = (end.year, "FY") if period == "annual" else _quarter_label(end, fy_ends)
+        fiscal_year, fiscal_period = (fiscal_year_of(end), "FY") if period == "annual" else _quarter_label(end, fy_ends)
         rows.append({"fiscal_year": fiscal_year, "fiscal_period": fiscal_period, "period_end": key, "values": values})
 
     missing = sorted({k for row in rows for k, v in row["values"].items() if v is None})

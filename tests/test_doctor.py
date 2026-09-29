@@ -36,3 +36,23 @@ def test_json_output_and_exit_code(monkeypatch, capsys):
     code = doctor.main(["--offline", "--json"])
     rows = json.loads(capsys.readouterr().out)
     assert code == 0 and {"name", "status", "detail"} <= set(rows[0])
+
+
+def test_a_failure_of_the_only_working_provider_is_not_excused_as_a_fallback(monkeypatch):
+    """The fail -> warn downgrade is for broken fallbacks. A provider whose chat works but which
+    rejects the tool schemas is not 'a fallback provider' covered by another one. No network: the
+    provider and vector-db checks are replaced."""
+    monkeypatch.setenv("ARA_MODE", "free")
+    monkeypatch.setenv("ARA_PROVIDER_ORDER", "gemini,groq")
+    monkeypatch.setattr(doctor, "check_vector_db", lambda offline: ("ok", "stubbed"))
+
+    def fake_check_provider(name):
+        if name == "gemini":
+            return [doctor.Check("llm:gemini (m) chat", "ok", "replied 'OK'"),
+                    doctor.Check("llm:gemini (m) tools", "fail", "provider rejected the tool schemas")]
+        return [doctor.Check("llm:groq (m) chat", "fail", "auth error")]
+
+    monkeypatch.setattr(doctor, "check_provider", fake_check_provider)
+    checks = {c.name: c for c in doctor.run(offline=False)}
+    assert checks["llm:groq (m) chat"].status == "warn"  # a broken fallback: gemini works
+    assert checks["llm:gemini (m) tools"].status == "fail"

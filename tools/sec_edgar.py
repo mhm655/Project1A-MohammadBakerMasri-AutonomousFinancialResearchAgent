@@ -66,6 +66,16 @@ def submissions(cik: str) -> dict[str, Any]:
     return _http().get_json(SUBMISSIONS_URL.format(cik=cik), ttl_s=DAY)
 
 
+def fiscal_year_of(period_end: date) -> int:
+    """The fiscal year a period ending on ``period_end`` belongs to.
+
+    52/53-week years that end on the weekend nearest 31 December sometimes end in the first days of
+    January (Kellogg's fiscal 2021 ended on 1 January 2022); such a year is named after the calendar
+    year it almost entirely covers.
+    """
+    return period_end.year - 1 if period_end.month == 1 and period_end.day <= 7 else period_end.year
+
+
 def find_filing(subs: dict[str, Any], form: str, year: int | None) -> dict[str, str]:
     """The most recent filing of ``form`` (for ``year``, the fiscal year of the report, if given)."""
     recent = subs["filings"]["recent"]
@@ -73,7 +83,7 @@ def find_filing(subs: dict[str, Any], form: str, year: int | None) -> dict[str, 
         if kind != form:
             continue
         report_date = recent["reportDate"][i] or recent["filingDate"][i]
-        if year is not None and not report_date.startswith(str(year)):
+        if year is not None and fiscal_year_of(date.fromisoformat(report_date[:10])) != year:
             continue
         return {key: recent[key][i] for key in ("accessionNumber", "filingDate", "reportDate", "primaryDocument", "items")
                 if key in recent}
@@ -236,7 +246,9 @@ def _exhibit_99(folder: str) -> str | None:
     except ToolExecutionError:
         return None
     names = [item["name"] for item in index.get("directory", {}).get("item", [])]
-    exhibit = next((n for n in names if re.search(r"ex[-_]?99", n, re.IGNORECASE) and n.lower().endswith((".htm", ".html"))), None)
+    # Filers name the exhibit "ex99-1.htm", "ex991.htm", "exhibit991.htm", "exhibit99_1.htm", ...
+    exhibit = next((n for n in names if re.search(r"ex(?:hibit)?[-_]?99", n, re.IGNORECASE)
+                    and n.lower().endswith((".htm", ".html"))), None)
     if not exhibit:
         return None
     text, _ = document_text(_http().get(f"{folder}/{exhibit}", ttl_s=MONTH, timeout_s=120))

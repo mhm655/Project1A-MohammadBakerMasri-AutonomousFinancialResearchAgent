@@ -118,9 +118,10 @@ def _dcf(inputs: dict[str, Any]) -> tuple[dict[str, float], list[str]]:
         "enterprise_value": enterprise_value,
     }
     if "net_debt" in inputs:
-        equity = enterprise_value - _num(inputs, "net_debt")
+        net_debt = _num(inputs, "net_debt")  # the parsed value: the raw input may be a string
+        equity = enterprise_value - net_debt
         result["equity_value"] = equity
-        steps.append(f"equity value = EV - net debt = {enterprise_value:.4f} - {inputs['net_debt']:g} = {equity:.4f}")
+        steps.append(f"equity value = EV - net debt = {enterprise_value:.4f} - {net_debt:g} = {equity:.4f}")
         if "shares_outstanding" in inputs:
             shares = _num(inputs, "shares_outstanding", positive=True)
             result["value_per_share"] = equity / shares

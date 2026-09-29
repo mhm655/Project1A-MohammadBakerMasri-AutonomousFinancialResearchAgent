@@ -42,7 +42,8 @@ def redact(value: Any) -> Any:
     """Recursively replace values stored under credential-like keys."""
     if isinstance(value, dict):
         return {
-            k: REDACTED if any(m in str(k).lower() for m in _SECRET_MARKERS) else redact(v)
+            # Hyphens count as underscores: HTTP headers spell keys "X-Api-Key", "x-goog-api-key".
+            k: REDACTED if any(m in str(k).lower().replace("-", "_") for m in _SECRET_MARKERS) else redact(v)
             for k, v in value.items()
         }
     if isinstance(value, (list, tuple)):

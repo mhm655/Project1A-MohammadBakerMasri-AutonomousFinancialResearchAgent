@@ -135,7 +135,9 @@ def classify_exception(provider: str, exc: BaseException) -> LLMProviderError:
         lowered = message.lower()
         if "request too large" in lowered:  # larger than the per-minute allowance: retrying cannot help
             return LLMProviderError(provider, "request_too_large", message)
-        if any(marker in lowered for marker in _DAILY_QUOTA_MARKERS):
+        # Gemini says "exceeded your current quota" for per-minute limits too; its quota id tells them apart.
+        per_minute = any(marker in lowered.replace(" ", "") for marker in _PER_MINUTE_MARKERS)
+        if not per_minute and any(marker in lowered for marker in _DAILY_QUOTA_MARKERS):
             return LLMProviderError(provider, "quota_exhausted", message)
         return LLMProviderError(provider, "rate_limit", message, retry_after=_retry_after(exc))
     if status in (401, 403):
@@ -152,6 +154,8 @@ def classify_exception(provider: str, exc: BaseException) -> LLMProviderError:
 # Phrases that mean a daily (not per-minute) quota is used up; it will not clear by waiting seconds.
 _DAILY_QUOTA_MARKERS = ("tokens per day", "requests per day", "(tpd)", "(rpd)", "exceeded your current quota",
                         "per day")
+# Quota ids and phrases of per-minute limits (spaces removed before matching): these clear within a minute.
+_PER_MINUTE_MARKERS = ("perminute", "(tpm)", "(rpm)")
 
 
 def _retry_after(exc: BaseException) -> float | None:
@@ -697,27 +701,31 @@ class LLMClient:
                     error = classify_exception(provider.name, exc)
                     errors.append(error)
                     self.usage.record_failure(provider.name, provider.model)
+                    # Cooldowns run from the failure, not from the start of this call: earlier providers
+                    # may already have spent a minute or more timing out.
+                    failed_at = self._clock()
                     # A rate limit or an unreachable server rarely clears within a few seconds: with
                     # another provider still to try, move on at once and give this one a cooling-off
                     # period (a light circuit breaker; the full breaker arrives on Day 9).
                     if error.kind == "connection" and getattr(provider, "is_local", False):
                         # A local model server that refuses connections is not running: set it aside
                         # for ten minutes instead of retrying it on every call.
-                        self._cooldown_until[provider.name] = now + 600
+                        self._cooldown_until[provider.name] = failed_at + 600
                         self._trace("error", source="llm", provider=provider.name, model=provider.model,
                                     error_kind=error.kind, message=str(error), attempt=attempt + 1,
                                     will_retry=False, cooling_down=True, purpose=purpose)
                         break
                     if error.kind == "quota_exhausted":
                         # A daily quota: set the provider aside for an hour and do not retry it.
-                        self._cooldown_until[provider.name] = now + self.quota_cooldown_s
+                        self._cooldown_until[provider.name] = failed_at + self.quota_cooldown_s
                         self._trace("error", source="llm", provider=provider.name, model=provider.model,
                                     error_kind=error.kind, message=str(error), attempt=attempt + 1,
                                     will_retry=False, cooling_down=True, purpose=purpose)
                         break
                     cool = error.kind in ("rate_limit", "connection") and not is_last and not final
                     if cool:
-                        self._cooldown_until[provider.name] = now + max(error.retry_after or 0.0, self.cooldown_s)
+                        self._cooldown_until[provider.name] = failed_at + max(error.retry_after or 0.0,
+                                                                              self.cooldown_s)
                         final_pass.add(provider.name)
                         queue.append(provider)
                     will_retry = error.retryable and attempt < self.max_retries and not cool

@@ -339,3 +339,85 @@ def test_network_smoke():
     assert profile.data["provider"] == "sec_xbrl" and profile.data["data"][0]["values"]["revenue"] > 100_000
     assert registry.dispatch("news_sentiment", {"query": "Microsoft", "num_articles": 3}).data["article_count"] > 0
     json.dumps(profile.data)
+
+
+# ==================================================================================================
+# Audit regressions
+# ==================================================================================================
+
+
+def test_52_53_week_year_ending_in_early_january_keeps_its_fiscal_year(monkeypatch):
+    # Kellogg-style calendar: fiscal 2021 ended on Saturday 1 January 2022, fiscal 2022 on 31 December 2022.
+    from tools import financial_api
+
+    def fact(start, end, val, form, filed):
+        return {"start": start, "end": end, "val": val, "form": form, "filed": filed,
+                "accn": f"acc-{filed}", "rank": 0}
+
+    revenue = [
+        fact("2019-12-29", "2021-01-02", 13770e6, "10-K", "2021-02-22"),
+        fact("2021-01-03", "2022-01-01", 14181e6, "10-K", "2022-02-22"),
+        fact("2022-01-02", "2022-12-31", 15315e6, "10-K", "2023-02-21"),
+        fact("2021-01-03", "2021-04-03", 3600e6, "10-Q", "2021-05-06"),
+        fact("2021-04-04", "2021-07-03", 3500e6, "10-Q", "2021-08-05"),
+        fact("2021-07-04", "2021-10-02", 3600e6, "10-Q", "2021-11-04"),
+    ]
+    monkeypatch.setattr(financial_api, "_facts", lambda cik, item: revenue if item == "revenue" else [])
+    monkeypatch.setattr("tools.sec_edgar.resolve_cik", lambda ticker: ("0000055067", "KELLOGG CO"))
+    monkeypatch.setattr("tools.sec_edgar.submissions", lambda cik: {"fiscalYearEnd": "1231"})
+
+    annual = financial_api.live_financial_data_api("K", "income_statement", "annual", 3)
+    assert [(r["fiscal_year"], r["period_end"]) for r in annual["data"]] == [
+        (2022, "2022-12-31"), (2021, "2022-01-01"), (2020, "2021-01-02")]
+    quarterly = financial_api.live_financial_data_api("K", "income_statement", "quarterly", 1)
+    labels = {r["period_end"]: (r["fiscal_period"], r["fiscal_year"]) for r in quarterly["data"]}
+    assert labels["2022-01-01"] == ("Q4", 2021) and labels["2021-04-03"] == ("Q1", 2021)
+
+
+def test_filing_year_matches_a_52_53_week_year_ending_in_early_january():
+    from tools.sec_edgar import find_filing
+
+    subs = {"filings": {"recent": {
+        "accessionNumber": ["acc-2023", "acc-2022"], "filingDate": ["2023-02-21", "2022-02-22"],
+        "reportDate": ["2022-12-31", "2022-01-01"], "form": ["10-K", "10-K"],
+        "primaryDocument": ["k-20221231.htm", "k-20220101.htm"]}}}
+    assert find_filing(subs, "10-K", 2021)["accessionNumber"] == "acc-2022"
+    assert find_filing(subs, "10-K", 2022)["accessionNumber"] == "acc-2023"
+
+
+def test_8k_press_release_named_exhibit991_is_found(network, live, monkeypatch):
+    fake, _ = network
+    original = fake.__call__
+
+    def with_long_exhibit_name(request):
+        url = str(request.url)
+        if url.endswith("index.json"):
+            return httpx.Response(200, json={"directory": {"item": [{"name": "msft-8k.htm"},
+                                                                    {"name": "exhibit991.htm"}]}})
+        if url.endswith("exhibit991.htm"):
+            return httpx.Response(200, content=b"<html><body><p>Record revenue of $77.0 billion.</p></body></html>")
+        return original(request)
+
+    monkeypatch.setattr(FakeNetwork, "__call__", lambda self, request: with_long_exhibit_name(request))
+    data = live.dispatch("sec_filing_search", {"ticker": "MSFT", "filing_type": "8-K"}).data
+    release = next(s for s in data["sections"] if s["item"] == "Exhibit 99.1")
+    assert "Record revenue of $77.0 billion" in release["text"]
+
+
+def test_rss_dates_without_a_known_timezone_do_not_crash(network, live, monkeypatch):
+    # RFC 2822 "-0000" (and a missing zone) parse to a naive datetime, which cannot be compared
+    # with the aware cutoff.
+    from datetime import datetime, timedelta
+
+    fake, _ = network
+    original = fake.__call__
+    recent = (datetime.now(UTC) - timedelta(days=1)).strftime("%a, %d %b %Y %H:%M:%S -0000")
+
+    def rss(request):
+        if "news.google.com" in str(request.url):
+            return httpx.Response(200, text=RSS.format(recent=recent))
+        return original(request)
+
+    monkeypatch.setattr(FakeNetwork, "__call__", lambda self, request: rss(request))
+    data = live.dispatch("news_sentiment", {"query": "Microsoft", "lookback_days": 30}).data
+    assert data["article_count"] == 2

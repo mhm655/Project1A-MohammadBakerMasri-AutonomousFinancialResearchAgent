@@ -517,3 +517,136 @@ def test_synthesis_prompt_respects_the_token_budget():
     total = count_tokens(agent._writing_system) + count_tokens(synthesis_prompt)
     assert total <= 1500 + 60  # only the "left out" note may overflow
     assert count_tokens(agent._writing_system) < count_tokens(agent._system) - 500  # no tool list when writing
+
+
+# ==================================================================================================
+# Audit regressions
+# ==================================================================================================
+
+
+def test_dependencies_on_steps_dropped_by_the_step_limit_or_a_cycle_are_removed():
+    """A kept step must never wait for a step that validation dropped: Plan.ready() would never
+    return it, so it could not run and would be skipped as if the budget had run out."""
+    registry = build_default_registry("mock")
+    text = json.dumps({"steps": [
+        {"id": "s1", "tool": "web_search", "args": {"query": "a"}, "depends_on": ["s3"]},
+        {"id": "c1", "tool": "web_search", "args": {"query": "b"}, "depends_on": ["c2"]},
+        {"id": "c2", "tool": "web_search", "args": {"query": "c"}, "depends_on": ["c1"]},
+        {"id": "s2", "tool": "web_search", "args": {"query": "d"}, "depends_on": ["c1"]},
+        {"id": "s3", "tool": "web_search", "args": {"query": "e"}},  # over the limit of 4
+    ]})
+    plan = parse_plan(text, registry, max_steps=4)
+    ids = {s.id for s in plan.steps}
+    assert ids == {"s1", "s2"}
+    assert all(set(s.depends_on) <= ids for s in plan.steps)
+    assert {s.id for s in plan.ready()} == {"s1", "s2"}
+
+
+def test_replan_steps_without_ids_get_fresh_ids_instead_of_being_rejected_as_duplicates():
+    registry = build_default_registry("mock")
+    plan = Plan([PlanStep("s1", "profile", "company_profile", {"ticker": "MSFT"}, status="done")])
+    text = json.dumps({"action": "continue", "add_steps": [
+        {"tool": "web_search", "args": {"query": "Microsoft Azure growth"}},
+    ]})
+    decision = parse_replan(text, registry, plan, max_new_steps=5)
+    assert not decision.done and len(decision.new_steps) == 1
+    assert decision.new_steps[0].id != "s1"
+
+
+def test_budget_running_out_before_a_dependent_step_is_reported_as_the_stop_reason():
+    """The repair of s1 uses the last tool call; s2 (which waits for s1) can then never run. The
+    run must say it stopped because the budget ran out, not that it completed."""
+    plan = {"steps": [
+        {"id": "s1", "goal": "Income", "tool": "financial_data_api", "args": {"ticker": "MSFT"}},  # needs repair
+        {"id": "s2", "goal": "Profile", "tool": "company_profile", "args": {"ticker": "MSFT"}, "depends_on": ["s1"]},
+    ]}
+
+    class Script(ScriptedLLM):
+        def __call__(self, request):
+            if "[ARA:EXECUTE]" in request.messages[-1]["content"]:
+                self.stages.append("EXECUTE")
+                return {"tool_calls": [
+                    {"name": "financial_data_api", "arguments": {"ticker": "MSFT"}},
+                    {"name": "financial_data_api", "arguments": {"ticker": "MSFT", "statement_type": "income_statement"}},
+                ]}
+            return super().__call__(request)
+
+    script = Script(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
+    result = make_agent(script, max_tool_calls=2, max_workers=1).run(QUERY)
+    assert [s.status for s in result.plan.steps] == ["done", "skipped"] and result.tool_calls == 2
+    assert result.stop_reason == "tool-call budget exhausted"
+
+
+def test_a_failed_gap_review_does_not_rewrite_the_same_draft():
+    """Reflection found missing sections, but the review reply was unusable, so nothing new was
+    researched: re-running synthesis would only spend a large LLM call re-writing the same draft
+    (and a failed re-write would throw the existing draft away)."""
+
+    class Script(ScriptedLLM):
+        replans = 0
+
+        def __call__(self, request):
+            if "[ARA:REPLAN]" in request.messages[-1]["content"]:
+                self.replans += 1
+                self.stages.append("REPLAN")
+                return '{"action": "done"}' if self.replans == 1 else "not json at all"
+            return super().__call__(request)
+
+    script = Script(synthesis="=== SECTION: executive_summary ===\nMicrosoft is a software company.")
+    result = make_agent(script).run(QUERY)
+    assert script.stages == ["PLAN", "EXECUTE", "REPLAN", "SYNTHESIZE", "REPLAN"]
+    assert result.sections["executive_summary"].startswith("Microsoft is a software company.")
+
+
+def test_a_complete_report_written_after_the_research_deadline_keeps_the_completed_stop_reason():
+    """Writing is meant to happen in the reserve after the research deadline. Reflection must not
+    record 'time limit reached' when no section is missing and nothing was cut short."""
+    now = [0.0]
+
+    class Script(ScriptedLLM):
+        def __call__(self, request):
+            if "[ARA:SYNTHESIZE]" in request.messages[-1]["content"]:
+                now[0] = 800.0  # past the research deadline (750 s), within the writing reserve
+            return super().__call__(request)
+
+    script = Script()
+    llm = LLMClient([MockProvider(script)], max_retries=0, sleep=lambda s: None, clock=lambda: now[0])
+    agent = ResearchAgent(llm, lambda: build_default_registry("mock"), agent_settings=AgentSettings(),
+                          max_seconds=1000, clock=lambda: now[0],
+                          memory=MemoryManager(DEFAULT_STORE, FactsStore(None), EpisodicMemory(None)))
+    result = agent.run(QUERY)
+    assert result.report_checks["missing_sections"] == []
+    assert result.stop_reason == "completed"
+
+
+def test_a_repeated_uncited_sentence_is_marked_once_at_each_occurrence():
+    body = "Microsoft had 123,456 widgets in FY2024. Microsoft had 123,456 widgets in FY2024."
+    result = make_agent(ScriptedLLM(synthesis=f"=== SECTION: executive_summary ===\n{body}\n")).run(QUERY)
+    text = result.sections["executive_summary"]
+    assert result.verification["uncited"] == 2
+    assert text.count("*(unverified: no source cited)*") == 2
+    assert "*(unverified: no source cited)* *(unverified" not in text
+
+
+def test_extract_json_skips_an_unbalanced_brace_in_prose_before_the_object():
+    assert extract_json('I will fill in {ticker later. {"a": 1}') == {"a": 1}
+
+
+def test_the_executor_refuses_system_tools_just_as_the_planner_does():
+    """The planner rejects report_generator / fact_checker / vector_db_*; a model must not be able to
+    reach them through a step's tool call either (e.g. writing its own 'findings' into memory)."""
+    plan = {"steps": [{"id": "s1", "goal": "Recent news", "tool": "web_search", "args": None}]}
+
+    class Script(ScriptedLLM):
+        def __call__(self, request):
+            if "[ARA:EXECUTE]" in request.messages[-1]["content"]:
+                self.stages.append("EXECUTE")
+                return {"tool_calls": [{"name": "vector_db_store", "arguments": {
+                    "content": "Microsoft revenue will double next year.",
+                    "metadata": {"ticker": "MSFT", "date": "2026-01-01", "source_type": "analysis"}}}]}
+            return super().__call__(request)
+
+    script = Script(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
+    result = make_agent(script).run(QUERY)
+    assert not any(r.tool == "vector_db_store" for r in result.evidence.values())
+    assert result.plan.get("s1").status != "done"

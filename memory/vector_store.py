@@ -55,7 +55,7 @@ class InMemoryVectorStore:
 
     def store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         ticker = metadata["ticker"].upper()
-        _parse_date(metadata["date"])
+        stored_on = _parse_date(metadata["date"]).isoformat()  # "2025-01-29T15:00Z" is stored as the day, as in Chroma
         prefix = record_id_prefix(metadata)
         seq = sum(1 for rid in self.records if rid.startswith(prefix + "-")) + 1
         record_id = f"{prefix}-{seq:03d}"
@@ -67,6 +67,7 @@ class InMemoryVectorStore:
                 "verified": False,
                 **metadata,
                 "ticker": ticker,
+                "date": stored_on,
             },
         }
         return {"id": record_id, "stored": True, "total_records": len(self.records)}
@@ -87,7 +88,7 @@ class InMemoryVectorStore:
             if score > 0:
                 scored.append({**record, "score": round(score, 4)})
         scored.sort(key=lambda r: r["score"], reverse=True)
-        return {"query": query, "results": scored[:top_k], "searched_records": len(self.records)}
+        return {"query": query, "results": scored[:max(0, top_k)], "searched_records": len(self.records)}
 
     def add_many(self, records: list[Any]) -> int:
         """Store many chunks at once; content-hash ids make re-storing a chunk an update."""
@@ -95,7 +96,7 @@ class InMemoryVectorStore:
         for record in records:
             meta = {"confidence": 0.5, "verified": False, **record.metadata,
                     "ticker": str(record.metadata["ticker"]).upper()}
-            _parse_date(meta["date"])
+            meta["date"] = _parse_date(meta["date"]).isoformat()
             rid = content_id(record.content, meta)
             self.records[rid] = {"id": rid, "content": record.content, "metadata": meta}
             written.add(rid)
@@ -233,11 +234,13 @@ class ChromaVectorStore:
         meta = _normalize_meta(metadata)
         prefix = record_id_prefix(meta)
         with self._lock:
-            existing = self._collection.get(
-                where={"$and": [{"ticker": meta["ticker"]}, {"source_type": meta["source_type"]}, {"date": meta["date"]}]},
-                include=[],
-            )
-            record_id = f"{prefix}-{len(existing['ids']) + 1:03d}"
+            # Ids are counted by their readable prefix, not by exact metadata: "10-K" and "10-k" share
+            # the prefix, and Chroma silently ignores an ``add`` whose id already exists.
+            taken = set(self._collection.get(where={"date": meta["date"]}, include=[])["ids"])
+            seq = sum(1 for rid in taken if rid.startswith(prefix + "-")) + 1
+            while f"{prefix}-{seq:03d}" in taken:
+                seq += 1
+            record_id = f"{prefix}-{seq:03d}"
             self._collection.add(ids=[record_id], documents=[content], metadatas=[meta])
         return {"id": record_id, "stored": True, "total_records": self.count()}
 
@@ -245,8 +248,8 @@ class ChromaVectorStore:
         if not _tokens(query):
             raise ToolValidationError("vector_db_search: query has no searchable words", tool="vector_db_search")
         total = self.count()
-        if total == 0:
-            return {"query": query, "results": [], "searched_records": 0}
+        if total == 0 or top_k < 1:  # Chroma rejects n_results < 1
+            return {"query": query, "results": [], "searched_records": total}
 
         kwargs: dict[str, Any] = {"query_texts": [query], "n_results": min(top_k, total)}
         where = _chroma_where(filter or {})

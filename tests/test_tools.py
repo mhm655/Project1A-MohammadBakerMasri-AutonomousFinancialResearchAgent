@@ -739,3 +739,49 @@ def test_evidence_flows_from_tools_into_a_cited_report(registry):
 def test_a_claim_in_billions_matches_a_source_in_millions(registry):
     out = check(registry, "| FY2022 | 198.3 |", "FY2022 revenue=198,270 (USD millions)")
     assert out["status"] == "supported" and out["evidence"][0]["scale_inferred"]
+
+
+# ==================================================================================================
+# Audit regressions
+# ==================================================================================================
+
+
+def test_percent_range_with_the_unit_on_both_ends_is_not_negative(registry):
+    # "30%-35%": the hyphen is a range dash, not a minus sign on 35 %.
+    assert [(q.kind, q.value) for q in extract_quantities("Guidance of 30%-35% margin")] == [
+        ("percent", pytest.approx(0.30)), ("percent", pytest.approx(0.35))]
+    out = check(registry, "Operating margin guidance is 30%-35%.", "Management guided to 30% to 35% operating margin.")
+    assert out["status"] == "supported"
+
+
+def test_numeric_dates_are_not_quantities(registry):
+    assert [q.value for q in extract_quantities("As of 09/28/2024 revenue was $391 billion.")] == [pytest.approx(391e9)]
+    out = check(registry, "As of 9/28/2024 revenue was $391 billion.", "Revenue was $391,035 million.")
+    assert out["status"] == "supported"
+
+
+def test_fiscal_period_labels_glued_to_digits_are_not_quantities(registry):
+    # "3Q24" and "2H25" are period labels, like "Q3" and "FY24".
+    assert [q.value for q in extract_quantities("3Q24 revenue rose 5% and 2H25 margins widened 1.5 pp")] == [
+        pytest.approx(0.05), pytest.approx(0.015)]
+    out = check(registry, "3Q24 revenue rose 5%.", "Revenue rose 5% year over year.")
+    assert out["status"] == "supported"
+
+
+def test_dcf_accepts_net_debt_sent_as_a_string(registry):
+    out = calc(registry, "dcf", cash_flows=[100], discount_rate=0.1, terminal_growth_rate=0.0, net_debt="50",
+               shares_outstanding="10")
+    ev = 100 / 1.1 + (100 / 0.1) / 1.1
+    assert out["result"]["equity_value"] == pytest.approx(ev - 50)
+    assert out["result"]["value_per_share"] == pytest.approx((ev - 50) / 10)
+
+
+def test_integral_floats_for_integer_arguments_become_ints(registry):
+    # Some providers deliver every JSON number as a float ("years": 2.0).
+    args = registry.validate_args("financial_data_api", {"ticker": "MSFT", "statement_type": "income_statement",
+                                                         "years": 2.0})
+    assert args["years"] == 2 and type(args["years"]) is int
+    assert len(registry.dispatch("financial_data_api", args).data["data"]) == 2
+    assert len(registry.dispatch("web_search", {"query": "nvidia", "num_results": 3.0}).data["results"]) == 3
+    with pytest.raises(ToolValidationError, match="num_results"):
+        registry.validate_args("web_search", {"query": "nvidia", "num_results": 5.5})

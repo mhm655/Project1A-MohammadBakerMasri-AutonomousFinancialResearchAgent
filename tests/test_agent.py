@@ -527,6 +527,10 @@ def test_cooling_providers_remain_a_last_resort():
     ("You exceeded your current quota, please check your plan and billing details.", "quota_exhausted"),
     ("Request too large for model `qwen/qwen3.8-27b` on output tokens per minute (OTPM): Limit 1000", "request_too_large"),
     ("Rate limit reached on tokens per minute (TPM): Limit 8000", "rate_limit"),
+    ("You exceeded your current quota. Quota exceeded for metric: generate_content_free_tier_requests, "
+     "quotaId: GenerateRequestsPerMinutePerProjectPerModel-FreeTier", "rate_limit"),
+    ("You exceeded your current quota. Quota exceeded for metric: generate_content_free_tier_requests, "
+     "quotaId: GenerateRequestsPerDayPerProjectPerModel-FreeTier", "quota_exhausted"),
 ])
 def test_429s_are_told_apart(message, kind):
     error = classify_exception("groq", type("E", (Exception,), {"status_code": 429, "__str__": lambda s: message})())
@@ -585,3 +589,35 @@ def test_a_local_server_that_is_not_running_is_set_aside():
     now[0] = 60
     with pytest.raises(AllProvidersFailedError):
         client.complete([{"role": "user", "content": "y"}])  # still set aside: not even attempted
+
+
+# ==================================================================================================
+# Audit regressions
+# ==================================================================================================
+
+
+def test_cooldowns_start_when_the_provider_fails_not_when_the_call_started():
+    """gemini spends 100 s timing out before groq is rate-limited. groq's 30 s cooldown must run
+    from its failure (t=100), so a call at t=110 still tries it last, not second."""
+    now = [0.0]
+
+    def slow_timeout(request):
+        now[0] += 100
+        return LLMProviderError("gemini", "timeout", "read timed out")
+
+    gemini = MockProvider(slow_timeout, name="gemini")
+    groq = MockProvider([rate_limited("groq"), "groq answer"], name="groq")
+    ollama = MockProvider(["ollama 1", "ollama 2"], name="ollama")
+    client = LLMClient([gemini, groq, ollama], max_retries=0, sleep=lambda s: None, clock=lambda: now[0],
+                       cooldown_s=30)
+    assert client.complete([{"role": "user", "content": "a"}]).provider == "ollama"
+    assert now[0] == 100 and len(groq.requests) == 1
+    now[0] = 110  # groq's cooldown runs until t=130; gemini is still slow
+    assert client.complete([{"role": "user", "content": "b"}]).provider == "ollama"
+    assert len(groq.requests) == 1
+
+
+def test_hyphenated_credential_keys_are_redacted():
+    tracer = TraceLogger()
+    event = tracer.log("note", headers={"X-Api-Key": "sk-live-123", "x-goog-api-key": "AIza-456", "accept": "json"})
+    assert event["headers"] == {"X-Api-Key": REDACTED, "x-goog-api-key": REDACTED, "accept": "json"}

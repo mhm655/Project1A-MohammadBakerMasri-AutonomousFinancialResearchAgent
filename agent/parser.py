@@ -102,10 +102,10 @@ def extract_json(text: str | None) -> dict[str, Any]:
         start = candidate.find("{")
         while start != -1:
             end = _matching_brace(candidate, start)
-            if end == -1:
-                break
-            blob = candidate[start : end + 1]
-            for attempt in (blob, re.sub(r",\s*([}\]])", r"\1", blob)):
+            # An unbalanced "{" (in prose, or a truncated first attempt) has no match: try the next
+            # "{" rather than giving up on the rest of the reply.
+            blob = candidate[start : end + 1] if end != -1 else ""
+            for attempt in (blob, re.sub(r",\s*([}\]])", r"\1", blob)) if blob else ():
                 try:
                     value = json.loads(attempt)
                 except json.JSONDecodeError:
@@ -155,7 +155,14 @@ def parse_steps(raw_steps: Any, registry: ToolRegistry, *, existing_ids: set[str
         if not isinstance(raw, dict):
             rejected.append(f"step {i + 1}: not an object")
             continue
-        step_id = str(raw.get("id") or f"s{i + 1}")
+        step_id = str(raw.get("id") or "")
+        if not step_id:
+            # No id given: number it, skipping ids already taken (review steps join an existing plan
+            # whose steps are usually s1, s2, ...; reusing one would reject the step as a duplicate).
+            n = i + 1
+            while f"s{n}" in taken:
+                n += 1
+            step_id = f"s{n}"
         tool = str(raw.get("tool") or "")
         label = f"{step_id} ({tool or 'no tool'})"
         if step_id in taken:
@@ -184,8 +191,9 @@ def parse_steps(raw_steps: Any, registry: ToolRegistry, *, existing_ids: set[str
         rejected += [f"{s.id} ({s.tool}): over the step limit of {max_steps}" for s in steps[max_steps:]]
         steps = steps[:max_steps]
 
-    # Dependencies must exist (in this batch or earlier ones); unknown ones are dropped.
-    known = taken | {s.id for s in steps}
+    # Dependencies must exist (in this batch or earlier ones); unknown ones are dropped. Steps cut by
+    # the step limit do not count: a step waiting for one would never become ready.
+    known = set(existing_ids or ()) | {s.id for s in steps}
     for step in steps:
         missing = [d for d in step.depends_on if d not in known]
         if missing:
@@ -195,6 +203,11 @@ def parse_steps(raw_steps: Any, registry: ToolRegistry, *, existing_ids: set[str
     if cyclic:
         rejected += [f"{sid}: part of a dependency cycle" for sid in sorted(cyclic)]
         steps = [s for s in steps if s.id not in cyclic]
+        # Likewise, a step that depended on a dropped cyclic step must not wait for it forever.
+        for step in steps:
+            if any(d in cyclic for d in step.depends_on):
+                rejected.append(f"{step.id}: ignored dependencies on dropped cyclic steps")
+                step.depends_on = [d for d in step.depends_on if d not in cyclic]
     return steps, rejected
 
 

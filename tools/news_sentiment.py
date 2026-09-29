@@ -137,6 +137,9 @@ def google_news(query: str, *, lookback_days: int, limit: int) -> list[dict[str,
             published = parsedate_to_datetime(entry.published)
         except (AttributeError, TypeError, ValueError):
             published = None
+        if published and published.tzinfo is None:
+            # "-0000" or no zone at all parses to a naive datetime; read it as UTC so it can be compared.
+            published = published.replace(tzinfo=UTC)
         if published and published < cutoff:
             continue
         source = entry.get("source", {}).get("title", "") if hasattr(entry, "get") else ""

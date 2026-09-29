@@ -545,6 +545,12 @@ class ResearchAgent:
             self.tracer.thought(reply.content or f"Calling {[c.name for c in reply.tool_calls]}", node="execute",
                                 step_id=step.id)
             for call in reply.tool_calls:
+                if call.name in SYSTEM_TOOLS:
+                    # Same rule as the planner: the system runs these (a model must not, for example,
+                    # write its own "findings" into memory). Counts as an attempt so the loop ends.
+                    step.attempts += 1
+                    problem = f"{call.name} is run by the system and cannot be called in a research step"
+                    continue
                 if step.attempts >= self.cfg.max_calls_per_step or not self._take_call():
                     break
                 step.attempts += 1
@@ -575,7 +581,8 @@ class ResearchAgent:
         plan, replans = state["plan"], state.get("replans", 0)
         gaps = state.get("pending_gaps", [])
         if replans >= self.cfg.max_replans or not self._budget_left() or not self._time_left():
-            return {"pending_gaps": []}
+            # Nothing new can be researched, so a gap-driven review must not re-write the same draft.
+            return {"pending_gaps": [], "skip_resynthesis": bool(gaps)}
         profile = state["profile"]
         completed = "\n".join(f"- {s.id} {s.goal}: {s.summary}" for s in plan.by_status("done"))
         failed = "\n".join(f"- {s.id} {s.goal}: {s.summary}" for s in plan.by_status("failed", "skipped"))
@@ -588,7 +595,8 @@ class ResearchAgent:
                                     max_new_steps=self.cfg.max_tool_calls - self.budget_used)
         except (ParseError, LLMError) as exc:
             self.tracer.log("error", source="review", error_kind=type(exc).__name__, message=str(exc)[:300])
-            return {"replans": replans + 1, "pending_gaps": []}
+            # As below: no new steps, so re-running synthesis would only re-write the same draft.
+            return {"replans": replans + 1, "pending_gaps": [], "skip_resynthesis": bool(gaps)}
         for note in decision.rejected:
             self.tracer.log("note", text=f"Review validation: {note}")
         if decision.new_steps:
@@ -627,7 +635,14 @@ class ResearchAgent:
         flagged: list[str] = []
         digests = {eid: evidence_digest(r, 6000) for eid, r in self.evidence.items()}
         for key, body in sections.items():
+            # Claims come in document order; each edit is made at the claim's own position. A plain
+            # str.replace(claim, ..., 1) hits the first occurrence, so a repeated sentence would be
+            # marked twice at its first occurrence and never at the second.
+            cursor = 0
             for claim, inherited in _claims(body):
+                at = body.find(claim, cursor)
+                if at != -1:
+                    cursor = at + len(claim)
                 quantities = extract_quantities(claim)
                 if not quantities:
                     continue
@@ -636,7 +651,7 @@ class ResearchAgent:
                 if source:
                     # Citation repair: every figure in the claim matches this one source exactly, so
                     # citing it is accurate. Counted separately so the report can disclose it.
-                    body = body.replace(claim, _cite(claim, source), 1)
+                    body, cursor = _replace_at(body, at, claim, _cite(claim, source), cursor)
                     tally["auto_cited"] += 1
                     tally["checked"] += 1
                     tally["supported"] += 1
@@ -644,14 +659,14 @@ class ResearchAgent:
                 if not ids:
                     tally["uncited"] += 1
                     flagged.append(f"{section_title(key)}: uncited figure: {claim[:140]}")
-                    body = body.replace(claim, _mark(claim, "unverified: no source cited"), 1)
+                    body, cursor = _replace_at(body, at, claim, _mark(claim, "unverified: no source cited"), cursor)
                     continue
                 verdict = fact_checker(claim, [evidence_digest(self.evidence[i], 6000) for i in ids])
                 tally["checked"] += 1
                 tally[verdict["status"]] = tally.get(verdict["status"], 0) + 1
                 if verdict["status"] in ("unsupported", "partially_supported"):
                     flagged.append(f"{section_title(key)}: {verdict['status'].replace('_', ' ')}: {claim[:140]}")
-                    body = body.replace(claim, _mark(claim, "unverified"), 1)
+                    body, cursor = _replace_at(body, at, claim, _mark(claim, "unverified"), cursor)
             sections[key] = body
         self.tracer.metric("verification", tally)
         return {"sections": sections, "verification": {**tally, "flagged": flagged}}
@@ -661,8 +676,10 @@ class ResearchAgent:
         missing = [s for s in needed if s not in state.get("sections", {})]
         reflections = state.get("reflections", 0)
         self.tracer.thought(f"Reflection: {len(missing)} section(s) missing {missing or ''}".strip(), node="reflect")
-        can_research = state.get("replans", 0) < self.cfg.max_replans and self._budget_left() and self._time_left()
-        if missing and reflections < self.cfg.max_reflections and can_research:
+        # Checked only when sections are missing: _time_left() records "time limit reached", which
+        # is wrong for a complete report written in the reserve after the research deadline.
+        if (missing and reflections < self.cfg.max_reflections and state.get("replans", 0) < self.cfg.max_replans
+                and self._budget_left() and self._time_left()):
             return {"pending_gaps": [f"Section '{section_title(s)}' has no supporting evidence." for s in missing],
                     "reflections": reflections + 1}
         return {"pending_gaps": []}
@@ -726,6 +743,9 @@ class ResearchAgent:
         plan = state["plan"]
         if plan.ready() and self._budget_left() and self._time_left():
             return "execute"
+        if plan.ready() and not self._budget_left():
+            # Steps could still run but the last call went to an earlier step: record why they will not.
+            self._stop("tool-call budget exhausted")
         for step in plan.by_status("pending"):  # unreachable, or the budget ran out
             self._finish(step, "skipped", "not run: the time or tool budget ran out")
         return "review"
@@ -752,6 +772,16 @@ def _find_single_source(claim: str, quantities: list[Any], digests: dict[str, st
     matches = [eid for eid, text in digests.items()
                if fact_checker(claim, [text])["status"] == "supported"]
     return matches[0] if len(matches) == 1 else None
+
+
+def _replace_at(body: str, at: int, claim: str, new: str, cursor: int) -> tuple[str, int]:
+    """Replace the claim that starts at ``at``; return the new body and the position after the edit.
+
+    ``at`` is -1 only if the claim was not found (it always should be); nothing changes then.
+    """
+    if at < 0:
+        return body, cursor
+    return body[:at] + new + body[at + len(claim):], at + len(new)
 
 
 def _cite(claim: str, evidence_id: str) -> str:

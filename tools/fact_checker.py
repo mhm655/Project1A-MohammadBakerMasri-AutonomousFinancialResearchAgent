@@ -26,10 +26,12 @@ _SCALES = {
 }
 
 # The lookbehind skips numbers glued to letters or hyphens ("Q4", "FY24", "3-for-1"); the lookahead
-# skips form names such as "10-K" and "8-K", and stops the engine backtracking to a partial number
-# ("1" of "10-K"). Percentage points count as percentages; basis points are hundredths of a percent.
+# skips form names such as "10-K" and "8-K" and period labels such as "3Q24" and "2H25", and stops the
+# engine backtracking to a partial number ("1" of "10-K"). Percentage points count as percentages;
+# basis points are hundredths of a percent.
 _QUANTITY = re.compile(
-    r"(?<![\w.\-])(?P<neg>-)?\$?(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?!\d|[.,]\d|-[A-Za-z])\s*"
+    r"(?<![\w.\-])(?P<neg>-)?\$?(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)"
+    r"(?!\d|[.,]\d|-[A-Za-z]|[A-Za-z]+\d)\s*"
     r"(?:(?P<pct>%|percent\b|percentage\s+points?\b|pp\b|ppts?\b)"
     r"|(?P<bps>basis\s+points?|bps|bp)\b"
     r"|(?P<scale>thousand|million|billion|trillion|mn|bn|tn|[kmbt])\b)?",
@@ -42,6 +44,8 @@ _QUANTITY = re.compile(
 _UNIT = (r"%|percent\b|percentage\s+points?\b|pp\b|ppts?\b|basis\s+points?\b|bps\b|bp\b"
          r"|thousand\b|million\b|billion\b|trillion\b|mn\b|bn\b|tn\b|[kmbt]\b")
 _RANGE = re.compile(rf"(\d+(?:\.\d+)?)\s*(?:-|–|—|to)\s*\$?(\d+(?:\.\d+)?)\s*({_UNIT})", re.IGNORECASE)
+# "30%-35%": a dash right after a percent sign is a range dash, not a minus sign on the next number.
+_PERCENT_DASH = re.compile(r"%\s*[-–—]\s*(?=\$?\d)")
 
 # Numbers that are almost always labels rather than measured quantities.
 _YEAR = re.compile(r"^(19|20)\d{2}$")
@@ -57,10 +61,11 @@ class Quantity:
 
 _MONTH = (r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|"
           r"Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?")
-# "June 1 2025", "June 1st, 2025", "1 June 2025", "June 2025": dates, not quantities.
+# "June 1 2025", "June 1st, 2025", "1 June 2025", "June 2025", "09/28/2024": dates, not quantities.
 _DATE = re.compile(
     rf"\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?,?\s+\d{{4}}\b|\b\d{{1,2}}(?:st|nd|rd|th)?\s+{_MONTH}\s+\d{{4}}\b"
-    rf"|\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?\b(?!\s*(?:%|million|billion|thousand))",
+    rf"|\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?\b(?!\s*(?:%|million|billion|thousand))"
+    r"|\b\d{1,2}/\d{1,2}/\d{2,4}\b",
     re.IGNORECASE,
 )
 
@@ -68,6 +73,7 @@ _DATE = re.compile(
 def extract_quantities(text: str) -> list[Quantity]:
     """Find numeric quantities in text, skipping dates and bare years such as 2024."""
     text = _DATE.sub(" ", text)
+    text = _PERCENT_DASH.sub("% to ", text)
     text = _RANGE.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else f"{m.group(1)} {m.group(3)} to {m.group(2)} {m.group(3)}", text)
     found = []
     for m in _QUANTITY.finditer(text):

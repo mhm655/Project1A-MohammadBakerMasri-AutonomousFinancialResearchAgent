@@ -67,13 +67,14 @@ class FactsStore:
     def query(self, ticker: str, *, items: list[str] | None = None, period: str = "annual",
               limit_periods: int = 5) -> list[dict[str, Any]]:
         """The latest ``limit_periods`` periods for a ticker, newest first."""
-        sql = ("SELECT * FROM facts WHERE ticker = ? AND period = ? AND period_end IN "
-               "(SELECT DISTINCT period_end FROM facts WHERE ticker = ? AND period = ? "
+        # The items filter applies inside the period subquery too: otherwise a newer period that lacks
+        # the requested items uses up the limit and the periods that have them are cut off.
+        item_filter = f" AND item IN ({','.join('?' * len(items))})" if items else ""
+        sql = (f"SELECT * FROM facts WHERE ticker = ? AND period = ?{item_filter} AND period_end IN "
+               f"(SELECT DISTINCT period_end FROM facts WHERE ticker = ? AND period = ?{item_filter} "
                "ORDER BY period_end DESC LIMIT ?)")
-        params: list[Any] = [ticker.upper(), period, ticker.upper(), period, limit_periods]
-        if items:
-            sql += f" AND item IN ({','.join('?' * len(items))})"
-            params += items
+        params: list[Any] = [ticker.upper(), period, *(items or []), ticker.upper(), period, *(items or []),
+                             limit_periods]
         with self._lock:
             return [dict(r) for r in self._db.execute(sql + " ORDER BY period_end DESC, item", params)]
 
