@@ -307,3 +307,66 @@ def test_conflicts_markdown():
     assert lines[1].startswith("|---")
     assert "ACME" in lines[2] and "FY2024" in lines[2] and "highest_tier" in lines[2]
     assert "$100.00 billion (sec_xbrl, tier 1, E1)" in lines[2] and "0.95" in lines[2]
+
+
+# --- regressions found in review ------------------------------------------------------------------
+
+
+def test_news_matching_ignores_word_tickers_and_partial_words():
+    from synthesis.narrative import _mentions
+
+    assert not _mentions("F-150 recall", "F", {"ford motor"})
+    assert _mentions("F earnings", "F", set())
+    assert not _mentions("all time highs", "ALL", set())
+    assert _mentions("ALL stock outlook", "ALL", set())
+    assert not _mentions("pineapple prices", "AAPL", {"apple"})
+    assert not _mentions("tech", "PLTR", {"palantir technologies"})
+    assert _mentions("Palantir", "PLTR", {"palantir technologies"})
+    assert _mentions("Palantir Technologies stock", "PLTR", {"palantir technologies"})
+
+
+def test_each_entity_uses_only_its_own_news():
+    ev = {"1": fin("E1", "AAA", "Alpha Inc", "income_statement", "millions",
+                   [(2023, {"revenue": 100.0}), (2024, {"revenue": 150.0})]),
+          "2": fin("E2", "BBB", "Beta Inc", "income_statement", "millions",
+                   [(2023, {"revenue": 100.0}), (2024, {"revenue": 50.0})]),
+          "3": news("E3", "Alpha stock", -0.5, "negative"), "4": news("E4", "BBB stock", 0.6, "positive")}
+    by_entity = {t.entity: t for t in sentiment_fact_alignment(build_ledger(ev), ev)}
+    assert by_entity["AAA"].contradicting == ["E3"] and by_entity["BBB"].contradicting == ["E4"]
+
+
+def test_fcf_change_from_negative_base_is_not_a_percentage():
+    ev = {"1": fin("E1", "AAA", "Alpha", "cash_flow", "millions",
+                   [(2023, {"free_cash_flow": -10.0}), (2024, {"free_cash_flow": 5.0})])}
+    text = " ".join(t.thesis for t in build_threads(build_ledger(ev), ev))
+    assert "-150" not in text and "-$10.0 million" in text
+
+
+def test_render_brief_empty_and_tiny_budget():
+    from synthesis.engine import Ledger
+
+    assert render_brief(Ledger(), []) == ""
+    ev = {"1": fin("E1", "AAA", "Alpha", "income_statement", "millions", [(2024, {"revenue": 150.0})])}
+    assert render_brief(build_ledger(ev), [], max_tokens=3) == ""  # one line longer than the budget
+
+
+def test_brief_figures_verify_against_evidence_text():
+    from synthesis.conflict_resolver import format_money
+    from tools.fact_checker import fact_checker
+
+    assert fact_checker(format_money(130.5e9), ["Revenue was 130,497 million"])["status"] == "supported"
+    assert fact_checker(format_money(-4.2e9), ["net income -4,200 million"])["status"] == "supported"
+
+
+def test_quarterly_rows_never_merge_with_annual():
+    rows = fin("E1", "AAA", "Alpha", "income_statement", "millions", [(2024, {"revenue": 400.0})])
+    rows.data["data"].append({"fiscal_year": 2024, "fiscal_period": "Q4", "period_end": "2024-12-31",
+                              "values": {"revenue": 100.0}})
+    ledger = build_ledger({"1": rows})
+    assert not ledger.conflicts and ledger.get("AAA", "revenue").value == 400e6
+
+
+def test_negative_and_zero_values_agree_correctly():
+    assert not resolve([claim(value=-100e6), claim(cid="C2", value=100e6, ev="E2", provider="yfinance", tier=2)],
+                       CFG)[1] == []
+    assert resolve([claim(value=0), claim(cid="C2", value=0, ev="E2", provider="yfinance", tier=2)], CFG)[1] == []

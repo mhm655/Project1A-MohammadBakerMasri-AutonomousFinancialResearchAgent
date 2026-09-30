@@ -788,3 +788,199 @@ def test_injected_failures_exercise_recovery_through_the_dispatcher() -> None:
             pass
     assert injector.injected.get("web_search", 0) > 0
     assert delivered >= 1
+
+
+# --------------------------------------------------------------------------------------------------
+# Review regressions: thread safety, classification, backoff cap, gap accuracy
+# --------------------------------------------------------------------------------------------------
+
+
+def _run_threads(count: int, target: Any) -> None:
+    import threading
+
+    barrier = threading.Barrier(count)
+
+    def wrapped(index: int) -> None:
+        barrier.wait()
+        target(index)
+
+    threads = [threading.Thread(target=wrapped, args=(i,)) for i in range(count)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+
+def test_half_open_admits_exactly_one_trial_under_threads() -> None:
+    clock = FakeClock()
+    breaker = CircuitBreaker("p", clock=clock)
+    for _ in range(3):
+        breaker.record_failure()
+    clock.advance(31)
+    allowed: list[bool] = []
+    _run_threads(8, lambda _i: allowed.append(breaker.allow()))
+    assert allowed.count(True) == 1
+
+
+def test_record_failure_reports_the_tripping_call_exactly_once() -> None:
+    breaker = CircuitBreaker("p", BreakerConfig(consecutive_failures=50, window=1000, window_failure_ratio=2.0))
+    breaker.config.consecutive_failures = 8
+    tripped: list[bool] = []
+    _run_threads(8, lambda _i: tripped.append(breaker.record_failure()))
+    assert tripped.count(True) == 1
+    assert breaker.trips == 1
+
+
+def test_last_attempts_is_per_thread() -> None:
+    import threading
+
+    gate = threading.Event()
+    seen: dict[str, list[str]] = {}
+
+    def slow(tool: str, args: dict[str, Any]) -> ToolResult:
+        if tool == "web_search":
+            gate.wait(5)
+        return make_result(tool, args)
+
+    dispatcher, _, _ = build(slow)
+
+    def worker(name: str, tool: str, args: dict[str, Any]) -> None:
+        dispatcher.call(tool, args)
+        if name == "a":
+            gate.set()
+        else:
+            gate.wait(5)
+        seen[name] = [a.tool for a in dispatcher.last_attempts]
+
+    ta = threading.Thread(target=worker, args=("a", "company_profile", {"ticker": "MSFT"}))
+    tb = threading.Thread(target=worker, args=("b", "web_search", {"query": "Tesla"}))
+    tb.start()
+    ta.start()
+    ta.join()
+    tb.join()
+    assert seen == {"a": ["company_profile"], "b": ["web_search"]}
+
+
+def test_unexpected_exception_frees_the_half_open_trial() -> None:
+    clock = FakeClock()
+    board = BreakerBoard(clock=clock)
+    breaker = board.for_provider("web_search")
+    for _ in range(3):
+        breaker.record_failure()
+    clock.advance(31)
+
+    def boom(tool: str, args: dict[str, Any]) -> ToolResult:
+        raise RuntimeError("dispatch bug")
+
+    dispatcher, _, _ = build(boom, board=board)
+    with pytest.raises(RuntimeError):
+        dispatcher.call("web_search", {"query": "Tesla"})
+    assert breaker.allow() is True  # the trial slot was not leaked
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("HTTP 50 results returned", "permanent"),
+        ("HTTP 5000 rows scanned", "permanent"),
+        ("HTTP 4040 rows", "permanent"),
+        ("connection pool summary unavailable", "permanent"),
+        ("no data-driven approach possible", "permanent"),
+        ("cache: results not found locally; HTTP 503 from upstream", "transient"),
+        ("HTTP 404 from host", "not_found"),
+        ("connection reset by peer", "transient"),
+    ],
+)
+def test_classify_avoids_loose_message_matches(message: str, expected: str) -> None:
+    assert classify(ToolExecutionError(message)) == expected
+
+
+def test_retryable_execution_error_with_unknown_message_is_transient() -> None:
+    assert classify(ToolExecutionError("weird upstream hiccup", retryable=True)) == "transient"
+
+
+def test_retry_after_is_capped_and_delays_are_never_negative() -> None:
+    script = Script({"web_search": [Retryable("HTTP 429 slow down", 3600), make_result("web_search")]})
+    dispatcher, sleeps, _ = build(script)
+    dispatcher.call("web_search", {"query": "Tesla"})
+    assert sleeps == [60.0]
+    policy = RetryPolicy(base_delay_s=1.0, max_jitter_s=0.0)
+    assert policy.delay(100, NoJitter()) == 60.0  # type: ignore[arg-type]
+    assert RetryPolicy(base_delay_s=-5.0).delay(0, NoJitter()) == 0.0  # type: ignore[arg-type]
+    script = Script({"web_search": [Retryable("HTTP 429", -30), make_result("web_search")]})
+    dispatcher, sleeps, _ = build(script)
+    dispatcher.call("web_search", {"query": "Tesla"})
+    assert sleeps[0] >= 0
+
+
+def test_no_sleep_when_the_deadline_has_already_passed() -> None:
+    script = Script({"web_search": [http_503()], "news_sentiment": [http_503()],
+                     "vector_db_search": [ToolExecutionError("HTTP 404")]})
+    dispatcher, sleeps, _ = build(script, deadline=lambda: True)
+    with pytest.raises(AllFallbacksFailed):
+        dispatcher.call("web_search", {"query": "Tesla"})
+    assert sleeps == []
+
+
+def test_live_schema_accepts_every_mapped_fallback() -> None:
+    registry = build_default_registry("live")
+    extra = [{"ticker": "BRK.B", "query": "Berkshire", "filing_type": "10-K", "year": 2024, "quarter": "Q2"},
+             {"ticker": " msft ", "query": " ab ", "statement_type": None, "filing_type": None}]
+    for tool, samples in SAMPLE_INPUTS.items():
+        for sample in [*samples, *extra]:
+            for fb in chain_for(tool):
+                mapped = fb.map_args(sample)
+                if mapped is not None:
+                    registry.validate_args(fb.tool, mapped)
+
+
+def test_gap_for_an_unavailable_primary_does_not_claim_an_open_circuit() -> None:
+    miss = ToolExecutionError("HTTP 404")
+    script = Script({"company_profile": [ToolUnavailableError("company_profile has no handler for mode 'live'")],
+                     "sec_filing_search": [miss], "web_search": [miss], "vector_db_search": [miss]})
+    dispatcher, _, _ = build(script)
+    with pytest.raises(AllFallbacksFailed) as info:
+        dispatcher.call("company_profile", {"ticker": "MSFT"})
+    assert "circuit" not in info.value.gap.cause
+    assert "no handler" in info.value.gap.cause
+
+
+def test_unavailable_or_open_fallback_is_skipped_and_the_chain_continues() -> None:
+    board = BreakerBoard(clock=FakeClock())
+    for _ in range(3):
+        board.for_provider("web_search").record_failure()
+    script = Script({
+        "financial_data_api": [ToolExecutionError("HTTP 404")],
+        "sec_filing_search": [ToolLockedError("sec_filing_search locked")],
+        "vector_db_search": [make_result("vector_db_search")],
+    })
+    dispatcher, _, _ = build(script, board=board)
+    result = dispatcher.call("financial_data_api", {"ticker": "TSLA", "statement_type": "income_statement"})
+    assert result.is_fallback and result.tool == "vector_db_search"
+    assert "web_search" not in script.tools_called()  # open breaker: never dispatched
+
+
+def test_injector_edge_rates_and_cache_hits() -> None:
+    assert _run_injector(FailureInjector(rate=1.0, seed=1), "web_search", 30) != [None] * 30
+    assert all(_run_injector(FailureInjector(rate=1.0, seed=1), "web_search", 30))
+    assert _run_injector(FailureInjector(rate=1.0, per_tool={"web_search": 0.0}, seed=1), "web_search", 20) == [None] * 20
+    registry = build_default_registry("mock")
+    first = registry.dispatch("web_search", {"query": "Tesla cache probe"})
+    registry.failure_injector = FailureInjector(rate=1.0, seed=1)
+    again = registry.dispatch("web_search", {"query": "Tesla cache probe"})  # served from cache
+    assert again.data == first.data
+    assert registry.failure_injector.injected == {}
+
+
+def test_injector_counts_are_exact_under_threads() -> None:
+    injector = FailureInjector(rate=1.0, seed=2)
+
+    def hammer(_i: int) -> None:
+        for _ in range(200):
+            try:
+                injector.maybe_fail("web_search")
+            except ToolError:
+                pass
+
+    _run_threads(8, hammer)
+    assert injector.injected == {"web_search": 1600}

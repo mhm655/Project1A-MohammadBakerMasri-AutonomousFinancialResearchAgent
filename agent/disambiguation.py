@@ -18,9 +18,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import date, timedelta
+from email.utils import parsedate_to_datetime
 from typing import Any
 
-from agent.query_analyzer import QueryProfile
+from agent.query_analyzer import QueryProfile, _resolve_entities
 from tools.base import ToolResult
 
 # --------------------------------------------------------------------------------------------------
@@ -232,7 +233,7 @@ def coverage_flags(evidence: dict[str, ToolResult], failures: list[tuple[str, di
 
     for tool, args, message in failures:
         entity = _entity_of(args, message)
-        if tool in _FILER_TOOLS and _NO_FILER.search(message) and entity not in with_financials:
+        if (tool in _FILER_TOOLS or "financial_data_api" in message) and _NO_FILER.search(message) and entity not in with_financials:
             add(CoverageFlag(
                 "private_company", entity,
                 f"{entity or 'The company'} has no SEC filings (no EDGAR filer was found), so the filing-based "
@@ -250,7 +251,12 @@ def coverage_flags(evidence: dict[str, ToolResult], failures: list[tuple[str, di
             entity = _entity_of({"ticker": data.get("ticker")} if data.get("ticker") else result.args)
             only = next((int(m.group(1)) for n in _notes(result) if (m := _ONLY_N.search(n))), None)
             requested = result.args.get("years", 3)
-            short = only is not None and only < 3 or (len(rows) < 3 and requested >= 3)
+            try:
+                wants_trend = int(requested) >= 3
+            except (TypeError, ValueError):
+                wants_trend = True
+            # Asking for one or two years and getting one or two is not a short history.
+            short = wants_trend and ((only is not None and only < 3) or len(rows) < 3)
             if period == "annual" and rows and short:
                 labels = ", ".join(_period_label(r) for r in rows)
                 add(CoverageFlag(
@@ -277,7 +283,7 @@ def _non_us(entity: str) -> CoverageFlag:
 # --------------------------------------------------------------------------------------------------
 
 _EVENT_RULES: list[tuple[str, re.Pattern[str]]] = [
-    ("acquisition/merger", re.compile(r"\bacqui(?:re|res|red|ring|sition|sitions)\b|\bmerger\b|\bmerges?\b|"
+    ("acquisition/merger", re.compile(r"\bacqui(?:re|res|red|ring|sition|sitions)\b(?!\s+(?:new\s+)?(?:customers?|users?|clients?|talent|subscribers?))|\bmerger\b|\bmerges?\b|"
                                       r"\btakeover\b|\bbuyout\b|\bto buy\b", re.I)),
     ("leadership change", re.compile(
         r"\b(?:ceo|cfo|chief executive|chief financial officer)\b.{0,40}\b(?:steps? down|resign\w*|appointed|ousted)\b|"
@@ -306,7 +312,21 @@ def _as_date(value: Any) -> date | None:
     try:
         return date.fromisoformat(str(value)[:10])
     except (TypeError, ValueError):
+        pass
+    try:  # RFC-2822, e.g. "Mon, 28 Sep 2026 10:00:00 GMT"
+        return parsedate_to_datetime(str(value)).date()
+    except (TypeError, ValueError, IndexError):
         return None
+
+
+def _about_other_company(entity: str, text: str) -> bool:
+    """True when the text names known companies and none of them is the queried entity."""
+    if not entity:
+        return False
+    mentioned = set(_resolve_entities(text)[1])
+    if not mentioned:
+        return False
+    return not (mentioned & (set(_resolve_entities(entity)[1]) | {entity.upper()}))
 
 
 def rate_of_change_flags(evidence: dict[str, ToolResult], *, today: date, lookback_days: int = 60) -> list[TemporalFlag]:
@@ -331,6 +351,8 @@ def rate_of_change_flags(evidence: dict[str, ToolResult], *, today: date, lookba
                     continue
                 title = str(item.get("title") or "")
                 text = f"{title} {item.get('snippet') or item.get('summary') or ''}"
+                if _about_other_company(entity, text):
+                    continue
                 for event, pattern in _EVENT_RULES:
                     if pattern.search(text):
                         emit(entity, event, ev.evidence_id, when, title)

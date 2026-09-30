@@ -10,6 +10,7 @@ The clock is injectable so state transitions can be tested without sleeping.
 
 from __future__ import annotations
 
+import threading
 import time
 from collections import deque
 from collections.abc import Callable
@@ -60,6 +61,7 @@ class CircuitBreaker:
         self.name = name
         self.config = config or BreakerConfig()
         self._clock = clock
+        self._lock = threading.RLock()  # one breaker is shared by every worker thread
         self._state = CLOSED
         self._consecutive = 0
         self._window: deque[bool] = deque(maxlen=self.config.window)  # True = the call failed
@@ -70,41 +72,49 @@ class CircuitBreaker:
     @property
     def state(self) -> str:
         """Current state; reports ``half_open`` as soon as the cool-down has elapsed."""
-        self._refresh()
-        return self._state
+        with self._lock:
+            self._refresh()
+            return self._state
 
     def allow(self) -> bool:
         """May a call go out now? In half-open state exactly one trial call is allowed at a time."""
-        self._refresh()
-        if self._state == CLOSED:
-            return True
-        if self._state == HALF_OPEN and not self._trial_pending:
-            self._trial_pending = True
-            return True
-        return False
+        with self._lock:
+            self._refresh()
+            if self._state == CLOSED:
+                return True
+            if self._state == HALF_OPEN and not self._trial_pending:
+                self._trial_pending = True
+                return True
+            return False
 
     def record_success(self) -> None:
-        self._refresh()
-        if self._state == HALF_OPEN:
-            self._close()
-        elif self._state == CLOSED:
-            self._consecutive = 0
-            self._window.append(False)
+        with self._lock:
+            self._refresh()
+            if self._state == HALF_OPEN:
+                self._close()
+            elif self._state == CLOSED:
+                self._consecutive = 0
+                self._window.append(False)
 
-    def record_failure(self) -> None:
-        self._refresh()
-        if self._state == HALF_OPEN:
-            self._trip()
-        elif self._state == CLOSED:
-            self._consecutive += 1
-            self._window.append(True)
-            failures = sum(self._window)
-            window_full = len(self._window) >= self.config.window
-            if (
-                self._consecutive >= self.config.consecutive_failures
-                or (window_full and failures / len(self._window) >= self.config.window_failure_ratio)
-            ):
+    def record_failure(self) -> bool:
+        """Record a provider failure; returns True if this very failure tripped the breaker."""
+        with self._lock:
+            self._refresh()
+            if self._state == HALF_OPEN:
                 self._trip()
+                return True
+            if self._state == CLOSED:
+                self._consecutive += 1
+                self._window.append(True)
+                failures = sum(self._window)
+                window_full = len(self._window) >= self.config.window
+                if (
+                    self._consecutive >= self.config.consecutive_failures
+                    or (window_full and failures / len(self._window) >= self.config.window_failure_ratio)
+                ):
+                    self._trip()
+                    return True
+            return False
 
     def release(self) -> None:
         """Give back a half-open trial that ended without evidence either way.
@@ -112,7 +122,8 @@ class CircuitBreaker:
         Bad arguments or a "no such company" answer say nothing about provider health, but the trial
         slot was consumed by ``allow()``; without this the breaker would refuse calls forever.
         """
-        self._trial_pending = False
+        with self._lock:
+            self._trial_pending = False
 
     def _refresh(self) -> None:
         if (
@@ -144,24 +155,30 @@ class BreakerBoard:
         self.config = config or BreakerConfig()
         self._clock = clock
         self._breakers: dict[str, CircuitBreaker] = {}
+        self._lock = threading.Lock()
         for provider in sorted({p for p in TOOL_PROVIDERS.values() if p}):
             self.for_provider(provider)
 
     def for_provider(self, name: str) -> CircuitBreaker:
-        if name not in self._breakers:
-            self._breakers[name] = CircuitBreaker(name, self.config, self._clock)
-        return self._breakers[name]
+        with self._lock:
+            if name not in self._breakers:
+                self._breakers[name] = CircuitBreaker(name, self.config, self._clock)
+            return self._breakers[name]
 
     def for_tool(self, tool: str) -> CircuitBreaker | None:
         provider = provider_for(tool)
         return self.for_provider(provider) if provider else None
 
     def open_providers(self) -> list[str]:
-        return sorted(name for name, breaker in self._breakers.items() if breaker.state == OPEN)
+        with self._lock:
+            breakers = list(self._breakers.items())
+        return sorted(name for name, breaker in breakers if breaker.state == OPEN)
 
     def system_degraded(self) -> bool:
         """Several providers failing at once: stop external research and write with what we have."""
         return len(self.open_providers()) >= self.config.max_open_providers
 
     def snapshot(self) -> dict[str, str]:
-        return {name: breaker.state for name, breaker in sorted(self._breakers.items())}
+        with self._lock:
+            breakers = sorted(self._breakers.items())
+        return {name: breaker.state for name, breaker in breakers}

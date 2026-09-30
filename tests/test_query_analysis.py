@@ -247,3 +247,71 @@ def test_render_temporal_flags():
 def test_disambiguation_dataclass_defaults():
     d = Disambiguation(level="low", proceed_reading="x")
     assert d.mode == "autonomous" and d.tickers == [] and d.clarifying_questions == []
+
+
+# ---------------------------------------------------------------- Day 10 review regressions
+
+
+@pytest.mark.parametrize("query", ["NVDA", "AAPL revenue", "What is NVDA's margin?"])
+def test_bare_upper_case_ticker_is_resolved(query):
+    assert analyze_query(query).tickers, query
+
+
+def test_bare_ticker_does_not_match_ordinary_acronyms():
+    assert analyze_query("What is the CEO of AI doing in the US").tickers == []
+
+
+def test_sector_word_inside_company_name_is_not_a_sector():
+    profile = analyze_query("Bank of America risks")
+    assert profile.tickers == ["BAC"] and profile.sector is None
+    assert analyze_query(CHALLENGES["C5"]).sector is None
+
+
+@pytest.mark.parametrize("query", ["metadata and the metaverse", "pineapple prices", "automation and autonomous cars",
+                                   "Oxford University", "shell company"])
+def test_substring_matches_do_not_resolve_entities(query):
+    assert analyze_query(query).tickers == []
+
+
+def test_past_n_years_is_a_period():
+    assert analyze_query("Tesla revenue over the past 3 years").periods == ["past 3 years"]
+
+
+def test_dollar_amounts_and_form_names_are_not_periods():
+    assert analyze_query("Apple raised $5 billion per its 10-K").periods == []
+
+
+def test_acquire_customers_is_not_an_acquisition():
+    ev = {"n": result("E1", "news_sentiment", {"articles": [
+        {"title": "Apple to acquire customers with a new plan", "published": "2026-09-20"}]}, {"ticker": "AAPL"})}
+    assert rate_of_change_flags(ev, today=TODAY) == []
+
+
+def test_rfc2822_published_dates_are_parsed_and_filtered():
+    def flags(published):
+        ev = {"n": result("E1", "web_search", {"results": [
+            {"title": "Apple to acquire Beats", "published": published}]}, {"ticker": "AAPL"})}
+        return rate_of_change_flags(ev, today=TODAY)
+    assert flags("Mon, 28 Sep 2024 10:00:00 GMT") == []
+    assert flags("Mon, 28 Sep 2026 10:00:00 GMT")[0].date == "2026-09-28"
+
+
+def test_article_about_another_company_is_not_attributed_to_the_entity():
+    ev = {"n": result("E1", "news_sentiment", {"articles": [
+        {"title": "Microsoft to acquire Activision", "published": "2026-09-20"}]}, {"ticker": "AAPL"})}
+    assert rate_of_change_flags(ev, today=TODAY) == []
+
+
+def test_recent_ipo_not_flagged_when_only_one_year_was_requested():
+    ev = {"a": result("E1", "financial_data_api",
+                      {"ticker": "NEW", "period": "annual", "data": [{"fiscal_year": 2025}],
+                       "notes": ["Only 1 annual period available"]}, {"ticker": "NEW", "years": 1})}
+    assert [f.kind for f in coverage_flags(ev, [])] == []
+
+
+@pytest.mark.parametrize("tool", ["financial_data_api", "web_search", "fallback"])
+def test_private_company_from_fallback_message(tool):
+    msg = ("Fallback: financial_data_api failed (not_found: financial_data_api: no EDGAR filer found for ticker "
+           "'XYZ'); data from web_search.")
+    flags = coverage_flags({}, [(tool, {"query": "XYZ"}, msg)])
+    assert [(f.kind, f.entity) for f in flags] == [("private_company", "XYZ")]

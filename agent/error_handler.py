@@ -13,8 +13,10 @@ Sleep, clock and random source are all injectable to keep tests deterministic.
 from __future__ import annotations
 
 import dataclasses
+import math
 import random
 import re
+import threading
 import time
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
@@ -56,10 +58,13 @@ BREAKER_COUNTED = frozenset({TRANSIENT, RATE_LIMITED, TIMEOUT, MALFORMED, AUTH})
 _TIMEOUT = re.compile(r"timed out|timeout", re.I)
 _RATE_LIMITED = re.compile(r"HTTP 429|rate.?limit|too many requests", re.I)
 _AUTH = re.compile(r"HTTP 40[13]\b|unauthori[sz]ed|forbidden", re.I)
+_HTTP_STATUS = re.compile(r"\bHTTP (\d{3})\b", re.I)
 _NOT_FOUND = re.compile(
-    r"HTTP 404|not found|no EDGAR filer|unknown ticker|\bno (?:\w+ )?data\b|\bno .{1,40}? found\b", re.I
+    r"HTTP 404\b|not found|no EDGAR filer|unknown ticker|\bno (?:\w+ )?data\b(?!-)|\bno .{1,40}? found\b", re.I
 )
-_SERVER = re.compile(r"HTTP 5\d\d|connection|unreachable|temporarily unavailable", re.I)
+_SERVER = re.compile(
+    r"HTTP 5\d\d\b|connection (?:reset|refused|aborted|closed|error|failed|timed)|connect(?:ion)? error"
+    r"|unreachable|temporarily unavailable", re.I)
 
 
 def classify(exc: BaseException) -> str:
@@ -84,6 +89,17 @@ def classify(exc: BaseException) -> str:
     message = str(exc)
     if _TIMEOUT.search(message):
         return TIMEOUT
+    status = _HTTP_STATUS.search(message)  # an explicit status code beats loose wording elsewhere
+    if status:
+        code = int(status.group(1))
+        if code == 429:
+            return RATE_LIMITED
+        if code in (401, 403):
+            return AUTH
+        if code == 404:
+            return NOT_FOUND
+        if 500 <= code < 600:
+            return TRANSIENT
     if _RATE_LIMITED.search(message):
         return RATE_LIMITED
     if _AUTH.search(message):
@@ -110,6 +126,8 @@ class RetryPolicy:
     factor: float = 2.0
     max_retries: int = 5
     max_jitter_s: float = 0.5
+    #: No single wait may exceed this, whatever the backoff or a server's Retry-After says.
+    max_delay_s: float = 60.0
 
     def retries_for(self, error_class: str) -> int:
         if error_class in (TRANSIENT, RATE_LIMITED):
@@ -121,7 +139,17 @@ class RetryPolicy:
     def delay(self, attempt: int, rng: random.Random | None = None) -> float:
         """Seconds to wait before retry number ``attempt`` (0-based): base * factor**attempt + jitter."""
         jitter = (rng or random).uniform(0, self.max_jitter_s)
-        return self.base_delay_s * self.factor**attempt + jitter
+        try:
+            raw = self.base_delay_s * self.factor**attempt + jitter
+        except OverflowError:
+            raw = self.max_delay_s
+        return self.clamp(raw)
+
+    def clamp(self, delay: float) -> float:
+        """Bound a wait to ``[0, max_delay_s]`` (NaN counts as 0)."""
+        if math.isnan(delay):
+            return 0.0
+        return max(0.0, min(delay, self.max_delay_s))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -242,12 +270,17 @@ class ResilientDispatcher:
         self._deadline = deadline
         self._on_event = on_event
         self._clock = clock
-        #: Attempts made by the most recent ``call`` (also carried by AllFallbacksFailed).
-        self.last_attempts: list[Attempt] = []
+        #: Per-thread attempts of the most recent ``call`` (also carried by AllFallbacksFailed).
+        self._local = threading.local()
+
+    @property
+    def last_attempts(self) -> list[Attempt]:
+        """Attempts made by the calling thread's most recent ``call`` (calls run on worker threads)."""
+        return getattr(self._local, "attempts", [])
 
     def call(self, tool: str, args: dict[str, Any]) -> ToolResult:
         attempts: list[Attempt] = []
-        self.last_attempts = attempts
+        self._local.attempts = attempts
 
         if self._validate is not None:
             try:
@@ -314,6 +347,10 @@ class ResilientDispatcher:
                 self._sleep(delay)
                 retry += 1
                 continue
+            except BaseException:  # a bug or interrupt: free a half-open trial slot, then propagate
+                if breaker is not None:
+                    breaker.release()
+                raise
 
             if breaker is not None:
                 breaker.record_success()
@@ -324,9 +361,7 @@ class ResilientDispatcher:
         if breaker is None:
             return
         if error_class in BREAKER_COUNTED:
-            trips = breaker.trips
-            breaker.record_failure()
-            if breaker.trips > trips:
+            if breaker.record_failure():
                 self._emit("breaker_open", {"tool": tool, "provider": provider, "reason": "tripped"})
         else:
             breaker.release()  # no evidence about provider health; free a half-open trial slot
@@ -345,7 +380,7 @@ class ResilientDispatcher:
                 delay = max(delay, float(getattr(exc, "retry_after", None) or 0.0))
             except (TypeError, ValueError):
                 pass
-        return delay
+        return self.policy.clamp(delay)
 
     # ------------------------------------------------------------------ results and gaps
 
@@ -379,6 +414,8 @@ class ResilientDispatcher:
             MALFORMED: f"{provider} returned malformed data",
             NOT_FOUND: "no data exists for this request",
         }
+        if primary.error_class == UNAVAILABLE and primary.exc is not None:  # no handler / locked, not a breaker
+            causes[UNAVAILABLE] = f"{tool} is unavailable ({primary.message[:120]})"
         cause = causes.get(primary.error_class, f"{tool} failed ({primary.error_class}): {primary.message[:120]}")
         tried = list(dict.fromkeys(a.tool for a in attempts))
         return Gap(
@@ -413,6 +450,7 @@ class FailureInjector:
         self.kinds = tuple(kinds)
         self._rng = random.Random(seed)
         self.injected: dict[str, int] = {}
+        self._lock = threading.Lock()  # the registry runs handlers on several worker threads
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str]) -> FailureInjector:
@@ -430,10 +468,13 @@ class FailureInjector:
         if provider_for(tool) is None:
             return
         rate = self.per_tool.get(tool, self.rate)
-        if rate <= 0 or self._rng.random() >= rate:
+        if rate <= 0:
             return
-        kind = self._rng.choice(self.kinds)
-        self.injected[tool] = self.injected.get(tool, 0) + 1
+        with self._lock:
+            if self._rng.random() >= rate:
+                return
+            kind = self._rng.choice(self.kinds)
+            self.injected[tool] = self.injected.get(tool, 0) + 1
         if kind == "timeout":
             raise ToolExecutionError(f"{tool}: request timed out (injected)", tool=tool, retryable=True)
         if kind == "http_503":

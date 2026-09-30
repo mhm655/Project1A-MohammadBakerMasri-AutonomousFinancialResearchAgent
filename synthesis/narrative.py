@@ -59,6 +59,11 @@ def _consecutive(claims: list[Claim]) -> list[Claim]:
     return run
 
 
+def _f(c: Claim) -> float:
+    """Numeric value of a claim. Callers only pass claims from :func:`_annual` (never text values)."""
+    return float(c.value)
+
+
 def _ids(*claims: Claim | None) -> list[str]:
     out: list[str] = []
     for c in claims:
@@ -87,11 +92,11 @@ def _entities(ledger: Ledger) -> list[str]:
 def _growth(ledger: Ledger, entity: str) -> tuple[float, int, list[str]] | None:
     """(latest-year revenue growth, fiscal year, evidence ids) from two consecutive years, else the stated claim."""
     run = _consecutive(_annual(ledger, entity, "revenue"))
-    if len(run) >= 2 and run[1].value:
-        return run[0].value / run[1].value - 1, run[0].period.fiscal_year or 0, _ids(run[0], run[1])  # type: ignore[operator]
+    if len(run) >= 2 and _f(run[1]):
+        return _f(run[0]) / _f(run[1]) - 1, run[0].period.fiscal_year or 0, _ids(run[0], run[1])
     stated = _annual(ledger, entity, "revenue_growth")
     if stated:
-        return float(stated[0].value), stated[0].period.fiscal_year or 0, _ids(stated[0])  # type: ignore[arg-type]
+        return _f(stated[0]), stated[0].period.fiscal_year or 0, _ids(stated[0])
     return None
 
 
@@ -101,10 +106,10 @@ def _net_income_direction(ledger: Ledger, entity: str) -> tuple[str, float, int,
     if not run:
         return None
     latest = run[0]
-    if len(run) >= 2 and run[1].value and run[1].value > 0:
-        change = latest.value / run[1].value - 1  # type: ignore[operator]
+    if len(run) >= 2 and _f(run[1]) > 0:
+        change = _f(latest) / _f(run[1]) - 1
         return ("grew" if change > 0 else "fell"), change, latest.period.fiscal_year or 0, _ids(latest, run[1])
-    return ("was positive" if latest.value > 0 else "was negative"), latest.value, latest.period.fiscal_year or 0, _ids(latest)  # type: ignore[operator]
+    return ("was positive" if _f(latest) > 0 else "was negative"), _f(latest), latest.period.fiscal_year or 0, _ids(latest)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -123,11 +128,29 @@ def _company_names(evidence: dict[str, ToolResult], ticker: str) -> set[str]:
     return {_COMPANY_SUFFIXES.sub("", n).strip().lower() for n in names if n}
 
 
+#: Tickers that are also everyday words ("ALL" Allstate, "ON", "NOW"): matched only when the query
+#: writes them in capitals, so "all time highs" or "what is on the menu" are not taken for a company.
+_WORD_TICKERS = frozenset({"a", "all", "are", "now", "on", "one", "it", "so", "can", "for", "has", "see", "well",
+                           "real", "key", "big", "cost", "post", "best", "good", "love", "pay", "run", "fast"})
+
+
 def _mentions(query: str, ticker: str, names: set[str]) -> bool:
     q = query.lower()
-    if re.search(rf"\b{re.escape(ticker.lower())}\b", q):
+    boundary = r"(?<![\w-])" + re.escape(ticker) + r"(?![\w-])"  # "F-150" is not the ticker F
+    if len(ticker) <= 2 or ticker.lower() in _WORD_TICKERS:
+        if re.search(boundary, query):  # case-sensitive: tickers are upper case
+            return True
+    elif re.search(boundary, query, re.IGNORECASE):
         return True
-    return any(n and (n in q or (len(q.strip()) >= 4 and q.strip() in n)) for n in names)
+    stripped = q.strip()
+    for n in names:
+        if not n:
+            continue
+        if re.search(r"(?<!\w)" + re.escape(n) + r"(?!\w)", q):
+            return True
+        if len(stripped) >= 4 and re.search(r"(?<!\w)" + re.escape(stripped) + r"(?!\w)", n):
+            return True
+    return False
 
 
 def _news_for(evidence: dict[str, ToolResult], ticker: str) -> dict[str, Any] | None:
@@ -203,12 +226,12 @@ def _growth_thread(ledger: Ledger, evidence: dict[str, ToolResult], entity: str)
     if len(run) < 2:
         return None
     chron = list(reversed(run))
-    yoy = [(b.period.fiscal_year, b.value / a.value - 1, b) for a, b in zip(chron, chron[1:], strict=False) if a.value]  # type: ignore[operator]
+    yoy = [(b.period.fiscal_year, _f(b) / _f(a) - 1, b) for a, b in zip(chron, chron[1:], strict=False) if _f(a)]
     if not yoy:
         return None
-    overall = chron[-1].value - chron[0].value  # type: ignore[operator]
+    overall = _f(chron[-1]) - _f(chron[0])
     contra = [b for _y, g, b in yoy if (g < 0) != (overall < 0)]
-    path = " -> ".join(f"{format_money(c.value)} (FY{c.period.fiscal_year})" for c in chron)  # type: ignore[arg-type]
+    path = " -> ".join(f"{format_money(_f(c))} (FY{c.period.fiscal_year})" for c in chron)
     latest_year, latest_g, _ = yoy[-1]
     thesis = (f"{entity} revenue {'rose' if overall >= 0 else 'fell'} over {len(chron)} fiscal years: {path}; "
               f"latest-year growth {latest_g * 100:+.1f}% in FY{latest_year} {_cite(_ids(*run))}.")
@@ -226,7 +249,7 @@ def _profitability_thread(ledger: Ledger, evidence: dict[str, ToolResult], entit
         return None
     name = metric.replace("_", " ")
     latest, prior = run[0], run[1]
-    delta = (latest.value - prior.value) * 100  # type: ignore[operator]
+    delta = (_f(latest) - _f(prior)) * 100
     verb = "expanded" if delta > 0 else "contracted" if delta < 0 else "was flat"
     others = []
     for m, n in (("gross_margin", "gross"), ("net_margin", "net")):
@@ -277,14 +300,16 @@ def _capital_thread(ledger: Ledger, evidence: dict[str, ToolResult], entity: str
     latest = fcf[0]
     capex = ledger.get(entity, "capital_expenditure", latest.period.fiscal_year)
     ocf = ledger.get(entity, "operating_cash_flow", latest.period.fiscal_year)
-    text = f"{entity} generated free cash flow of {format_money(latest.value)} in FY{latest.period.fiscal_year}"  # type: ignore[arg-type]
+    text = f"{entity} generated free cash flow of {format_money(_f(latest))} in FY{latest.period.fiscal_year}"
     if capex:
-        text += f" after {format_money(capex.value)} of capital expenditure"  # type: ignore[arg-type]
-        if ocf and ocf.value:
-            text += f" ({capex.value / ocf.value * 100:.1f}% of operating cash flow)"  # type: ignore[operator]
+        text += f" after {format_money(_f(capex))} of capital expenditure"
+        if ocf and _f(ocf):
+            text += f" ({_f(capex) / _f(ocf) * 100:.1f}% of operating cash flow)"
     prior = _consecutive(fcf)
-    if len(prior) >= 2 and prior[1].value:
-        text += f"; free cash flow changed {(latest.value / prior[1].value - 1) * 100:+.1f}% year on year"  # type: ignore[operator]
+    if len(prior) >= 2 and _f(prior[1]) > 0:
+        text += f"; free cash flow changed {(_f(latest) / _f(prior[1]) - 1) * 100:+.1f}% year on year"
+    elif len(prior) >= 2:  # a percentage change from a zero or negative base is meaningless
+        text += f"; free cash flow moved from {format_money(_f(prior[1]))} the year before"
     ids = _ids(latest, capex, ocf, *(prior[1:2]))
     so_what = "Explain how the cash is being deployed (reinvestment, buybacks, dividends, balance sheet)."
     return Thread("capital_allocation", entity, f"{text} {_cite(ids)}.", ids, [], so_what, _tools(evidence, ids))
@@ -354,6 +379,8 @@ def render_brief(ledger: Ledger, threads: list[Thread], max_tokens: int = 900) -
                 out.extend(text for _p, text in lines)
         return "\n".join(out)
 
+    if not any(lines for _t, lines in sections):
+        return ""  # nothing resolved: a header-only brief would only mislead the writer
     text = render()
     while count_tokens(text) > max_tokens:
         candidates = [(p, si, li) for si, (_t, lines) in enumerate(sections) for li, (p, _x) in enumerate(lines)]
@@ -363,7 +390,7 @@ def render_brief(ledger: Ledger, threads: list[Thread], max_tokens: int = 900) -
         _p, si, li = min(candidates, key=lambda x: (x[0], -x[1], -x[2]))
         del sections[si][1][li]
         text = render()
-    return text
+    return text if any(lines for _t, lines in sections) else ""
 
 
 def _cell(text: str) -> str:

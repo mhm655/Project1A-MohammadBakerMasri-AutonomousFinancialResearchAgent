@@ -80,7 +80,7 @@ _EXPLICIT_PERIOD = re.compile(
     r"\bFY\s?\d{4}\b|\bQ[1-4]\s?(?:FY)?\s?\d{4}\b|\bfiscal (?:year )?\d{4}\b|\b(?:19|20)\d{2}\b", re.IGNORECASE)
 _RELATIVE_PERIOD = re.compile(
     r"\b(?:(?:most recent|latest|last|current|prior) (?:quarterly|quarter|year|fiscal year|annual|period)"
-    r"|recent|latest|this year|year to date|ytd|last \d+ (?:days|weeks|months|years))\b", re.IGNORECASE)
+    r"|recent|latest|this year|year to date|ytd|(?:last|past|previous) \d+ (?:days|weeks|months|years))\b", re.IGNORECASE)
 
 _FACTUAL_START = re.compile(r"^\W*(what|how much|how many|when|who)\b", re.IGNORECASE)
 _INVESTIGATIVE_EXTRA = re.compile(r"explain why|why (?:did|is|are|has)", re.IGNORECASE)
@@ -110,6 +110,11 @@ def _resolve_entities(query: str) -> tuple[str, list[str], list[str]]:
         if re.search(rf"\b{re.escape(name)}\b", lowered) and ticker not in tickers:
             tickers.append(ticker)
             names.append(name.title())
+    # A bare upper-case ticker ("NVDA", "AAPL revenue") that belongs to a company we know.
+    known = set(KNOWN_COMPANIES.values())
+    for m in re.finditer(r"\b[A-Z]{1,5}\b", query):
+        if m.group(0) in known and m.group(0) not in tickers:
+            tickers.append(m.group(0))
     for m in _TICKER_HINT.finditer(query):
         ticker = m.group(2) or m.group(3)
         before = query[: m.start()].lower().rstrip()
@@ -137,7 +142,11 @@ def _find_periods(query: str) -> list[str]:
 
 
 def _find_sector(query: str) -> str | None:
-    m = _SECTOR_RE.search(query.lower())
+    lowered = query.lower()
+    # "Bank of America" / "Energy Transfer": a sector word inside a company name is not a sector request.
+    for name in sorted(KNOWN_COMPANIES, key=len, reverse=True):
+        lowered = re.sub(rf"\b{re.escape(name)}\b", " ", lowered)
+    m = _SECTOR_RE.search(lowered)
     return SECTOR_WORDS[m.group(1)] if m else None
 
 
