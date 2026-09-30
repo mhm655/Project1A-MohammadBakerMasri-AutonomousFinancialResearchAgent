@@ -87,6 +87,12 @@ max_replans = 3
 max_reflections = 2
 max_prompt_tokens = 6000   # fits free tiers such as Groq (about 7,000 input tokens per minute)
 
+[synthesis]                 # spec A6.2 / architecture section 12
+# Base weight of source tiers 1-5: SEC filings, curated data, company communications, major news,
+# other web. Used for conflict resolution and claim confidence.
+tier_weights = [0.95, 0.85, 0.70, 0.60, 0.30]
+brief_tokens = 900          # resolved figures, conflicts and narrative threads given to the writer
+
 [retry]                     # spec A4.3
 base_delay_s = 1.0
 max_retries = 5

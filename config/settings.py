@@ -107,6 +107,19 @@ class MemorySettings:
 
 
 @dataclass(frozen=True)
+class SynthesisSettings:
+    #: Base weight of source tiers 1-5 (spec A6.2 with the corrected order, architecture section 12.3).
+    tier_weights: tuple[float, ...] = (0.95, 0.85, 0.70, 0.60, 0.30)
+    #: Budget of the synthesis brief (resolved figures, conflicts, narrative threads) in the writer prompt.
+    brief_tokens: int = 900
+
+    def reliability(self) -> Any:
+        from synthesis.conflict_resolver import ReliabilityConfig
+
+        return ReliabilityConfig(weights={tier: w for tier, w in enumerate(self.tier_weights, start=1)})
+
+
+@dataclass(frozen=True)
 class SecSettings:
     app_name: str
     contact_email: str | None
@@ -132,6 +145,7 @@ class Settings:
     sec: SecSettings
     log_level: str
     project_root: Path = PROJECT_ROOT
+    synthesis: SynthesisSettings = field(default_factory=SynthesisSettings)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -184,7 +198,15 @@ def load_settings(
         ),
         log_level=(env.get("ARA_LOG_LEVEL") or raw.get("logging", {}).get("level", "INFO")).upper(),
         project_root=project_root,
+        synthesis=_synthesis_settings(raw.get("synthesis", {})),
     )
+
+
+def _synthesis_settings(raw: dict[str, Any]) -> SynthesisSettings:
+    weights = tuple(float(w) for w in raw.get("tier_weights", SynthesisSettings.tier_weights))
+    if len(weights) != 5 or any(not 0 < w <= 1 for w in weights):
+        raise ConfigError("synthesis.tier_weights must be five weights in (0, 1], for tiers 1 to 5")
+    return SynthesisSettings(tier_weights=weights, brief_tokens=int(raw.get("brief_tokens", 900)))
 
 
 def _llm_settings(raw: dict[str, Any], mode: str, env: Mapping[str, str]) -> LLMSettings:

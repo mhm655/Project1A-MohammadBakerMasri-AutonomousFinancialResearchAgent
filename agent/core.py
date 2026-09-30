@@ -46,8 +46,10 @@ from agent.parser import (
     step_done_note,
 )
 from agent.tracing import TraceLogger
-from config.settings import AgentSettings, Settings
+from config.settings import AgentSettings, Settings, SynthesisSettings
 from memory.context_manager import count_tokens, fit_evidence
+from synthesis.engine import Ledger, build_ledger
+from synthesis.narrative import build_threads, conflicts_markdown, render_brief
 from tools import ToolError, ToolExecutionError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
 from tools.fact_checker import extract_quantities, fact_checker
 from tools.report_gen import TEMPLATES, cited_ids, section_title
@@ -346,10 +348,12 @@ class ResearchAgent:
         clock: Callable[[], float] = time.monotonic,
         today: date | None = None,
         memory: Any = None,
+        synthesis_settings: SynthesisSettings | None = None,
     ) -> None:
         self.llm = llm
         self.registry_factory = registry_factory
         self.cfg = agent_settings or AgentSettings()
+        self.synthesis_cfg = synthesis_settings or SynthesisSettings()
         self.traces_dir = traces_dir
         self.max_seconds = max_seconds
         self.max_workers = max_workers
@@ -362,7 +366,8 @@ class ResearchAgent:
 
     @classmethod
     def from_settings(cls, settings: Settings, **overrides: Any) -> ResearchAgent:
-        options: dict[str, Any] = {"agent_settings": settings.agent, "traces_dir": str(settings.paths.traces_dir)}
+        options: dict[str, Any] = {"agent_settings": settings.agent, "traces_dir": str(settings.paths.traces_dir),
+                                   "synthesis_settings": settings.synthesis}
         options.update(overrides)
         llm = options.pop("llm", None) or LLMClient.from_settings(settings)
         if "memory" not in options:
@@ -385,6 +390,7 @@ class ResearchAgent:
         self.llm.tracer = self.tracer
         self.evidence: dict[str, ToolResult] = {}
         self.gaps: list[str] = []
+        self.ledger = Ledger(claims=[], conflicts=[])
         self.budget_used = 0
         self._lock = threading.Lock()
         self._stop_reason = "completed"
@@ -692,13 +698,21 @@ class ResearchAgent:
         if not self.evidence:
             self.gaps.append("No evidence was gathered, so no section could be written.")
             return {"sections": {}}
+        # Spec A6: reconcile the sources before writing, so the writer works from resolved figures.
+        self.ledger = build_ledger(self.evidence, self.synthesis_cfg.reliability())
+        threads = build_threads(self.ledger, self.evidence)
+        brief = render_brief(self.ledger, threads, max_tokens=self.synthesis_cfg.brief_tokens)
+        self.tracer.metric("synthesis_ledger", {**self.ledger.summary(), "threads": [t.theme for t in threads]})
+        for c in self.ledger.conflicts:
+            self.tracer.decision(f"conflict:{c.method}", c.rationale, entity=c.entity, metric=c.metric)
         overhead = count_tokens(self._writing_system) + count_tokens(
-            prompts.synthesize_prompt(query=state["query"], evidence="", sections=sections_needed))
+            prompts.synthesize_prompt(query=state["query"], evidence="", sections=sections_needed, brief=brief))
         fitted = fit_evidence(self.evidence, max(300, self.cfg.max_prompt_tokens - overhead), evidence_digest)
         if fitted.dropped:
             self.tracer.log("note", text=f"Context budget: left {len(fitted.dropped)} evidence item(s) out of the "
                                          f"synthesis prompt: {', '.join(fitted.dropped)}")
-        prompt = prompts.synthesize_prompt(query=state["query"], evidence=fitted.text, sections=sections_needed)
+        prompt = prompts.synthesize_prompt(query=state["query"], evidence=fitted.text, sections=sections_needed,
+                                           brief=brief)
         try:
             reply = self._llm(prompt, purpose="synthesize", writing=True, reasoning_effort="low", max_tokens=6000)
         except LLMError as exc:
@@ -770,6 +784,10 @@ class ResearchAgent:
         gaps += [f"Unverified claim in {f}" for f in verification.get("flagged", [])]
         sections = dict(state.get("sections", {}))
         sections["data_gaps_and_limitations"] = "\n".join(f"- {g}" for g in gaps) or ""
+        if self.ledger.conflicts:  # spec A6.3 step 6 / P6: every conflict and how it was resolved
+            sections["data_gaps_and_limitations"] += (
+                "\n\nConflicting figures between sources, and how each was resolved:\n\n"
+                + conflicts_markdown(self.ledger.conflicts)).lstrip()
         sections["research_methodology"] = self._methodology(plan, verification)
         company = profile.names[0] if len(profile.names) == 1 else ", ".join(profile.tickers) or "Research"
         result = self.registry.dispatch("report_generator", {

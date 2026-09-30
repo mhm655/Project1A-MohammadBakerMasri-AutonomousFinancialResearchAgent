@@ -108,7 +108,7 @@ Only add steps that fill a real gap; never repeat a completed step. Step ids mus
 SYNTHESIZE_PROMPT = """[ARA:SYNTHESIZE]
 Research request: {query}
 Write the report sections from the evidence below.
-
+{brief}
 EVIDENCE (cite by id)
 {evidence}
 
@@ -128,6 +128,10 @@ Rules:
 - State the fiscal period of every figure.
 - Mark inferences with "Analysis:". Tables are welcome for financial data.
 - If the evidence cannot support a section, write one sentence saying what is missing.
+- The SYNTHESIS BRIEF (when present) lists figures already reconciled across sources, the conflicts
+  found and how they were resolved, and threads linking the sources. Where sources disagree, use the
+  brief's resolved value. Work each thread into the report; when news sentiment and the fundamentals
+  point in different directions, say so and explain the likely reasons.
 - Do not add a title, a sources list or a methodology section; the system adds those."""
 
 SECTION_GUIDANCE: dict[str, str] = {
@@ -174,9 +178,10 @@ def replan_prompt(*, query: str, template: str, sections: list[str], completed: 
     )
 
 
-def synthesize_prompt(*, query: str, evidence: str, sections: list[str]) -> str:
+def synthesize_prompt(*, query: str, evidence: str, sections: list[str], brief: str = "") -> str:
     listed = "\n".join(f"- {s}: {SECTION_GUIDANCE.get(s, '')}".rstrip(": ") for s in sections)
-    return SYNTHESIZE_PROMPT.format(query=query, evidence=evidence, sections="\n" + listed)
+    return SYNTHESIZE_PROMPT.format(query=query, evidence=evidence, sections="\n" + listed,
+                                    brief=f"\n{brief}\n" if brief else "")
 
 
 def compact_json(data: Any, limit: int) -> str:

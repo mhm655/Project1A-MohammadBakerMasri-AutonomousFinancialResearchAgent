@@ -31,7 +31,7 @@ anywhere.
 | **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
 | **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |
 | **Memory**: chunking per source type (one chunk per risk factor, Q&A pairs kept together); financial statements in a SQLite facts store; episodic lessons fed to the planner; prompts fitted to a token budget (40/30 primary/supporting); Challenge 7 recalls earlier research | Built (Day 6) |
-| **Synthesis**: a claim ledger (period, unit, evidence, confidence) and tiered conflict resolution | Day 8 |
+| **Synthesis**: a claim ledger (entity, metric, fiscal period, unit, evidence, confidence), configurable source-tier weights, the A6.3 conflict protocol (restatement, triangulated majority, highest tier, unresolved range) with a conflicts table in the report, and narrative threads (growth, margins, peers, news sentiment vs fundamentals) handed to the writer as a brief | Built (Day 8) |
 | **Tool fallback chains, circuit breakers, failure injection** | Day 9 (fallbacks are already declared per tool) |
 | **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |
 

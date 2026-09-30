@@ -731,3 +731,41 @@ def test_the_executor_refuses_system_tools_just_as_the_planner_does():
     result = make_agent(script).run(QUERY)
     assert not any(r.tool == "vector_db_store" for r in result.evidence.values())
     assert result.plan.get("s1").status != "done"
+
+
+# ==================================================================================================
+# Day 8: the synthesis engine in the loop
+# ==================================================================================================
+
+
+def test_writer_gets_the_synthesis_brief_and_the_report_lists_conflicts(monkeypatch):
+    from synthesis.conflict_resolver import ConflictRecord, Period
+    from synthesis.engine import build_ledger
+
+    def with_conflict(evidence, config=None):
+        ledger = build_ledger(evidence, config)
+        eid = next(iter(evidence))
+        ledger.conflicts.append(ConflictRecord(
+            entity="MSFT", metric="revenue", period=Period(2024, "FY", "2024-06-30"),
+            values=[{"value": 245122e6, "evidence_id": eid, "tier": 1, "provider": "sec_xbrl"},
+                    {"value": 262000e6, "evidence_id": eid, "tier": 4, "provider": "news"}],
+            chosen_value=245122e6, method="highest_tier",
+            rationale="The SEC filing (tier 1) outranks the news report (tier 4).", confidence=0.95))
+        return ledger
+
+    monkeypatch.setattr("agent.core.build_ledger", with_conflict)
+    script = ScriptedLLM()
+    prompts_seen = []
+    original = script.__call__
+
+    class Capture:
+        def __call__(self, request):
+            prompts_seen.append(request.messages[-1]["content"])
+            return original(request)
+
+    result = make_agent(Capture()).run(QUERY)
+    synthesis_prompt = next(p for p in prompts_seen if "[ARA:SYNTHESIZE]" in p)
+    assert "SYNTHESIS BRIEF" in synthesis_prompt and "MSFT FY" in synthesis_prompt
+    report = result.report_markdown
+    assert "Conflicting figures between sources" in report
+    assert "| MSFT | revenue |" in report.replace("Revenue", "revenue")
