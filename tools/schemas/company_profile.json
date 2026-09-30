@@ -16,7 +16,7 @@
   "x-ara": {
     "handlers": {
       "mock": "tools.company_profile:mock_company_profile",
-      "live": null
+      "live": "tools.company_profile:live_company_profile"
     },
     "source_tier": 2,
     "cache_ttl_s": 86400,

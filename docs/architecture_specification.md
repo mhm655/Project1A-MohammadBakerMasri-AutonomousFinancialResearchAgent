@@ -343,11 +343,11 @@ configuration unlocks everything, so every challenge can use the tools the spec 
 |---|---|---|---|---|
 | 1 | `sec_filing_search` | EDGAR submissions API (`data.sec.gov/submissions`) and archive documents | EDGAR full-text search (`efts.sec.gov`) → `web_search` restricted to sec.gov → `vector_db_search` | 1 |
 | 2 | `financial_data_api` | **SEC XBRL company facts** (`data.sec.gov/api/xbrl/companyfacts`): audited figures | yfinance statements → `sec_filing_search` with table parsing → `vector_db_search` | 1–2 |
-| 3 | `company_profile` | yfinance `info` | EDGAR submissions (name, SIC, state, fiscal year end) → `web_search` | 2 |
-| 4 | `earnings_transcript` | Publicly posted transcripts found by `web_search` and then fetched | EDGAR 8-K Item 2.02 Exhibit 99.1 (earnings press release) and 99.2 (CFO commentary, where filed) → `news_sentiment` for call coverage | 3 |
+| 3 | `company_profile` | EDGAR submissions (name, CIK, SIC, exchange, address, fiscal year end) merged with yfinance `info` (sector, industry, employees, market cap, executives) | Either source alone gives a partial profile → `web_search` | 1–2 |
+| 4 | `earnings_transcript` | The Motley Fool's free call transcripts (found by `web_search`, fetched, split into speaker turns and prepared/Q&A sections) | EDGAR 8-K Item 2.02 Exhibit 99 (earnings press release) → `news_sentiment` for call coverage | 3 |
 | 5 | `web_search` | DuckDuckGo (`ddgs` library) | Google News RSS → `vector_db_search` | 4–6 (by domain) |
 | 6 | `news_sentiment` | Google News RSS and yfinance news, scored with VADER, with LLM summaries | `web_search` plus VADER → `vector_db_search` | 4 |
-| 7 | `peer_comparison` | EDGAR SIC code gives the peer set; XBRL/yfinance gives the metrics | yfinance sector/industry → a curated peer map in config | 1–2 |
+| 7 | `peer_comparison` | Peers: the largest companies in the yfinance industry, or tickers the caller passes (`peers`). Metrics: SEC XBRL, market cap from yfinance. (EDGAR's SIC listing was dropped: it includes hundreds of inactive filers per code and has no size ordering.) | A peer without usable data is replaced by the next candidate → `financial_data_api` per company | 1–2 |
 | 8 | `calculation_engine` | Local Python (ratios, growth, CAGR, margins, DCF, statistics) | — (deterministic) | derived |
 | 9 | `fact_checker` | Local: the claim ledger plus independent re-queries | — | derived |
 | 10 | `report_generator` | Local Jinja2 templates | — | — |

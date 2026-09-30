@@ -421,3 +421,296 @@ def test_rss_dates_without_a_known_timezone_do_not_crash(network, live, monkeypa
     monkeypatch.setattr(FakeNetwork, "__call__", lambda self, request: rss(request))
     data = live.dispatch("news_sentiment", {"query": "Microsoft", "lookback_days": 30}).data
     assert data["article_count"] == 2
+
+
+# ==================================================================================================
+# Day 7: company_profile, earnings_transcript and peer_comparison (live)
+# ==================================================================================================
+
+FOOL_CURRENT = b"""<html><body><div class="article-body transcript-content">
+<p class="caption">Image source: The Motley Fool.</p>
+<h2>DATE</h2><p>Wednesday, July 29, 2026 at 5:30 p.m. ET</p>
+<h2>CALL PARTICIPANTS</h2>
+<ul><li>Vice President of Investor Relations - Jonathan Neilson</li><li>Chief Executive Officer - Satya Nadella</li>
+<li>Chief Financial Officer - Amy Hood</li></ul>
+<h2>TAKEAWAYS</h2><p><strong>Revenue</strong> -- $76.4 billion, up 18%.</p>
+<h2>Full Conference Call Transcript</h2>
+<p><strong>Operator:</strong> Greetings, and welcome to the Microsoft fiscal year 2026 fourth quarter call.</p>
+<p><strong>Jonathan Neilson:</strong> Good afternoon, and thank you for joining us today on this call.</p>
+<p><strong>Satya Nadella:</strong> Thank you, Jonathan. It was a record fiscal year for the company.</p>
+<p>Azure surpassed $100 billion in annual revenue for the first time this year.</p>
+<p><strong>Operator:</strong> Our first question comes from Karl Keirstead with UBS. Please go ahead.</p>
+<p><strong>Karl Keirstead:</strong> Satya, how should we think about capital expenditure next year?</p>
+<p><strong>Amy Hood:</strong> We expect capital expenditure to keep growing, though more slowly than this year.</p>
+<p><strong>Karl Keirstead:</strong> Thanks.</p>
+<p><strong>Mark Moerdler:</strong> Amy, can you talk about Azure margins as the AI mix increases?</p>
+<p><strong>Amy Hood:</strong> AI workloads carry lower gross margins today, and they improve as they scale.</p>
+<h2>More MSFT analysis</h2><p><strong>Someone:</strong> not part of the call, and should be ignored.</p>
+</div></body></html>"""
+
+FOOL_OLDER = b"""<html><body><div class="article-body">
+<p><strong>Tesla</strong> (TSLA) Q4 2023 Earnings Call Jan 24, 2024 , 5:30 p.m. ET</p>
+<h2>Contents:</h2><ul><li>Prepared Remarks</li><li>Questions and Answers</li><li>Call Participants</li></ul>
+<h2>Prepared Remarks:</h2>
+<p><strong>Martin Viecha</strong></p>
+<p>Good afternoon, everyone, and welcome to Tesla's fourth-quarter 2023 webcast.</p>
+<p><strong>Elon Musk</strong> -- <em>Chief Executive Officer and Product Architect</em></p>
+<p>We achieved record production and deliveries of over 1.8 million vehicles in 2023.</p>
+<p><strong>Pierre Ferragu</strong> -- <em>New Street Research -- Analyst</em></p>
+<p>How should we think about the timing of the next-generation vehicle ramp?</p>
+<p><strong>Elon Musk</strong> -- <em>Chief Executive Officer and Product Architect</em></p>
+<p>We expect production of the next-generation vehicle to start in the second half of 2025.</p>
+<h2>Call participants:</h2>
+<p><strong>Martin Viecha</strong></p>
+<p><strong>Elon Musk</strong> -- <em>Chief Executive Officer and Product Architect</em></p>
+</div></body></html>"""
+
+FOOL_URL = "https://www.fool.com/earnings/call-transcripts/2026/08/07/microsoft-msft-q4-2026-earnings-call-transcript/"
+
+
+def test_current_fool_layout_is_parsed_into_prepared_remarks_and_qa():
+    from tools.earnings import parse_fool_transcript
+
+    call_date, segments = parse_fool_transcript(FOOL_CURRENT)
+    assert call_date == "2026-07-29"
+    turns = [(s["speaker"], s["role"], s["section"]) for s in segments]
+    assert turns == [
+        ("Jonathan Neilson", "Vice President of Investor Relations", "prepared"),
+        ("Satya Nadella", "Chief Executive Officer", "prepared"),
+        ("Karl Keirstead", "Analyst", "qa"),  # not a participant: an analyst, and the Q&A starts
+        ("Amy Hood", "Chief Financial Officer", "qa"),
+        ("Mark Moerdler", "Analyst", "qa"),  # "Thanks." (too short) is dropped, so no empty question
+        ("Amy Hood", "Chief Financial Officer", "qa"),
+    ]
+    assert "Azure surpassed $100 billion" in segments[1]["text"]  # continuation paragraphs stay with the speaker
+    assert not any("ignored" in s["text"] or "Greetings" in s["text"] for s in segments)
+
+
+def test_older_fool_layout_with_speaker_lines_is_parsed():
+    from tools.earnings import parse_fool_transcript
+
+    call_date, segments = parse_fool_transcript(FOOL_OLDER)
+    assert call_date == "2024-01-24"
+    turns = [(s["speaker"], s["role"], s["section"]) for s in segments]
+    assert turns == [
+        ("Martin Viecha", "", "prepared"),  # the IR host is not mistaken for an analyst
+        ("Elon Musk", "Chief Executive Officer and Product Architect", "prepared"),
+        ("Pierre Ferragu (New Street Research)", "Analyst", "qa"),  # no Q&A heading: the first analyst starts it
+        ("Elon Musk", "Chief Executive Officer and Product Architect", "qa"),
+    ]
+
+
+def test_live_transcript_uses_only_the_matching_fool_page(network, live, monkeypatch):
+    fake, _ = network
+    original = fake.__call__
+    hits = [{"url": FOOL_URL.replace("q4-2026", "q3-2026")},  # a different quarter: not used
+            {"url": "https://seekingalpha.com/article/1-microsoft-msft-q4-2026-earnings-call-transcript"},
+            {"url": FOOL_URL}]
+    monkeypatch.setattr("tools.web_search.live_web_search", lambda query, num_results=10: {"results": hits})
+    monkeypatch.setattr(FakeNetwork, "__call__", lambda self, request: (
+        httpx.Response(200, content=FOOL_CURRENT) if str(request.url) == FOOL_URL else original(request)))
+    live.set_progress(8)
+    data = live.dispatch("earnings_transcript", {"ticker": "MSFT", "quarter": "Q4", "year": 2026}).data
+    assert data["source_kind"] == "transcript" and data["source_url"] == FOOL_URL
+    assert data["call_date"] == "2026-07-29" and any(s["section"] == "qa" for s in data["segments"])
+    assert not any("fool.com" in str(r.url) and str(r.url) != FOOL_URL for r in fake.requests)
+
+
+def test_live_transcript_falls_back_to_the_quarters_press_release(network, live, monkeypatch):
+    monkeypatch.setattr("tools.web_search.live_web_search", lambda query, num_results=10: {"results": []})
+    live.set_progress(8)
+    # Microsoft's fiscal Q4 FY2026 ends 30 June 2026; its Item 2.02 8-K was filed on 15 August.
+    data = live.dispatch("earnings_transcript", {"ticker": "MSFT", "quarter": "Q4", "year": 2026}).data
+    assert data["source_kind"] == "press_release" and data["call_date"] == "2026-08-14"
+    assert "record revenue of $77.0 billion" in data["segments"][0]["text"]
+    assert "no Motley Fool transcript" in data["notes"][0] and "no management Q&A" in data["notes"][0]
+    with pytest.raises(ToolExecutionError, match="no earnings press release"):  # Q1 FY2026: no 8-K in the window
+        live.dispatch("earnings_transcript", {"ticker": "MSFT", "quarter": "Q1", "year": 2026})
+
+
+def test_without_a_quarter_the_latest_reported_quarter_is_used(network, live, monkeypatch):
+    monkeypatch.setattr("tools.web_search.live_web_search", lambda query, num_results=10: {"results": []})
+    # Microsoft's latest Item 2.02 8-K was filed on 15 August 2026: fiscal Q4 FY2026 (ended 30 June).
+    data = live.dispatch("earnings_transcript", {"ticker": "MSFT"}).data
+    assert (data["quarter"], data["fiscal_year"]) == ("Q4", 2026)
+    assert data["notes"][0].startswith("No quarter was requested: Q4 FY2026 is the latest quarter")
+    with pytest.raises(ToolExecutionError, match="give both quarter and year"):
+        live.dispatch("earnings_transcript", {"ticker": "MSFT", "year": 2026})
+
+
+def test_mock_transcript_without_a_quarter_uses_the_latest():
+    registry = build_default_registry("mock")
+    data = registry.dispatch("earnings_transcript", {"ticker": "AAPL"}).data
+    from tools.mock_data import QUARTERLY_INCOME, TRANSCRIPTS
+    latest = max([(q["fiscal_year"], q["fiscal_period"]) for q in QUARTERLY_INCOME["AAPL"]]
+                 + [(y, q) for t, q, y in TRANSCRIPTS if t == "AAPL"])
+    assert (data["fiscal_year"], data["quarter"]) == latest
+
+
+class FakeYfTicker:
+    INFO = {"MSFT": {"longName": "Microsoft Corporation", "sector": "Technology",
+                     "industry": "Software - Infrastructure", "industryKey": "software-infrastructure",
+                     "fullTimeEmployees": 228000, "marketCap": 3.8e12, "longBusinessSummary": "Microsoft develops software.",
+                     "companyOfficers": [{"name": "Mr. Satya  Nadella", "title": "Chairman & CEO"},
+                                         {"name": "Ms. Amy E. Hood", "title": "Executive VP & CFO"}]}}
+
+    def __init__(self, symbol):
+        if symbol not in self.INFO:
+            raise RuntimeError("yfinance is down")
+        self.info = self.INFO[symbol]
+
+
+def test_live_company_profile_combines_edgar_and_yfinance(network, live, monkeypatch):
+    monkeypatch.setattr("yfinance.Ticker", FakeYfTicker)
+    data = live.dispatch("company_profile", {"ticker": "MSFT"}).data
+    assert data["name"] == "MICROSOFT CORP" and data["cik"] == "0000789019"  # the filer's registered name
+    assert data["sic_code"] == "7372" and data["fiscal_year_end"] == "0630"
+    assert data["industry"] == "Software - Infrastructure" and data["employees"] == 228000
+    assert data["executives"][0] == {"name": "Satya  Nadella", "title": "Chairman & CEO"}  # honorific removed
+    assert data["executives"][1]["name"] == "Amy E. Hood"
+
+
+def test_live_company_profile_survives_yfinance_failure(network, live, monkeypatch):
+    monkeypatch.setattr("yfinance.Ticker", FakeYfTicker)
+    data = live.dispatch("company_profile", {"ticker": "AAPL"}).data  # EDGAR ticker table only
+    assert data["name"] == "Apple Inc." and data["cik"] == "0000320193" and "market_cap" not in data
+    assert any("yfinance returned no quote data" in n for n in data["notes"])
+    assert any("No SEC EDGAR filing metadata" in n for n in data["notes"])  # its submissions file is missing
+    with pytest.raises(ToolExecutionError, match="no profile data"):
+        live.dispatch("company_profile", {"ticker": "ZZZZ"})
+
+
+def test_industry_peers_skip_the_company_and_its_other_share_class(monkeypatch):
+    import pandas as pd
+
+    from tools import peer_comparison
+
+    top = pd.DataFrame({"name": ["Alphabet Inc.", "Alphabet Inc.", "Meta Platforms, Inc.", "Spotify Technology S.A.",
+                                 "China Yuchai International Limited", "Tiny Corp"],
+                        "market weight": [0.33, 0.33, 0.30, 0.016, float("nan"), 0.001]},
+                       index=pd.Index(["GOOG", "GOOGL", "META", "SPOT", "CYD", "TINY"], name="symbol"))
+
+    class FakeIndustry:
+        def __init__(self, key):
+            assert key == "internet-content-information"
+            self.top_companies = top
+
+    monkeypatch.setattr("tools.company_profile.yfinance_info", lambda t: {
+        "longName": "Alphabet Inc.", "industry": "Internet Content & Information",
+        "industryKey": "internet-content-information"})
+    monkeypatch.setattr("yfinance.Industry", FakeIndustry)
+    peers, how = peer_comparison.industry_peers("GOOGL", 5)
+    # CYD has no market weight and TINY is under 1 % of Alphabet's: neither is a comparable peer.
+    assert peers == ["META", "SPOT"] and "Internet Content & Information" in how
+
+
+def _metrics_row(ticker, revenue, net_margin, fiscal_year=2025):
+    return {"ticker": ticker, "name": ticker, "fiscal_year": fiscal_year, "period_end": f"{fiscal_year}-12-31",
+            "provider": "sec_xbrl", "values": {"revenue": revenue, "revenue_growth": 0.1, "gross_margin": 0.5,
+                                               "operating_margin": 0.2, "net_margin": net_margin, "roe": 0.2,
+                                               "pe_ratio": 20.0, "market_cap": revenue * 1e7}}
+
+
+def test_live_peer_comparison_replaces_a_peer_without_data(live, monkeypatch):
+    from tools import peer_comparison
+
+    rows = {"TSLA": _metrics_row("TSLA", 94827, 0.04), "GM": _metrics_row("GM", 185019, 0.015),
+            "RIVN": _metrics_row("RIVN", 5387, -0.68)}
+
+    def metrics(ticker):
+        if ticker not in rows:
+            raise ToolExecutionError(f"peer_comparison: no annual revenue for {ticker}", tool="peer_comparison")
+        return dict(rows[ticker])
+
+    monkeypatch.setattr(peer_comparison, "industry_peers", lambda t, n: (["GM", "CYD", "RIVN", "F"], "Peers: test."))
+    monkeypatch.setattr(peer_comparison, "live_metrics", metrics)
+    live.set_progress(8)
+    data = live.dispatch("peer_comparison", {"ticker": "TSLA", "num_peers": 2, "metrics": ["revenue", "net_margin"]}).data
+    assert data["peers"] == ["GM", "RIVN"]  # CYD has no data; the next candidate takes its place, F is not needed
+    assert data["rankings"]["revenue"] == ["GM", "TSLA", "RIVN"]
+    assert data["matrix"][0]["values"] == {"revenue": 94827, "net_margin": 0.04}
+    assert any("CYD left out" in n for n in data["notes"]) and any("TSLA FY2025" in n for n in data["notes"])
+
+    explicit = live.dispatch("peer_comparison", {"ticker": "TSLA", "peers": ["gm", "TSLA", "RIVN"]}).data
+    assert explicit["peers"] == ["GM", "RIVN"] and explicit["notes"][0] == "Peers: chosen by the caller."
+    with pytest.raises(ToolExecutionError, match="no annual revenue for XYZ"):  # the company itself must have data
+        live.dispatch("peer_comparison", {"ticker": "XYZ", "peers": ["GM"]})
+
+
+def test_mock_peer_comparison_accepts_explicit_peers():
+    registry = build_default_registry("mock")
+    registry.set_progress(8)
+    data = registry.dispatch("peer_comparison", {"ticker": "AMZN", "peers": ["MSFT", "GOOGL"]}).data
+    assert data["peers"] == ["MSFT", "GOOGL"] and len(data["matrix"]) == 3
+
+
+def test_total_revenue_wins_over_a_contract_revenue_subtotal(monkeypatch):
+    # General Motors tags $168 bn of contract revenue and $185 bn of total revenue for the same year.
+    from tools import financial_api
+
+    def fact(val):
+        return {"start": "2025-01-01", "end": "2025-12-31", "val": val, "form": "10-K", "filed": "2026-02-01",
+                "accn": "acc-1"}
+
+    class FakeHttp:
+        def get_json(self, url, ttl_s):
+            if "RevenueFromContractWithCustomerExcludingAssessedTax" in url:
+                return {"units": {"USD": [fact(167971e6)]}}
+            if url.endswith("/Revenues.json"):
+                return {"units": {"USD": [fact(185019e6)]}}
+            raise ToolExecutionError(f"not found: {url}")
+
+    monkeypatch.setattr("tools.http.get_http", lambda: FakeHttp())
+    [merged] = financial_api._facts("0001467858", "revenue")
+    assert merged["val"] == 185019e6 and merged["concept"] == "Revenues"
+
+
+def test_stale_concept_api_falls_back_to_company_facts(monkeypatch):
+    # Ford: the per-concept API had revenue only to FY2024 although the FY2025 10-K was filed; the
+    # company-facts file had FY2025, and the net loss only as income available to common stockholders.
+    from tools import financial_api
+
+    def fact(year, val):
+        return {"start": f"{year}-01-01", "end": f"{year}-12-31", "val": val, "form": "10-K",
+                "filed": f"{year + 1}-02-10", "accn": f"acc-{year}"}
+
+    full = {"facts": {"us-gaap": {
+        "Revenues": {"units": {"USD": [fact(2024, 184992e6)]}},
+        "RevenueFromContractWithCustomerExcludingAssessedTax": {"units": {"USD": [fact(2025, 187267e6)]}},
+        "NetIncomeLoss": {"units": {"USD": [fact(2024, 5879e6)]}},
+        "NetIncomeLossAvailableToCommonStockholdersBasic": {"units": {"USD": [fact(2025, -8182e6)]}}}}}
+
+    class FakeHttp:
+        def get_json(self, url, ttl_s, timeout_s=None):
+            if "companyfacts" in url:
+                return full
+            if url.endswith("/Revenues.json"):
+                return {"units": {"USD": [fact(2024, 184992e6)]}}
+            raise ToolExecutionError(f"not found: {url}")
+
+    monkeypatch.setattr("tools.http.get_http", lambda: FakeHttp())
+    monkeypatch.setattr("tools.sec_edgar.resolve_cik", lambda ticker: ("0000037996", "FORD MOTOR CO"))
+    monkeypatch.setattr("tools.sec_edgar.submissions", lambda cik: {"fiscalYearEnd": "1231", "filings": {"recent": {
+        "form": ["10-K", "10-K"], "reportDate": ["2025-12-31", "2024-12-31"]}}})
+    data = financial_api.live_financial_data_api("F", "income_statement", "annual", 2)
+    assert [(r["fiscal_year"], r["values"]["revenue"], r["values"]["net_income"]) for r in data["data"]] == [
+        (2025, 187267.0, -8182.0), (2024, 184992.0, 5879.0)]
+    assert any("company-facts file" in n for n in data["notes"])
+
+
+def test_gross_profit_is_derived_when_not_tagged(monkeypatch):
+    from tools import financial_api
+
+    def fact(end, val, filed):
+        return {"start": f"{int(end[:4])}-01-01", "end": end, "val": val, "form": "10-K", "filed": filed,
+                "accn": f"acc-{filed}", "rank": 0}
+
+    facts = {"revenue": [fact("2025-12-31", 716924e6, "2026-02-06"), fact("2024-12-31", 637959e6, "2025-02-07")],
+             "cost_of_revenue": [fact("2025-12-31", 356400e6, "2026-02-06")]}
+    monkeypatch.setattr(financial_api, "_facts", lambda cik, item: facts.get(item, []))
+    monkeypatch.setattr("tools.sec_edgar.resolve_cik", lambda ticker: ("0001018724", "AMAZON COM INC"))
+    monkeypatch.setattr("tools.sec_edgar.submissions", lambda cik: {"fiscalYearEnd": "1231"})
+    data = financial_api.live_financial_data_api("AMZN", "income_statement", "annual", 2)
+    assert data["data"][0]["values"]["gross_profit"] == 360524.0
+    assert data["data"][1]["values"]["gross_profit"] is None  # no cost of revenue for 2024: not invented
+    assert any("derived as revenue minus cost of revenue" in n for n in data["notes"])

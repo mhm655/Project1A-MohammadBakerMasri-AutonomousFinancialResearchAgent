@@ -20,7 +20,6 @@ from tools import (
     ToolNotFoundError,
     ToolOutputError,
     ToolRegistry,
-    ToolUnavailableError,
     ToolValidationError,
     build_default_registry,
 )
@@ -269,13 +268,11 @@ def test_call_log_records_successes_and_failures(registry):
     assert not failed.ok and failed.error_kind == "execution_error" and "ZZZZ" in failed.error_message
 
 
-def test_live_mode_only_exposes_implemented_tools():
+def test_every_tool_has_a_live_handler():
+    # Day 7 completed the set: no tool falls back to canned data in live mode.
     live = build_default_registry("live")
-    assert {s.name for s in live.available()} == {
-        "calculation_engine", "fact_checker", "report_generator", "vector_db_search", "vector_db_store",
-        "sec_filing_search", "financial_data_api", "web_search", "news_sentiment"}  # live since Day 5
-    with pytest.raises(ToolUnavailableError):
-        live.dispatch("company_profile", {"ticker": "NVDA"})  # its live handler arrives on Day 7
+    assert {s.name for s in live.available()} == set(live.names)
+    assert all(live.get(name).handler_mode in ("live", "any") for name in live.names)
 
 
 def test_invalid_mode():

@@ -16,6 +16,7 @@ A mock handler with canned data is kept for tests and offline runs.
 
 from __future__ import annotations
 
+import functools
 from datetime import date, timedelta
 from typing import Any
 
@@ -25,6 +26,8 @@ from tools.mock_data import ANNUAL, MOCK_NOTICE, PROFILES, QUARTERLY_INCOME
 TOOL = "financial_data_api"
 
 CONCEPT_URL = "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/us-gaap/{tag}.json"
+# Every concept at once (many megabytes): only used when the per-concept API lacks the latest 10-K.
+COMPANY_FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
 
 # Our line item -> XBRL concepts, in order of preference. Companies change concepts over the years
 # (Microsoft reported "Revenues" until 2017), so all candidates are merged, the first one winning.
@@ -33,7 +36,9 @@ CONCEPTS: dict[str, list[str]] = {
                 "RevenueFromContractWithCustomerIncludingAssessedTax"],
     "gross_profit": ["GrossProfit"],
     "operating_income": ["OperatingIncomeLoss"],
-    "net_income": ["NetIncomeLoss"],
+    # Ford tagged its FY2025 net loss only as income available to common stockholders; ProfitLoss
+    # (which includes minority interests) is the last resort.
+    "net_income": ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"],
     "eps_diluted": ["EarningsPerShareDiluted"],
     "total_assets": ["Assets"],
     "total_liabilities": ["Liabilities"],
@@ -42,6 +47,8 @@ CONCEPTS: dict[str, list[str]] = {
                              "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"],
     "operating_cash_flow": ["NetCashProvidedByUsedInOperatingActivities"],
     "capital_expenditure": ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets"],
+    # Not returned itself: gross profit is derived from it for filers that do not tag GrossProfit.
+    "cost_of_revenue": ["CostOfRevenue", "CostOfGoodsAndServicesSold"],
 }
 STATEMENTS = {
     "income_statement": ["revenue", "gross_profit", "operating_income", "net_income", "eps_diluted"],
@@ -127,23 +134,34 @@ def mock_financial_data_api(ticker: str, statement_type: str, period: str = "ann
 # --------------------------------------------------------------------------------------------------
 
 
-def _facts(cik: str, item: str) -> list[dict[str, Any]]:
-    """Every reported value for a line item, merged across its candidate concepts."""
+def _facts(cik: str, item: str, company_facts: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    """Every reported value for a line item, merged across its candidate concepts (from the
+    per-concept API, or from an already downloaded company-facts file)."""
     from tools.http import get_http
 
     merged: dict[tuple[str | None, str, str], dict[str, Any]] = {}
     for rank, tag in enumerate(CONCEPTS[item]):
-        try:
-            data = get_http().get_json(CONCEPT_URL.format(cik=cik, tag=tag), ttl_s=86_400)
-        except ToolExecutionError as exc:
-            if "not found" in str(exc):
-                continue  # this company does not use this concept
-            raise
+        if company_facts is not None:
+            data = company_facts.get("facts", {}).get("us-gaap", {}).get(tag)
+            if data is None:
+                continue
+        else:
+            try:
+                data = get_http().get_json(CONCEPT_URL.format(cik=cik, tag=tag), ttl_s=86_400)
+            except ToolExecutionError as exc:
+                if "not found" in str(exc):
+                    continue  # this company does not use this concept
+                raise
         unit = "USD/shares" if item in PER_SHARE_ITEMS else "USD"
         for fact in data.get("units", {}).get(unit, []):
             key = (fact.get("start"), fact["end"], fact["accn"])
             if key not in merged:  # an earlier (preferred) concept already supplied this fact
                 merged[key] = {**fact, "concept": tag, "rank": rank}
+            elif item == "revenue" and fact["val"] > merged[key]["val"]:
+                # Some filers tag contract revenue and total revenue separately (General Motors: $168 bn
+                # "RevenueFromContractWithCustomer..." without GM Financial, $185 bn "Revenues"). Total
+                # revenue is the largest of them.
+                merged[key] = {**fact, "concept": tag, "rank": merged[key]["rank"]}
     return list(merged.values())
 
 
@@ -221,15 +239,33 @@ def live_financial_data_api(ticker: str, statement_type: str, period: str = "ann
     if period == "quarterly" and statement_type in ("balance_sheet", "cash_flow"):
         raise ToolExecutionError(f"{TOOL}: quarterly {statement_type} is not supported; use period='annual'", tool=TOOL)
 
-    revenue_facts = _facts(cik, "revenue")
-    fy_ends = sorted({date.fromisoformat(e) for e in _latest_by_period(revenue_facts, _is_annual, [], "revenue")},
-                     reverse=True)
+    def fetch(item: str, company_facts: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+        return _facts(cik, item) if company_facts is None else _facts(cik, item, company_facts)
+
+    def annual_ends(facts: list[dict[str, Any]]) -> list[date]:
+        return sorted({date.fromisoformat(e) for e in _latest_by_period(facts, _is_annual, [], "revenue")}, reverse=True)
+
+    revenue_facts = fetch("revenue")
+    fy_ends = annual_ends(revenue_facts)
+    latest_10k = _latest_annual_report(submissions(cik))
+    if latest_10k and (not fy_ends or fy_ends[0] < latest_10k - timedelta(days=20)):
+        # The per-concept API sometimes lacks facts the full company-facts file has (Ford's FY2025
+        # revenue: an empty list from one, $187.3 bn in the other). Without this, the "latest" year
+        # returned would silently be a year old.
+        from tools.http import get_http
+
+        full = get_http().get_json(COMPANY_FACTS_URL.format(cik=cik), ttl_s=86_400, timeout_s=180)
+        full_facts = fetch("revenue", full)
+        if annual_ends(full_facts)[:1] > fy_ends[:1]:
+            fetch = functools.partial(fetch, company_facts=full)
+            revenue_facts, fy_ends = full_facts, annual_ends(full_facts)
+            notes.append("Figures are from SEC's company-facts file: the per-concept XBRL API lacked the latest 10-K.")
     if not fy_ends:
         return _yfinance_statements(ticker, statement_type, period, years, reason="no annual revenue in SEC XBRL data")
 
     series: dict[str, dict[str, float]] = {}
     for item in items:
-        facts = revenue_facts if item == "revenue" else _facts(cik, item)
+        facts = revenue_facts if item == "revenue" else fetch(item)
         label = item.replace("_", " ")
         if item in INSTANT_ITEMS:
             series[item] = _latest_by_period(facts, lambda f: not f.get("start"), notes, label)
@@ -239,6 +275,8 @@ def live_financial_data_api(ticker: str, statement_type: str, period: str = "ann
             quarterly = _latest_by_period(facts, _is_quarter, notes, label)
             annual = _latest_by_period(facts, _is_annual, [], label)
             series[item] = _with_derived_q4(quarterly, annual, fy_ends, notes)
+    if "gross_profit" in series:
+        _derive_gross_profit(series, fetch, period, fy_ends, notes)
 
     if period == "annual":
         ends = fy_ends[:years]
@@ -273,6 +311,13 @@ def live_financial_data_api(ticker: str, statement_type: str, period: str = "ann
     }
 
 
+def _latest_annual_report(subs: dict[str, Any]) -> date | None:
+    """Period end of the company's latest 10-K, from its EDGAR filing list."""
+    recent = subs.get("filings", {}).get("recent", {})
+    ends = [recent["reportDate"][i] for i, form in enumerate(recent.get("form", [])) if form == "10-K"]
+    return max((date.fromisoformat(e[:10]) for e in ends if e), default=None)
+
+
 def _with_derived_q4(quarters: dict[str, float], annual: dict[str, float], fy_ends: list[date],
                      notes: list[str]) -> dict[str, float]:
     """Add fiscal Q4 = FY - (Q1 + Q2 + Q3) where the three quarters are reported."""
@@ -289,6 +334,27 @@ def _with_derived_q4(quarters: dict[str, float], annual: dict[str, float], fy_en
             if note not in notes:
                 notes.append(note)
     return result
+
+
+def _derive_gross_profit(series: dict[str, dict[str, float]], fetch: Any, period: str, fy_ends: list[date],
+                         notes: list[str]) -> None:
+    """Fill gross profit as revenue minus cost of revenue where GrossProfit is not tagged (Amazon, Alphabet)."""
+    revenue, gross = series["revenue"], series["gross_profit"]
+    missing = [end for end in revenue if end not in gross]
+    if not missing:
+        return
+    facts = fetch("cost_of_revenue")
+    if period == "annual":
+        cost = _latest_by_period(facts, _is_annual, [], "cost of revenue")
+    else:
+        cost = _with_derived_q4(_latest_by_period(facts, _is_quarter, [], "cost of revenue"),
+                                _latest_by_period(facts, _is_annual, [], "cost of revenue"), fy_ends, [])
+    derived = [end for end in missing if end in cost]
+    for end in derived:
+        gross[end] = revenue[end] - cost[end]
+    if derived:
+        notes.append("Gross profit is derived as revenue minus cost of revenue: the company does not report "
+                     "gross profit itself.")
 
 
 def _scale(item: str, value: float | None) -> float | None:

@@ -63,6 +63,11 @@ Rules:
 - Omit "year" and similar period arguments to get the LATEST data, unless the request names a specific
   period. Your training data is older than today's date, so do not assume which year is current.
 - Prefer one call that returns a whole statement over several calls for single numbers.
+- Never plan the same tool with the same arguments twice.
+- Financial statements are company-wide. When the request is about a segment or division (AWS,
+  Azure, Google Cloud, iPhone, ...), plan earnings_transcript for each company: the call and the
+  earnings release report segment revenue, growth and operating income.
+- When several companies are compared, plan one peer_comparison with the others in "peers".
 - Plan calculation_engine steps for growth rates and margins the report will need (principle P2).
 - Do not plan report_generator, fact_checker, vector_db_search or vector_db_store steps: the system
   runs those itself.

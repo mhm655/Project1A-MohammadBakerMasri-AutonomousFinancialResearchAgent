@@ -12,22 +12,22 @@
       "quarter": {
         "type": "string",
         "enum": ["Q1", "Q2", "Q3", "Q4"],
-        "description": "Fiscal quarter (the company's fiscal calendar, not the calendar year)."
+        "description": "Fiscal quarter (the company's fiscal calendar, not the calendar year). Omit quarter and year for the latest reported quarter."
       },
       "year": {
         "type": "integer",
         "minimum": 2000,
         "maximum": 2100,
-        "description": "Fiscal year the quarter belongs to."
+        "description": "Fiscal year the quarter belongs to. Give it together with quarter, or omit both."
       }
     },
-    "required": ["ticker", "quarter", "year"],
+    "required": ["ticker"],
     "additionalProperties": false
   },
   "x-ara": {
     "handlers": {
       "mock": "tools.earnings:mock_earnings_transcript",
-      "live": null
+      "live": "tools.earnings:live_earnings_transcript"
     },
     "source_tier": 3,
     "cache_ttl_s": 604800,
@@ -43,6 +43,7 @@
         "fiscal_year": {"type": "integer"},
         "call_date": {"type": ["string", "null"]},
         "source_kind": {"enum": ["transcript", "press_release"]},
+        "source_url": {"type": "string"},
         "segments": {
           "type": "array",
           "minItems": 1,

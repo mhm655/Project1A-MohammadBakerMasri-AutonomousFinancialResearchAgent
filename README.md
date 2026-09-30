@@ -26,7 +26,7 @@ anywhere.
 | **Tool registry**: 12 tools, schema validation, repair of common LLM argument mistakes, caching, evidence ids, call log | Built (Day 2) |
 | **Local tools**: `calculation_engine`, `fact_checker`, `report_generator` | Built (Day 2) |
 | **Live data tools**: `sec_filing_search` (EDGAR, 10-K items and risk factors), `financial_data_api` (SEC XBRL, restatement detection, yfinance backup), `web_search` (Brave/Bing/DuckDuckGo, Google News fallback), `news_sentiment` (Google News + finance-tuned VADER); rate-limited and disk-cached | Built (Day 5) |
-| **Remaining network tools** (`company_profile`, `earnings_transcript`, `peer_comparison`) | Mock data now; live on Day 7 |
+| **Remaining network tools**: `company_profile` (EDGAR + yfinance), `earnings_transcript` (Motley Fool call transcripts split into prepared remarks and Q&A, 8-K press release as fallback), `peer_comparison` (yfinance industry peers or caller-chosen peers, SEC XBRL metrics) | Built (Day 7) |
 | **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
 | **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
 | **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |

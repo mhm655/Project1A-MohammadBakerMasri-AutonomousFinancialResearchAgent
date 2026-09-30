@@ -25,6 +25,14 @@
         "minItems": 1,
         "uniqueItems": true,
         "description": "Metrics to compare. Omit for all."
+      },
+      "peers": {
+        "type": "array",
+        "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$"},
+        "minItems": 1,
+        "maxItems": 10,
+        "uniqueItems": true,
+        "description": "Tickers to compare against, when the right peers are not the company's industry (e.g. Amazon against Microsoft and Alphabet in cloud). Omit to use the largest companies in the same industry."
       }
     },
     "required": ["ticker"],
@@ -33,7 +41,7 @@
   "x-ara": {
     "handlers": {
       "mock": "tools.peer_comparison:mock_peer_comparison",
-      "live": null
+      "live": "tools.peer_comparison:live_peer_comparison"
     },
     "source_tier": 2,
     "cache_ttl_s": 86400,
@@ -55,6 +63,8 @@
             "properties": {
               "ticker": {"type": "string"},
               "name": {"type": "string"},
+              "fiscal_year": {"type": "integer"},
+              "period_end": {"type": "string"},
               "values": {"type": "object", "additionalProperties": {"type": ["number", "null"]}}
             }
           }

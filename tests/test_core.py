@@ -422,6 +422,87 @@ def test_peer_ratios_are_shown_as_percentages_so_claims_verify():
     assert fact_checker("NVIDIA revenue grew 114.2% [E1].", [digest])["status"] == "supported"
 
 
+# ==================================================================================================
+# Regressions found in the first live Challenge 3 run (Day 7)
+# ==================================================================================================
+
+
+def test_peer_pe_and_market_cap_carry_their_units():
+    """A bare "367.30" under a "ratios as percentages" header came out as a P/E of 36,730.00 %."""
+    registry = build_default_registry("mock")
+    peers = registry.dispatch("peer_comparison", {"ticker": "MSFT", "metrics": ["pe_ratio", "market_cap"]})
+    digest = evidence_digest(peers)
+    assert "pe_ratio=" in digest and re.search(r"pe_ratio=[\d,.]+x", digest)
+    assert "market_cap=$3,100.0 bn" in digest and "ratios as percentages" not in digest
+    from tools.fact_checker import fact_checker
+    assert fact_checker("Microsoft's market cap is $3.1 trillion [E1].", [digest])["status"] == "supported"
+
+
+def test_list_items_inherit_the_intro_citation_and_markers_are_not_figures():
+    from agent.core import _claims
+
+    body = ("Execution risks cited in the 10-K [E5]:\n"
+            "1. Delays in ramping new products.\n"
+            "2. Expansion of internal 4680 cell manufacturing.\n\n"
+            "A new paragraph with 12% growth.\n"
+            "- Unrelated bullet with $5 billion.")
+    claims = _claims(body)
+    assert ("Delays in ramping new products.", {"E5"}) in claims  # "1." is gone: not a figure to check
+    assert ("Expansion of internal 4680 cell manufacturing.", {"E5"}) in claims
+    assert ("Unrelated bullet with $5 billion.", set()) in claims  # the intro before it had no colon
+
+
+def test_transcript_digest_keeps_figures_guidance_and_questions_within_budget():
+    from agent.core import salient_statements
+
+    segments = [
+        {"speaker": "Travis Axelrod", "role": "Head of Investor Relations", "section": "prepared",
+         "text": "Good afternoon, everyone, and welcome to the webcast. " * 30},
+        {"speaker": "Vaibhav Taneja", "role": "Chief Financial Officer", "section": "prepared",
+         "text": "Automotive gross margin was 17.2% this quarter. We expect capital expenditures to exceed $20 billion "
+                 "next year. The team did great work across the board this quarter."},
+        {"speaker": "Adam Jonas", "role": "Analyst", "section": "qa",
+         "text": "Thanks for taking my question today. How should we think about robotaxi margins over time?"},
+    ]
+    lines = salient_statements(segments, 400)
+    assert sum(len(x) + 1 for x in lines) <= 400
+    assert lines[0].startswith("[prepared] Vaibhav Taneja (Chief Financial Officer): Automotive gross margin was 17.2%")
+    assert any("expect capital expenditures to exceed $20 billion" in x for x in lines)
+    assert any(x.startswith("[Q&A] Adam Jonas (Analyst): How should we think") for x in lines)
+    assert not any("welcome to the webcast" in x for x in lines)
+    everything = salient_statements(segments, 100_000)  # fact checking: every sentence is kept
+    assert any("welcome to the webcast" in x for x in everything) and any("great work" in x for x in everything)
+
+
+def test_abbreviations_do_not_end_a_claim():
+    from agent.core import _claims
+
+    body = "Tesla trades at 367.3x P/E vs. GM's 27.0x P/E [E8]. Ford Motor Co. earned $5 billion [E3]."
+    assert [c for c, _ in _claims(body)] == ["Tesla trades at 367.3x P/E vs. GM's 27.0x P/E [E8].",
+                                            "Ford Motor Co. earned $5 billion [E3]."]
+
+
+def test_transcript_source_names_the_quarter_retrieved_and_its_date():
+    from agent.core import source_entry
+
+    registry = build_default_registry("mock")
+    result = registry.dispatch("earnings_transcript", {"ticker": "AAPL", "quarter": "Q4", "year": 2024})
+    entry = source_entry(result)
+    assert entry["title"] == "earnings_transcript: AAPL Q4 FY2024 (call transcript)"
+    assert entry["date"] == "2024-10-31"
+
+
+def test_claims_citing_a_filing_are_checked_against_the_whole_document():
+    """The 10-K's "4680" was flagged as unsupported: the verifier saw a 6,000-character digest of it."""
+    from agent.core import verification_text
+
+    registry = build_default_registry("mock")
+    filing = registry.dispatch("sec_filing_search", {"ticker": "TSLA", "filing_type": "10-K"})
+    last_section = filing.data["sections"][-1]
+    filing.data["sections"][-1] = {**last_section, "text": "x " * 5000 + "Internal 4680 cell production grew."}
+    assert "4680" not in evidence_digest(filing, 6000) and "4680" in verification_text(filing)
+
+
 def test_a_slow_tool_call_times_out_and_the_report_is_still_written():
     """Live Day 5 run: one 10-K download took 350 s and left no time to write the report."""
     import time as _time

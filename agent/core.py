@@ -159,12 +159,23 @@ def evidence_digest(result: ToolResult, limit: int = 2500) -> str:
             lines.append(f"Item {s['item']} {s['title']}: {text[:share]}")
         body = "\n".join(lines)
     elif result.tool == "peer_comparison":
-        lines = [f"Peer comparison for {data.get('ticker')} (ratios as percentages; revenue in USD millions)"]
+        # Every value carries its unit: a bare "367.30" under a "ratios as percentages" header was read
+        # as a P/E of 36,730 %.
+        lines = [f"Peer comparison for {data.get('ticker')} (growth, margins and ROE in percent; revenue in "
+                 "USD millions; P/E in times earnings; market cap in USD billions)"]
         for row in data.get("matrix", []):
-            values = "; ".join(f"{k}={_fmt_ratio(v) if _PERCENT_KEYS.search(k) else _fmt_amount(v)}"
-                               for k, v in row["values"].items())
-            lines.append(f"{row['ticker']} ({row.get('name', '')}): {values}")
+            values = "; ".join(f"{k}={_fmt_peer_value(k, v)}" for k, v in row["values"].items())
+            period = f", FY{row['fiscal_year']} ended {row['period_end']}" if row.get("fiscal_year") else ""
+            lines.append(f"{row['ticker']} ({row.get('name', '')}{period}): {values}")
+        lines += [n for n in data.get("notes", []) if n.startswith(("Peers:", "P/E")) or " left out: " in n]
         body = "\n".join(lines)
+    elif result.tool == "earnings_transcript":
+        kind = "earnings call transcript" if data.get("source_kind") == "transcript" else "earnings press release"
+        lines = [f"{data.get('ticker')} {data.get('quarter')} FY{data.get('fiscal_year')} {kind}, "
+                 f"{data.get('call_date') or 'date unknown'} ({data.get('source_url', '')})"]
+        lines += [n for n in data.get("notes", []) if n.startswith(("No quarter", "Call transcript unavailable"))]
+        budget = limit - len(head) - sum(len(x) + 1 for x in lines) - 20
+        body = "\n".join(lines + salient_statements(data.get("segments", []), budget))
     elif result.tool == "calculation_engine":
         r = data.get("result")
         inputs = ", ".join(f"{k}={v}" for k, v in data.get("inputs", {}).items())
@@ -180,12 +191,74 @@ def evidence_digest(result: ToolResult, limit: int = 2500) -> str:
     return text if len(text) <= limit else text[: limit - 15] + "...[truncated]"
 
 
+_FIGURE = re.compile(r"\d[\d,.]*\s*(?:%|percent|basis points|billion|million)|\$\s?\d", re.IGNORECASE)
+_GUIDANCE = re.compile(r"\b(?:expect|guidance|outlook|anticipate|forecast|next quarter|full[- ]year|going forward)",
+                       re.IGNORECASE)
+_RISK = re.compile(r"\b(?:headwind|pressure|tariff|competition|competitive|constrain|shortage|decline|slow|"
+                   r"uncertain|regulat|recall|risk)", re.IGNORECASE)
+MAX_STATEMENT_CHARS = 320
+
+
+def salient_statements(segments: list[dict[str, Any]], budget: int) -> list[str]:
+    """The most informative sentences of an earnings call, in call order, within ``budget`` characters.
+
+    A call runs to 50,000+ characters and a prompt digest gets about 2,500. Sentences are scored by
+    what an analysis needs: figures, guidance, risks, and analysts' questions (they show what the
+    market is worried about); management's sentences rank above the IR host's. When everything
+    fits (fact checking reads whole transcripts), every sentence is kept.
+    """
+    candidates = []  # (score, position, line)
+    for seg in segments:
+        role = seg.get("role") or ""
+        tag = f"[{'Q&A' if seg.get('section') == 'qa' else 'prepared'}] {seg.get('speaker', '')}" + \
+              (f" ({role})" if role else "")
+        for sentence in re.split(r"(?<=[.!?])\s+", " ".join(seg.get("text", "").split())):
+            if len(sentence) < 25:
+                continue
+            score = 2 * bool(_FIGURE.search(sentence)) + 2 * bool(_GUIDANCE.search(sentence)) + \
+                bool(_RISK.search(sentence))
+            if role.lower() == "analyst":
+                score += 1.5 if sentence.endswith("?") else -1
+            elif "chief" in role.lower() or role in ("CEO", "CFO", "Company"):
+                score += 0.5
+            candidates.append((score, len(candidates), f"{tag}: {sentence[:MAX_STATEMENT_CHARS]}"))
+    if sum(len(c[2]) + 1 for c in candidates) > budget:
+        chosen, used = [], 0
+        for score, position, line in sorted(candidates, key=lambda c: (-c[0], c[1])):
+            if score <= 0:
+                break
+            if used + len(line) + 1 <= budget:
+                chosen.append((score, position, line))
+                used += len(line) + 1
+        candidates = chosen
+    return [line for _, _, line in sorted(candidates, key=lambda c: c[1])]
+
+
+#: Fact checking reads long documents whole: a claim may come from any part of a 10-K or a call
+#: transcript, not only from the opening that fits in a prompt digest.
+VERIFY_LIMITS = {"sec_filing_search": 400_000, "earnings_transcript": 250_000}
+
+
+def verification_text(result: ToolResult) -> str:
+    return evidence_digest(result, VERIFY_LIMITS.get(result.tool, 6000))
+
+
 def _fmt_amount(v: Any) -> str:
     return "n/a" if v is None else (f"{v:,.2f}" if isinstance(v, float) and not v.is_integer() else f"{v:,.0f}")
 
 
 def _fmt_ratio(v: Any) -> str:
     return "n/a" if v is None else f"{v:.2%}"
+
+
+def _fmt_peer_value(metric: str, v: Any) -> str:
+    if v is None:
+        return "n/a"
+    if metric == "pe_ratio":
+        return f"{v:,.1f}x"
+    if metric == "market_cap":
+        return f"${v / 1e9:,.1f} bn"
+    return _fmt_ratio(v) if _PERCENT_KEYS.search(metric) else _fmt_amount(v)
 
 
 SOURCE_TYPES = {
@@ -197,15 +270,21 @@ SOURCE_TYPES = {
 
 def source_entry(result: ToolResult) -> dict[str, Any]:
     args = ", ".join(f"{v}" for v in result.args.values() if not isinstance(v, (dict, list)))[:80]
+    data = result.data
+    if result.tool == "earnings_transcript" and data.get("quarter"):
+        # The quarter actually retrieved (it is chosen by the tool when the call omitted it).
+        kind = "call transcript" if data.get("source_kind") == "transcript" else "press release, no call transcript"
+        args = f"{data.get('ticker')} {data['quarter']} FY{data.get('fiscal_year')} ({kind})"
     entry: dict[str, Any] = {
         "id": result.evidence_id,
         "title": f"{result.tool}: {args}" if args else result.tool,
         "source_type": SOURCE_TYPES.get(result.tool, result.tool),
-        "date": result.data.get("filing_date") or result.retrieved_at[:10],
+        "date": data.get("filing_date") or data.get("call_date") or result.retrieved_at[:10],
         "is_mock": result.is_mock,
     }
-    if isinstance(result.data.get("url"), str):
-        entry["url"] = result.data["url"]
+    url = data.get("url") or data.get("source_url")
+    if isinstance(url, str) and url:
+        entry["url"] = url
     return entry
 
 
@@ -633,7 +712,7 @@ class ResearchAgent:
         tally = {"checked": 0, "supported": 0, "partially_supported": 0, "unsupported": 0, "unverifiable": 0,
                  "uncited": 0, "auto_cited": 0}
         flagged: list[str] = []
-        digests = {eid: evidence_digest(r, 6000) for eid, r in self.evidence.items()}
+        digests = {eid: verification_text(r) for eid, r in self.evidence.items()}
         for key, body in sections.items():
             # Claims come in document order; each edit is made at the claim's own position. A plain
             # str.replace(claim, ..., 1) hits the first occurrence, so a repeated sentence would be
@@ -661,7 +740,7 @@ class ResearchAgent:
                     flagged.append(f"{section_title(key)}: uncited figure: {claim[:140]}")
                     body, cursor = _replace_at(body, at, claim, _mark(claim, "unverified: no source cited"), cursor)
                     continue
-                verdict = fact_checker(claim, [evidence_digest(self.evidence[i], 6000) for i in ids])
+                verdict = fact_checker(claim, [digests[i] for i in ids])
                 tally["checked"] += 1
                 tally[verdict["status"]] = tally.get(verdict["status"], 0) + 1
                 if verdict["status"] in ("unsupported", "partially_supported"):
@@ -801,6 +880,20 @@ def _mark(claim: str, note: str) -> str:
 
 
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z*(\[])")
+_LIST_ITEM = re.compile(r"^(?:[-*+]|\d{1,2}[.)])\s+")
+_ABBREVIATION = re.compile(r"\b(?:vs|e\.g|i\.e|approx|Inc|Corp|Co|Ltd|No|U\.S)\.$", re.IGNORECASE)
+
+
+def _sentences(text: str) -> list[str]:
+    """Sentences of ``text``; "vs.", "e.g." and "Inc." do not end a sentence (a split there left
+    "GM's 27.0x P/E ..." as a separate, uncited claim)."""
+    parts: list[str] = []
+    for part in _SENTENCE.split(text):
+        if parts and _ABBREVIATION.search(parts[-1]):
+            parts[-1] = f"{parts[-1]} {part}"
+        else:
+            parts.append(part)
+    return [p.strip() for p in parts if p.strip()]
 
 
 def _claims(body: str) -> list[tuple[str, set[str]]]:
@@ -808,14 +901,22 @@ def _claims(body: str) -> list[tuple[str, set[str]]]:
 
     Analysts (and models) usually cite a table once, in its caption or header, not in every row. So
     a table row without its own citation inherits those of the table's header and of the line just
-    before the table. Header and separator rows are not claims.
+    before the table. Header and separator rows are not claims. Likewise, the items of a list inherit
+    the citations of the line that introduces the list ("Risks cited in the 10-K [E5]:"), and a list
+    marker ("1.") is not a figure.
     """
     claims: list[tuple[str, set[str]]] = []
     lines = [line.strip() for line in body.splitlines()]
     previous_text = ""
     in_table, table_ids = False, set()
+    list_ids: set[str] = set()
     for i, line in enumerate(lines):
         if not line:
+            in_table = False
+            continue
+        if marker := _LIST_ITEM.match(line):
+            item = line[marker.end():]
+            claims += [(s, list_ids) for s in _sentences(item)]
             in_table = False
             continue
         if line.startswith("|"):
@@ -830,5 +931,6 @@ def _claims(body: str) -> list[tuple[str, set[str]]]:
             continue
         in_table = False
         previous_text = line
-        claims += [(s.strip(), set()) for s in _SENTENCE.split(line) if s.strip()]
+        list_ids = cited_ids(line) if line.rstrip("*_ ").endswith(":") else set()
+        claims += [(s, set()) for s in _sentences(line)]
     return claims
