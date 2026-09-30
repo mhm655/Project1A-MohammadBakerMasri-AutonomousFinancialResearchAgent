@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import date
 
 import pytest
 
@@ -807,3 +808,26 @@ def test_several_providers_down_stops_research_instead_of_cascading():
         BreakerBoard.system_degraded = original
     assert result.tool_calls == 0 and "several data providers are down" in result.stop_reason
     assert result.report_markdown  # the report is still written, with its gaps
+
+
+# ==================================================================================================
+# Day 10: disambiguation in the loop
+# ==================================================================================================
+
+
+def test_ambiguous_query_is_researched_on_documented_assumptions():
+    """Challenge 6: the agent proceeds on the most likely reading and says what it assumed."""
+    agent = make_agent(ScriptedLLM(), today=date(2026, 9, 30))
+    result = agent.run("What's happening with the banks?")
+    assert agent.disambiguation.level == "high"
+    assert agent.disambiguation.tickers == ["JPM", "BAC", "C", "WFC", "GS", "MS"]
+    report = result.report_markdown
+    assert "Scope and assumptions" in report and "US large-cap banks" in report
+    assert "Questions that would have been asked" in report and "as of 2026-09-30" in report
+
+
+def test_clear_query_adds_no_assumption_block():
+    agent = make_agent(ScriptedLLM(), today=date(2026, 9, 30))
+    result = agent.run(QUERY)
+    assert agent.disambiguation.level == "low"
+    assert "request was ambiguous" not in result.report_markdown

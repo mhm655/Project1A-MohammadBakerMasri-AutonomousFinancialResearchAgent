@@ -35,6 +35,14 @@ from langgraph.graph import END, START, StateGraph
 
 from agent import prompts
 from agent.circuit_breaker import BreakerBoard
+from agent.disambiguation import (
+    Disambiguation,
+    coverage_flags,
+    disambiguate,
+    rate_of_change_flags,
+    render_assumptions,
+    render_temporal_flags,
+)
 from agent.error_handler import AllFallbacksFailed, FailureInjector, ResilientDispatcher, RetryPolicy
 from agent.llm import LLMClient, LLMError
 from agent.parser import (
@@ -47,6 +55,7 @@ from agent.parser import (
     parse_sections,
     step_done_note,
 )
+from agent.query_analyzer import KNOWN_COMPANIES, TEMPLATE_RULES, QueryProfile, analyze_query  # noqa: F401
 from agent.tracing import TraceLogger
 from config.settings import AgentSettings, ResilienceSettings, RetrySettings, Settings, SynthesisSettings
 from memory.context_manager import count_tokens, fit_evidence
@@ -55,56 +64,6 @@ from synthesis.narrative import build_threads, conflicts_markdown, render_brief
 from tools import ToolError, ToolExecutionError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
 from tools.fact_checker import extract_quantities, fact_checker
 from tools.report_gen import TEMPLATES, cited_ids, section_title
-
-# --------------------------------------------------------------------------------------------------
-# Query analysis (a minimal version; the full analyser and disambiguation arrive on Day 10)
-# --------------------------------------------------------------------------------------------------
-
-KNOWN_COMPANIES = {
-    "microsoft": "MSFT", "apple": "AAPL", "tesla": "TSLA", "nvidia": "NVDA", "amazon": "AMZN",
-    "alphabet": "GOOGL", "google": "GOOGL", "palantir": "PLTR", "meta platforms": "META",
-    "jpmorgan": "JPM", "goldman sachs": "GS", "morgan stanley": "MS", "oracle": "ORCL",
-}
-
-# Checked in order; the first match wins. The default is company_profile.
-TEMPLATE_RULES: list[tuple[str, tuple[str, ...]]] = [
-    ("full_report", ("investment research report", "full research report", "complete investment")),
-    ("investigative", ("contradict", "investigate", "apparent contradiction")),
-    ("earnings_analysis", ("earnings", "quarterly results", "consensus")),  # before "compare": "compare to consensus"
-    ("comparative_analysis", ("compare", "comparison", " versus ", " vs ")),
-    ("thematic", ("themes", "cross-cutting", "across the")),
-    ("risk_assessment", ("risk assessment", "risks")),
-]
-
-_TICKER_HINT = re.compile(r"\((NASDAQ:|NYSE:)?\s*([A-Z]{1,5})\)|\bticker\s+([A-Z]{1,5})\b")
-
-
-@dataclass
-class QueryProfile:
-    template: str
-    tickers: list[str]
-    names: list[str]
-
-
-def analyze_query(query: str) -> QueryProfile:
-    lowered = f" {query.lower()} "
-    template = next((t for t, words in TEMPLATE_RULES if any(w in lowered for w in words)), "company_profile")
-    tickers: list[str] = []
-    names: list[str] = []
-    for name, ticker in KNOWN_COMPANIES.items():
-        if re.search(rf"\b{re.escape(name)}\b", lowered) and ticker not in tickers:
-            tickers.append(ticker)
-            names.append(name.title())
-    for m in _TICKER_HINT.finditer(query):
-        ticker = m.group(2) or m.group(3)
-        before = query[: m.start()].lower().rstrip()
-        # "Amazon (AWS)": brackets after a company we already know name a product or segment, not a
-        # ticker, unless an exchange prefix says otherwise ("(NASDAQ: MSFT)").
-        if m.group(2) and not m.group(1) and any(before.endswith(name) for name in KNOWN_COMPANIES):
-            continue
-        if ticker not in tickers:
-            tickers.append(ticker)
-    return QueryProfile(template=template, tickers=tickers, names=names)
 
 
 def default_plan(profile: QueryProfile) -> Plan:
@@ -421,6 +380,8 @@ class ResearchAgent:
         self.evidence: dict[str, ToolResult] = {}
         self.gaps: list[str] = []
         self.ledger = Ledger(claims=[], conflicts=[])
+        self.failures: list[tuple[str, dict[str, Any], str]] = []  # (tool, args, message), for coverage flags
+        self.disambiguation: Disambiguation | None = None
         self.budget_used = 0
         self._lock = threading.Lock()
         self._stop_reason = "completed"
@@ -563,8 +524,19 @@ class ResearchAgent:
 
     def _node_analyze(self, state: ResearchState) -> ResearchState:
         profile = analyze_query(state["query"])
-        self.tracer.thought(f"Report type '{profile.template}'; companies {profile.tickers or 'not identified'}.",
-                            node="analyze")
+        self.tracer.thought(f"Report type '{profile.template}' ({profile.query_type}, {profile.complexity}); "
+                            f"companies {profile.tickers or 'not identified'}; ambiguity {profile.ambiguity:.2f} "
+                            f"({profile.ambiguity_level}: {'; '.join(profile.signals) or 'clear'}).", node="analyze")
+        # Spec A7.3: an autonomous agent does not stop to ask. It picks the most likely reading,
+        # documents it, and lists the questions it would have asked.
+        self.disambiguation = disambiguate(profile, today=self._today or date.today())
+        d = self.disambiguation
+        # A query about earlier research gets its companies from memory (recall), not from sector defaults.
+        if not profile.tickers and d.tickers and profile.complexity != "cross_memory":
+            profile.tickers = list(d.tickers)
+        if d.assumptions:
+            self.tracer.decision("disambiguate", d.proceed_reading, assumptions=d.assumptions,
+                                 questions=d.clarifying_questions)
         return {"profile": profile}
 
     def _node_recall(self, state: ResearchState) -> ResearchState:
@@ -707,8 +679,12 @@ class ResearchAgent:
             if result.is_fallback:  # graceful degradation is disclosed, never silent (spec A4.3)
                 note = next((n for n in result.data.get("notes", []) if n.startswith("Fallback:")), "fallback data")
                 with self._lock:
+                    self.failures.append((result.data.get("fallback_for", step.tool), dict(step.args or {}), note))
                     self.gaps.append(f"Step '{step.goal}' ({step.tool} {_args_text(step.args)}): {note} "
                                      f"[{result.evidence_id}] is less reliable than the primary source.")
+        if status == "failed":
+            with self._lock:
+                self.failures.append((step.tool, dict(step.args or {}), summary))
         if status in ("failed", "skipped") and not summary.startswith("not needed"):
             with self._lock:
                 self.gaps.append(f"Step '{step.goal}' ({step.tool}) {summary}.")
@@ -836,7 +812,14 @@ class ResearchAgent:
         gaps = list(dict.fromkeys(self.gaps))  # de-duplicate, keep order
         gaps += [f"Unverified claim in {f}" for f in verification.get("flagged", [])]
         sections = dict(state.get("sections", {}))
+        today = self._today or date.today()
+        gaps = [f.message for f in coverage_flags(self.evidence, self.failures)] + gaps  # spec 15.3 edge cases
         sections["data_gaps_and_limitations"] = "\n".join(f"- {g}" for g in gaps) or ""
+        temporal = render_temporal_flags(rate_of_change_flags(self.evidence, today=today))
+        if temporal and sections.get("executive_summary"):
+            sections["executive_summary"] = f"{temporal}\n\n{sections['executive_summary']}"
+        elif temporal:
+            sections["data_gaps_and_limitations"] = f"{temporal}\n\n{sections['data_gaps_and_limitations']}"
         if self.ledger.conflicts:  # spec A6.3 step 6 / P6: every conflict and how it was resolved
             sections["data_gaps_and_limitations"] += (
                 "\n\nConflicting figures between sources, and how each was resolved:\n\n"
@@ -888,6 +871,9 @@ class ResearchAgent:
             f"- Stop reason: {self._stop_reason}.",
         ]
         lines += self._resilience_lines()
+        assumptions = render_assumptions(self.disambiguation) if self.disambiguation else ""
+        if assumptions:
+            lines.append("\n" + assumptions)
         if any(r.is_mock for r in self.evidence.values()):
             lines.append("- **Mock data was used; figures are approximations for development only.**")
         return "\n".join(lines)

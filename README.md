@@ -33,6 +33,7 @@ anywhere.
 | **Memory**: chunking per source type (one chunk per risk factor, Q&A pairs kept together); financial statements in a SQLite facts store; episodic lessons fed to the planner; prompts fitted to a token budget (40/30 primary/supporting); Challenge 7 recalls earlier research | Built (Day 6) |
 | **Synthesis**: a claim ledger (entity, metric, fiscal period, unit, evidence, confidence), configurable source-tier weights, the A6.3 conflict protocol (restatement, triangulated majority, highest tier, unresolved range) with a conflicts table in the report, and narrative threads (growth, margins, peers, news sentiment vs fundamentals) handed to the writer as a brief | Built (Day 8) |
 | **Error handling**: an error taxonomy with per-class retries and exponential backoff, one circuit breaker per data provider (stops research when several are down), fallback chains with at least two alternatives per network tool, gaps and fallback use stated in the report, and seeded failure injection (`--fail-rate`) | Built (Day 9) |
+| **Query analysis**: query type, complexity and a scored ambiguity level with its reasons; for ambiguous requests, documented assumptions (e.g. "the banks" = six largest US banks) and the questions it would have asked; flags for private companies, recent IPOs and fast-changing situations (M&A, leadership changes, restatements) | Built (Day 10) |
 | **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |
 
 The full design is in the [architecture specification](docs/architecture_specification.md).

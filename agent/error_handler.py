@@ -272,7 +272,7 @@ class ResilientDispatcher:
             if isinstance(result, ToolResult):
                 self._emit("fallback_used", {"tool": tool, "fallback": fb.tool,
                                              "error_class": primary.error_class})
-                return self._mark_fallback(result, tool, primary.error_class, fb)
+                return self._mark_fallback(result, tool, primary.error_class, fb, primary.message)
             self._emit("fallback_failed", {"tool": tool, "fallback": fb.tool,
                                            "error_class": result.error_class, "message": result.message})
 
@@ -350,12 +350,14 @@ class ResilientDispatcher:
     # ------------------------------------------------------------------ results and gaps
 
     @staticmethod
-    def _mark_fallback(result: ToolResult, primary: str, error_class: str, fb: Fallback) -> ToolResult:
+    def _mark_fallback(result: ToolResult, primary: str, error_class: str, fb: Fallback,
+                       message: str = "") -> ToolResult:
         # Copy: the registry may hand back its cached object, which other callers still hold.
         data = dict(result.data)
         notes = data.get("notes")
         notes = list(notes) if isinstance(notes, list) else ([notes] if notes else [])
-        notes.append(f"Fallback: {primary} failed ({error_class}); data from {fb.tool}.")
+        reason = f"{error_class}: {message[:160]}" if message else error_class
+        notes.append(f"Fallback: {primary} failed ({reason}); data from {fb.tool}.")
         if fb.note:
             notes.append(f"Fallback data is {fb.note}.")
         data["notes"] = notes

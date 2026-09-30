@@ -509,7 +509,7 @@ def test_open_breaker_skips_straight_to_fallback() -> None:
     assert result.is_fallback
     assert result.tool == "web_search"
     assert result.data["fallback_for"] == "financial_data_api"
-    assert "failed (unavailable)" in result.data["notes"][0]
+    assert "failed (unavailable: circuit open for sec_edgar)" in result.data["notes"][0]
     assert sleeps == []
     assert dispatcher.last_attempts[0].error_class == "unavailable"
     assert [kind for kind, _ in events][:1] == ["breaker_open"]
@@ -528,7 +528,8 @@ def test_fallback_result_is_marked_and_cached_original_is_not_mutated() -> None:
     assert result.tool == "sec_filing_search"
     assert result.data["fallback_for"] == "financial_data_api"
     assert result.data["notes"][0] == "existing"
-    assert "Fallback: financial_data_api failed (auth); data from sec_filing_search." in result.data["notes"]
+    assert ("Fallback: financial_data_api failed (auth: HTTP 401 from host); data from sec_filing_search."
+            in result.data["notes"])
     assert result.data["filings"] == [1]
     # The object the registry would keep in its cache is untouched.
     assert cached.is_fallback is False
