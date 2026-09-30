@@ -34,6 +34,8 @@ from typing import Any, TypedDict
 from langgraph.graph import END, START, StateGraph
 
 from agent import prompts
+from agent.circuit_breaker import BreakerBoard
+from agent.error_handler import AllFallbacksFailed, FailureInjector, ResilientDispatcher, RetryPolicy
 from agent.llm import LLMClient, LLMError
 from agent.parser import (
     SYSTEM_TOOLS,
@@ -46,7 +48,7 @@ from agent.parser import (
     step_done_note,
 )
 from agent.tracing import TraceLogger
-from config.settings import AgentSettings, Settings, SynthesisSettings
+from config.settings import AgentSettings, ResilienceSettings, RetrySettings, Settings, SynthesisSettings
 from memory.context_manager import count_tokens, fit_evidence
 from synthesis.engine import Ledger, build_ledger
 from synthesis.narrative import build_threads, conflicts_markdown, render_brief
@@ -245,6 +247,16 @@ def verification_text(result: ToolResult) -> str:
     return evidence_digest(result, VERIFY_LIMITS.get(result.tool, 6000))
 
 
+def _args_text(args: Any) -> str:
+    return ", ".join(str(v) for v in args.values() if not isinstance(v, (dict, list)))[:80] \
+        if isinstance(args, dict) else ""
+
+
+def _failure_text(exc: ToolError) -> str:
+    """A failed step's reason for the report: the Gap sentence when every fallback failed."""
+    return exc.gap.to_text() if isinstance(exc, AllFallbacksFailed) else str(exc)
+
+
 def _fmt_amount(v: Any) -> str:
     return "n/a" if v is None else (f"{v:,.2f}" if isinstance(v, float) and not v.is_integer() else f"{v:,.0f}")
 
@@ -349,11 +361,17 @@ class ResearchAgent:
         today: date | None = None,
         memory: Any = None,
         synthesis_settings: SynthesisSettings | None = None,
+        resilience_settings: ResilienceSettings | None = None,
+        retry_settings: RetrySettings | None = None,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self.llm = llm
         self.registry_factory = registry_factory
         self.cfg = agent_settings or AgentSettings()
         self.synthesis_cfg = synthesis_settings or SynthesisSettings()
+        self.resilience_cfg = resilience_settings or ResilienceSettings()
+        self.retry_cfg = retry_settings or RetrySettings()
+        self._sleep = sleep
         self.traces_dir = traces_dir
         self.max_seconds = max_seconds
         self.max_workers = max_workers
@@ -367,7 +385,8 @@ class ResearchAgent:
     @classmethod
     def from_settings(cls, settings: Settings, **overrides: Any) -> ResearchAgent:
         options: dict[str, Any] = {"agent_settings": settings.agent, "traces_dir": str(settings.paths.traces_dir),
-                                   "synthesis_settings": settings.synthesis}
+                                   "synthesis_settings": settings.synthesis, "resilience_settings": settings.resilience,
+                                   "retry_settings": settings.retry}
         options.update(overrides)
         llm = options.pop("llm", None) or LLMClient.from_settings(settings)
         if "memory" not in options:
@@ -385,6 +404,17 @@ class ResearchAgent:
         # least a minute (but never more than half).
         self._research_deadline = self._deadline - min(self.max_seconds / 2, max(60.0, self.max_seconds / 4))
         self.registry = self.registry_factory()
+        if self.resilience_cfg.fail_rate > 0:
+            self.registry.failure_injector = FailureInjector(rate=self.resilience_cfg.fail_rate,
+                                                             seed=self.resilience_cfg.fail_seed)
+        self.breakers = BreakerBoard(self.resilience_cfg.breaker_config(), clock=self._clock)
+        self.resilience_events: list[tuple[str, dict[str, Any]]] = []
+        self.dispatcher = ResilientDispatcher(
+            self.registry.dispatch, breakers=self.breakers,
+            policy=RetryPolicy(base_delay_s=self.retry_cfg.base_delay_s, max_retries=self.retry_cfg.max_retries,
+                               max_jitter_s=self.retry_cfg.max_jitter_s),
+            validate=self.registry.validate_args, sleep=self._sleep, clock=self._clock,
+            deadline=lambda: self._clock() >= self._research_deadline, on_event=self._on_resilience_event)
         self.tracer = TraceLogger(traces_dir=self.traces_dir)
         self.registry.add_listener(self.tracer.on_tool_call)
         self.llm.tracer = self.tracer
@@ -481,7 +511,8 @@ class ResearchAgent:
         from concurrent.futures import TimeoutError as FutureTimeout
 
         timeout = max(1.0, self._research_deadline - self._clock())
-        future = self._pool.submit(self.registry.dispatch, tool, args)
+        # Retries, circuit breakers and fallback chains (spec A4.3, architecture section 14).
+        future = self._pool.submit(self.dispatcher.call, tool, args)
         try:
             return future.result(timeout=timeout)
         except FutureTimeout:
@@ -489,7 +520,15 @@ class ResearchAgent:
                                      "download continues in the background and will be cached for the next run",
                                      tool=tool) from None
 
+    def _on_resilience_event(self, kind: str, payload: dict[str, Any]) -> None:
+        with self._lock:
+            self.resilience_events.append((kind, payload))
+        details = ", ".join(f"{k}={str(v)[:160]}" for k, v in payload.items())
+        self.tracer.log("note", text=f"resilience {kind}: {details}")
+
     def _take_call(self) -> bool:
+        if self._providers_down():
+            return False
         with self._lock:
             if self.budget_used >= self.cfg.max_tool_calls:
                 self._stop("tool-call budget exhausted")
@@ -498,7 +537,15 @@ class ResearchAgent:
             return True
 
     def _budget_left(self) -> bool:
-        return self.budget_used < self.cfg.max_tool_calls
+        return self.budget_used < self.cfg.max_tool_calls and not self._providers_down()
+
+    def _providers_down(self) -> bool:
+        """Several providers down at once: more calls would only fail (cascading failure), so stop
+        researching and write the report with what was gathered."""
+        if not self.breakers.system_degraded():
+            return False
+        self._stop(f"several data providers are down ({', '.join(self.breakers.open_providers())})")
+        return True
 
     def _stop(self, reason: str) -> None:
         if self._stop_reason == "completed":
@@ -609,9 +656,10 @@ class ResearchAgent:
             except ToolValidationError as exc:
                 problem = str(exc)  # wrong arguments: the LLM can repair these
             except ToolError as exc:
-                # The call was well-formed but the data is not there ("no filings for PLTR"). Changing
-                # the arguments cannot fix that, so do not spend LLM calls and budget trying.
-                return self._finish(step, "failed", f"{exc}")
+                # The call was well-formed but the data is not there ("no filings for PLTR"), or
+                # every fallback failed too. Changing the arguments cannot fix that, so do not spend
+                # LLM calls and budget trying.
+                return self._finish(step, "failed", _failure_text(exc))
 
         dependencies = "\n\n".join(
             evidence_digest(self.evidence[eid], 1800)
@@ -656,6 +704,11 @@ class ResearchAgent:
             with self._lock:
                 self.evidence[result.evidence_id] = result
             step.evidence_ids.append(result.evidence_id)
+            if result.is_fallback:  # graceful degradation is disclosed, never silent (spec A4.3)
+                note = next((n for n in result.data.get("notes", []) if n.startswith("Fallback:")), "fallback data")
+                with self._lock:
+                    self.gaps.append(f"Step '{step.goal}' ({step.tool} {_args_text(step.args)}): {note} "
+                                     f"[{result.evidence_id}] is less reliable than the primary source.")
         if status in ("failed", "skipped") and not summary.startswith("not needed"):
             with self._lock:
                 self.gaps.append(f"Step '{step.goal}' ({step.tool}) {summary}.")
@@ -798,6 +851,26 @@ class ResearchAgent:
         })
         return {"report": result.data}
 
+    def _resilience_lines(self) -> list[str]:
+        """Graceful degradation (spec A4.3): say which data came from fallbacks and what failed."""
+        lines = []
+        fallbacks = [r for r in self.evidence.values() if r.is_fallback]
+        if fallbacks:
+            used = "; ".join(f"[{r.evidence_id}] {r.tool} instead of {r.data.get('fallback_for', '?')}"
+                             for r in fallbacks)
+            lines.append(f"- Fallback data (lower confidence than the primary source): {used}.")
+        counts: dict[str, int] = {}
+        for kind, _ in self.resilience_events:
+            counts[kind] = counts.get(kind, 0) + 1
+        if counts.get("retry") or counts.get("breaker_open"):
+            lines.append(f"- Resilience: {counts.get('retry', 0)} retried call(s); circuit breakers opened for "
+                         f"{', '.join(self.breakers.open_providers()) or 'no provider'} at the end of research.")
+        injector = self.registry.failure_injector
+        if injector is not None:
+            lines.append(f"- **Failure injection test:** {sum(injector.injected.values())} tool failure(s) were "
+                         f"injected on purpose (rate {self.resilience_cfg.fail_rate:.0%}).")
+        return lines
+
     def _methodology(self, plan: Plan, verification: dict[str, Any]) -> str:
         done = plan.by_status("done")
         tools_used = sorted({s.tool for s in done})
@@ -814,6 +887,7 @@ class ResearchAgent:
             "claim matched exactly one retrieved source.",
             f"- Stop reason: {self._stop_reason}.",
         ]
+        lines += self._resilience_lines()
         if any(r.is_mock for r in self.evidence.values()):
             lines.append("- **Mock data was used; figures are approximations for development only.**")
         return "\n".join(lines)

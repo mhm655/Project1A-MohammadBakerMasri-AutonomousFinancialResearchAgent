@@ -20,12 +20,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", choices=["mock", "local", "free"], help="override ARA_MODE")
     parser.add_argument("--data", choices=["mock", "live"], help="override ARA_DATA_MODE")
     parser.add_argument("--max-seconds", type=float, default=300.0, help="wall-clock limit (default 300)")
+    parser.add_argument("--fail-rate", type=float, help="inject tool failures at this rate (0-1), to test recovery")
+    parser.add_argument("--fail-seed", type=int, help="seed for --fail-rate, for reproducible runs")
     args = parser.parse_args(argv)
 
     if args.mode:
         os.environ["ARA_MODE"] = args.mode
     if args.data:
         os.environ["ARA_DATA_MODE"] = args.data
+    if args.fail_rate is not None:
+        os.environ["ARA_FAIL_RATE"] = str(args.fail_rate)
+    if args.fail_seed is not None:
+        os.environ["ARA_FAIL_SEED"] = str(args.fail_seed)
 
     from agent.core import ResearchAgent
     from agent.tracing import configure_logging

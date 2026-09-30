@@ -144,6 +144,8 @@ class ToolRegistry:
         enforce_unlocks: bool = False,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
+        #: Optional :class:`agent.error_handler.FailureInjector` (spec 14.5), used to test recovery.
+        self.failure_injector: Any = None
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}, got {mode!r}")
         self.mode = mode
@@ -311,6 +313,8 @@ class ToolRegistry:
                 return cached
 
             try:
+                if self.failure_injector is not None:
+                    self.failure_injector.maybe_fail(name)
                 data = spec.handler(**clean)
             except ToolError as exc:
                 exc.tool = exc.tool or name

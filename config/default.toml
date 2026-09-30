@@ -87,6 +87,16 @@ max_replans = 3
 max_reflections = 2
 max_prompt_tokens = 6000   # fits free tiers such as Groq (about 7,000 input tokens per minute)
 
+[resilience]                # spec A4.3 / architecture section 14
+# One circuit breaker per data provider: it opens after 3 consecutive failures or when at least half
+# of the last 6 calls failed, and lets one trial call through after the cool-down.
+consecutive_failures = 3
+window = 6
+window_failure_ratio = 0.5
+cooldown_s = 30.0
+max_open_providers = 3      # this many providers down at once: stop researching, write the report
+fail_rate = 0.0             # injected failures for network tools (ARA_FAIL_RATE; Challenge 8: 0.5)
+
 [synthesis]                 # spec A6.2 / architecture section 12
 # Base weight of source tiers 1-5: SEC filings, curated data, company communications, major news,
 # other web. Used for conflict resolution and claim confidence.

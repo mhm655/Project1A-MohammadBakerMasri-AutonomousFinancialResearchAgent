@@ -107,6 +107,28 @@ class MemorySettings:
 
 
 @dataclass(frozen=True)
+class ResilienceSettings:
+    """Circuit breakers and failure injection (architecture section 14)."""
+
+    consecutive_failures: int = 3
+    window: int = 6
+    window_failure_ratio: float = 0.5
+    cooldown_s: float = 30.0
+    #: When this many providers are down at once, research stops and the report is written.
+    max_open_providers: int = 3
+    #: Injected failure rate for network tools (0 = off; Challenge 8 uses 0.5). ARA_FAIL_RATE overrides.
+    fail_rate: float = 0.0
+    fail_seed: int | None = None
+
+    def breaker_config(self) -> Any:
+        from agent.circuit_breaker import BreakerConfig
+
+        return BreakerConfig(consecutive_failures=self.consecutive_failures, window=self.window,
+                             window_failure_ratio=self.window_failure_ratio, cooldown_s=self.cooldown_s,
+                             max_open_providers=self.max_open_providers)
+
+
+@dataclass(frozen=True)
 class SynthesisSettings:
     #: Base weight of source tiers 1-5 (spec A6.2 with the corrected order, architecture section 12.3).
     tier_weights: tuple[float, ...] = (0.95, 0.85, 0.70, 0.60, 0.30)
@@ -146,6 +168,7 @@ class Settings:
     log_level: str
     project_root: Path = PROJECT_ROOT
     synthesis: SynthesisSettings = field(default_factory=SynthesisSettings)
+    resilience: ResilienceSettings = field(default_factory=ResilienceSettings)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -199,7 +222,23 @@ def load_settings(
         log_level=(env.get("ARA_LOG_LEVEL") or raw.get("logging", {}).get("level", "INFO")).upper(),
         project_root=project_root,
         synthesis=_synthesis_settings(raw.get("synthesis", {})),
+        resilience=_resilience_settings(raw.get("resilience", {}), env),
     )
+
+
+def _resilience_settings(raw: dict[str, Any], env: Mapping[str, str]) -> ResilienceSettings:
+    values = dict(raw)
+    try:
+        if env.get("ARA_FAIL_RATE"):
+            values["fail_rate"] = float(env["ARA_FAIL_RATE"])
+        if env.get("ARA_FAIL_SEED"):
+            values["fail_seed"] = int(env["ARA_FAIL_SEED"])
+    except ValueError as exc:
+        raise ConfigError(f"ARA_FAIL_RATE / ARA_FAIL_SEED must be numbers: {exc}") from exc
+    settings = ResilienceSettings(**values)
+    if not 0 <= settings.fail_rate <= 1:
+        raise ConfigError(f"resilience.fail_rate must be between 0 and 1, got {settings.fail_rate}")
+    return settings
 
 
 def _synthesis_settings(raw: dict[str, Any]) -> SynthesisSettings:

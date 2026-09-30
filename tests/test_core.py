@@ -254,9 +254,12 @@ def test_data_errors_are_not_sent_to_the_llm_for_repair():
                        "args": {"ticker": "ZZZZ", "statement_type": "income_statement"}}]}
     script = ScriptedLLM(plan=json.dumps(plan), synthesis="=== SECTION: executive_summary ===\nText.")
     result = make_agent(script).run(QUERY)
-    assert result.plan.get("s1").status == "failed" and result.tool_calls == 1
-    assert "EXECUTE" not in script.stages
-    assert any("ZZZZ" in g for g in result.gaps)
+    assert result.tool_calls == 1 and "EXECUTE" not in script.stages
+    # Day 9: the fallback chain (sec_filing_search, then web_search) answers instead, and the report
+    # says so rather than presenting web results as financial statements.
+    [eid] = result.plan.get("s1").evidence_ids
+    assert result.evidence[eid].is_fallback
+    assert any("ZZZZ" in g and "Fallback: financial_data_api failed" in g for g in result.gaps)
 
 
 def test_tool_budget_is_enforced_and_reported():
@@ -769,3 +772,38 @@ def test_writer_gets_the_synthesis_brief_and_the_report_lists_conflicts(monkeypa
     report = result.report_markdown
     assert "Conflicting figures between sources" in report
     assert "| MSFT | revenue |" in report.replace("Revenue", "revenue")
+
+
+# ==================================================================================================
+# Day 9: resilience in the loop
+# ==================================================================================================
+
+
+def test_half_the_tool_calls_failing_still_gives_a_transparent_report():
+    """Spec Day 9 task 5 / Challenge 8: inject failures below the retry and breaker layers."""
+    from config.settings import ResilienceSettings
+
+    sleeps = []
+    agent = make_agent(ScriptedLLM(), resilience_settings=ResilienceSettings(fail_rate=0.5, fail_seed=7),
+                       sleep=sleeps.append)
+    result = agent.run(QUERY)
+    injected = sum(agent.registry.failure_injector.injected.values())
+    assert injected > 0 and sleeps  # failures happened and were retried with backoff
+    assert result.report_markdown and result.stop_reason in ("completed", "tool-call budget exhausted")
+    methodology = result.sections.get("research_methodology") or result.report_markdown
+    assert f"{injected} tool failure(s) were injected" in result.report_markdown
+    assert "Failure injection test" in methodology or "Failure injection test" in result.report_markdown
+
+
+def test_several_providers_down_stops_research_instead_of_cascading():
+    from agent.circuit_breaker import BreakerBoard
+
+    agent = make_agent(ScriptedLLM())
+    original = BreakerBoard.system_degraded
+    try:
+        BreakerBoard.system_degraded = lambda self: True
+        result = agent.run(QUERY)
+    finally:
+        BreakerBoard.system_degraded = original
+    assert result.tool_calls == 0 and "several data providers are down" in result.stop_reason
+    assert result.report_markdown  # the report is still written, with its gaps
