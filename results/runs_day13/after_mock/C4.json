@@ -1,0 +1,3455 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C4",
+  "number": 4,
+  "title": "Industry Comparison",
+  "expected_pages": [
+   10,
+   12
+  ]
+ },
+ "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+ "session_id": "session-20261001-203223-9955",
+ "data_mode": "mock",
+ "fail_rate": 0.0,
+ "fail_tools": [],
+ "injected_failures": {},
+ "profile": {
+  "template": "comparative_analysis",
+  "tickers": [
+   "MSFT",
+   "AMZN",
+   "GOOGL"
+  ],
+  "names": [
+   "Microsoft",
+   "Amazon",
+   "Google"
+  ],
+  "query_type": "comparison",
+  "complexity": "multi_company",
+  "periods": [],
+  "ambiguity": 0.1,
+  "ambiguity_level": "low",
+  "signals": [
+   "+0.10: no timeframe stated"
+  ],
+  "sector": "cloud computing"
+ },
+ "template": "comparative_analysis",
+ "stop_reason": "completed",
+ "duration_s": 0.13,
+ "tool_calls": 12,
+ "llm_usage": {
+  "calls": 9,
+  "failures": 0,
+  "prompt_tokens": 19213,
+  "completion_tokens": 576,
+  "reasoning_tokens": 0
+ },
+ "report_markdown": "# MSFT, AMZN, GOOGL: Comparative Analysis\n\n> **Warning:** this report was generated from MOCK data and must not be used or cited.\n\n## Executive Summary\n\nScripted text for executive_summary. [E1]\n\n## Methodology\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Revenue Growth\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Market Share\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Margins\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Competitive Advantages\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Conclusion\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Data Gaps and Limitations\n\n- AMZN has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- GOOGL has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Earnings call for MSFT' (earnings_transcript MSFT, 8-K): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search. [E10] is less reliable than the primary source.\n- Step 'Latest 10-K for AMZN' (sec_filing_search AMZN, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Earnings call for AMZN' (earnings_transcript AMZN earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment. [E13] is less reliable than the primary source.\n- Step 'Latest 10-K for GOOGL' (sec_filing_search GOOGL, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search. [E15] is less reliable than the primary source.\n- Step 'Income statement for GOOGL' (financial_data_api GOOGL income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Income statement for AMZN' (financial_data_api AMZN income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for GOOGL' (earnings_transcript GOOGL earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment. [E17] is less reliable than the primary source.\n- Section not completed: Methodology.\n- Section not completed: Revenue Growth.\n- Section not completed: Market Share.\n- Section not completed: Margins.\n- Section not completed: Competitive Advantages.\n- Section not completed: Conclusion.\n\n## Research Methodology\n\n- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E10] sec_filing_search instead of earnings_transcript; [E11] web_search instead of sec_filing_search; [E13] news_sentiment instead of earnings_transcript; [E15] web_search instead of sec_filing_search; [E14] web_search instead of financial_data_api; [E16] web_search instead of financial_data_api; [E17] news_sentiment instead of earnings_transcript.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**\n\n## Sources\n\n- [E1] vector_db_search: Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Go (memory, 2026-10-01)\n- [E6] company_profile: MSFT (company data, 2026-10-01)\n- [E7] financial_data_api: income_statement, MSFT, annual, 3 (financial data, 2026-10-01)\n- [E8] company_profile: AMZN (company data, 2026-10-01)\n- [E9] sec_filing_search: MSFT, 10-K (SEC filing, 2024-08-04). https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm\n- [E10] sec_filing_search: MSFT, 8-K (SEC filing, 2024-07-28). https://www.sec.gov/Archives/edgar/data/789019/000078901924003000/mock.htm\n- [E11] web_search: AMZN 10-K SEC filing, 10 (web, 2026-10-01)\n- [E13] news_sentiment: AMZN earnings, 20, 30 (news, 2026-10-01)\n- [E12] company_profile: GOOGL (company data, 2026-10-01)\n- [E15] web_search: GOOGL 10-K SEC filing, 10 (web, 2026-10-01)\n- [E14] web_search: GOOGL income statement financials, 10 (web, 2026-10-01)\n- [E16] web_search: AMZN income statement financials, 10 (web, 2026-10-01)\n- [E17] news_sentiment: GOOGL earnings, 20, 30 (news, 2026-10-01)\n",
+ "sections": {
+  "executive_summary": "Scripted text for executive_summary. [E1]"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "s1",
+    "goal": "Company facts for MSFT",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "MSFT"
+    },
+    "depends_on": [],
+    "reason": "Company facts for MSFT",
+    "status": "done",
+    "evidence_ids": [
+     "E6"
+    ],
+    "summary": "company_profile returned E6",
+    "attempts": 1
+   },
+   {
+    "id": "s2",
+    "goal": "Income statement for MSFT",
+    "tool": "financial_data_api",
+    "args": {
+     "statement_type": "income_statement",
+     "ticker": "MSFT",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "Income statement for MSFT",
+    "status": "done",
+    "evidence_ids": [
+     "E7"
+    ],
+    "summary": "financial_data_api returned E7",
+    "attempts": 1
+   },
+   {
+    "id": "s3",
+    "goal": "Earnings call for MSFT",
+    "tool": "earnings_transcript",
+    "args": {
+     "ticker": "MSFT",
+     "filing_type": "8-K"
+    },
+    "depends_on": [],
+    "reason": "Earnings call for MSFT",
+    "status": "done",
+    "evidence_ids": [
+     "E10"
+    ],
+    "summary": "earnings_transcript returned E10",
+    "attempts": 1
+   },
+   {
+    "id": "s4",
+    "goal": "Latest 10-K for MSFT",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "MSFT",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for MSFT",
+    "status": "done",
+    "evidence_ids": [
+     "E9"
+    ],
+    "summary": "sec_filing_search returned E9",
+    "attempts": 1
+   },
+   {
+    "id": "s5",
+    "goal": "Company facts for AMZN",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "AMZN"
+    },
+    "depends_on": [],
+    "reason": "Company facts for AMZN",
+    "status": "done",
+    "evidence_ids": [
+     "E8"
+    ],
+    "summary": "company_profile returned E8",
+    "attempts": 1
+   },
+   {
+    "id": "s6",
+    "goal": "Income statement for AMZN",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "AMZN income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for AMZN",
+    "status": "done",
+    "evidence_ids": [
+     "E16"
+    ],
+    "summary": "financial_data_api returned E16",
+    "attempts": 1
+   },
+   {
+    "id": "s7",
+    "goal": "Earnings call for AMZN",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "AMZN earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for AMZN",
+    "status": "done",
+    "evidence_ids": [
+     "E13"
+    ],
+    "summary": "earnings_transcript returned E13",
+    "attempts": 1
+   },
+   {
+    "id": "s8",
+    "goal": "Latest 10-K for AMZN",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "AMZN",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for AMZN",
+    "status": "done",
+    "evidence_ids": [
+     "E11"
+    ],
+    "summary": "sec_filing_search returned E11",
+    "attempts": 1
+   },
+   {
+    "id": "s9",
+    "goal": "Company facts for GOOGL",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "GOOGL"
+    },
+    "depends_on": [],
+    "reason": "Company facts for GOOGL",
+    "status": "done",
+    "evidence_ids": [
+     "E12"
+    ],
+    "summary": "company_profile returned E12",
+    "attempts": 1
+   },
+   {
+    "id": "s10",
+    "goal": "Income statement for GOOGL",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "GOOGL income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for GOOGL",
+    "status": "done",
+    "evidence_ids": [
+     "E14"
+    ],
+    "summary": "financial_data_api returned E14",
+    "attempts": 1
+   },
+   {
+    "id": "s11",
+    "goal": "Earnings call for GOOGL",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "GOOGL earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for GOOGL",
+    "status": "done",
+    "evidence_ids": [
+     "E17"
+    ],
+    "summary": "earnings_transcript returned E17",
+    "attempts": 1
+   },
+   {
+    "id": "s12",
+    "goal": "Latest 10-K for GOOGL",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "GOOGL",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for GOOGL",
+    "status": "done",
+    "evidence_ids": [
+     "E15"
+    ],
+    "summary": "sec_filing_search returned E15",
+    "attempts": 1
+   }
+  ],
+  "rationale": "scripted",
+  "rejected": []
+ },
+ "evidence": {
+  "E1": {
+   "evidence_id": "E1",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "MSFT"
+   },
+   "data": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "results": [
+     {
+      "id": "msft-10-k-2024-06-30-9ae4c33e57",
+      "content": "Microsoft Corporation Form 10-K (period ended 2024-06-30), Item 1 Business: Develops and licenses software, cloud services and devices. Reports three segments: Productivity and Business Processes, Intelligent Cloud (including Azure), and More Personal Computing.",
+      "metadata": {
+       "confidence": 0.95,
+       "verified": false,
+       "ticker": "MSFT",
+       "source_type": "10-K",
+       "date": "2024-06-30",
+       "researcher_session": "session-20261001-203223-af9a",
+       "evidence_id": "E4",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm",
+       "section": "Item 1"
+      },
+      "score": 0.1064
+     },
+     {
+      "id": "msft-8-k-2024-06-30-d678703f45",
+      "content": "Microsoft Corporation Form 8-K (period ended 2024-06-30), Item 2.02 Results of Operations and Financial Condition: The company announced financial results; the press release is furnished as Exhibit 99.1.",
+      "metadata": {
+       "confidence": 0.95,
+       "verified": false,
+       "ticker": "MSFT",
+       "source_type": "8-K",
+       "date": "2024-06-30",
+       "researcher_session": "session-20261001-203223-af9a",
+       "evidence_id": "E5",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924003000/mock.htm",
+       "section": "Item 2.02"
+      },
+      "score": 0.0851
+     },
+     {
+      "id": "msft-10-k-2024-06-30-44db4ba059",
+      "content": "Microsoft Corporation Form 10-K (period ended 2024-06-30), Item 7 Management's Discussion and Analysis: Fiscal 2024 revenue was $245,122 million, up 15.7% from the prior year. Operating income was $109,433 million and net income $88,136 million.",
+      "metadata": {
+       "confidence": 0.95,
+       "verified": false,
+       "ticker": "MSFT",
+       "source_type": "10-K",
+       "date": "2024-06-30",
+       "researcher_session": "session-20261001-203223-af9a",
+       "evidence_id": "E4",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm",
+       "section": "Item 7"
+      },
+      "score": 0.0755
+     }
+    ],
+    "searched_records": 45
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.39,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E6": {
+   "evidence_id": "E6",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "data": {
+    "ticker": "MSFT",
+    "name": "Microsoft Corporation",
+    "cik": "0000789019",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Software - Infrastructure",
+    "sic_code": "7372",
+    "headquarters": "Redmond, Washington, USA",
+    "employees": 228000,
+    "fiscal_year_end": "0630",
+    "market_cap": 3100000000000.0,
+    "description": "Develops and licenses software, cloud services and devices. Reports three segments: Productivity and Business Processes, Intelligent Cloud (including Azure), and More Personal Computing.",
+    "executives": [
+     {
+      "name": "Satya Nadella",
+      "title": "Chairman and Chief Executive Officer"
+     },
+     {
+      "name": "Amy Hood",
+      "title": "Executive Vice President and Chief Financial Officer"
+     },
+     {
+      "name": "Brad Smith",
+      "title": "Vice Chair and President"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.198,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E7": {
+   "evidence_id": "E7",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "MSFT",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "MSFT",
+    "company_name": "Microsoft Corporation",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "millions",
+    "fiscal_year_end": "0630",
+    "data": [
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-06-30",
+      "values": {
+       "revenue": 245122,
+       "gross_profit": 171008,
+       "operating_income": 109433,
+       "net_income": 88136,
+       "eps_diluted": 11.8
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-06-30",
+      "values": {
+       "revenue": 211915,
+       "gross_profit": 146052,
+       "operating_income": 88523,
+       "net_income": 72361,
+       "eps_diluted": 9.68
+      }
+     },
+     {
+      "fiscal_year": 2022,
+      "fiscal_period": "FY",
+      "period_end": "2022-06-30",
+      "values": {
+       "revenue": 198270,
+       "gross_profit": 135620,
+       "operating_income": 83383,
+       "net_income": 72738,
+       "eps_diluted": 9.65
+      }
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.343,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E8": {
+   "evidence_id": "E8",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "AMZN"
+   },
+   "data": {
+    "ticker": "AMZN",
+    "name": "Amazon.com, Inc.",
+    "market_cap": 2200000000000.0,
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite.",
+     "Partial profile: only name and market cap available in mock mode."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.098,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E9": {
+   "evidence_id": "E9",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "data": {
+    "ticker": "MSFT",
+    "cik": "0000789019",
+    "company_name": "Microsoft Corporation",
+    "filing_type": "10-K",
+    "filing_date": "2024-08-04",
+    "period_of_report": "2024-06-30",
+    "accession_number": "0000789019-24-001000",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm",
+    "sections": [
+     {
+      "item": "1",
+      "title": "Business",
+      "text": "Develops and licenses software, cloud services and devices. Reports three segments: Productivity and Business Processes, Intelligent Cloud (including Azure), and More Personal Computing."
+     },
+     {
+      "item": "1A",
+      "title": "Risk Factors",
+      "text": "- Intense competition across cloud, productivity, gaming and devices.\n- Heavy investment in AI infrastructure may not earn expected returns.\n- Cybersecurity attacks on Microsoft or its customers could damage trust.\n- Evolving regulation of AI, privacy and competition in multiple jurisdictions.\n- Dependence on third-party hardware and datacenter capacity."
+     },
+     {
+      "item": "7",
+      "title": "Management's Discussion and Analysis",
+      "text": "Fiscal 2024 revenue was $245,122 million, up 15.7% from the prior year. Operating income was $109,433 million and net income $88,136 million."
+     },
+     {
+      "item": "8",
+      "title": "Financial Statements and Supplementary Data",
+      "text": "Audited consolidated financial statements (see financial_data_api for line items)."
+     }
+    ],
+    "risk_factors": [
+     "Intense competition across cloud, productivity, gaming and devices.",
+     "Heavy investment in AI infrastructure may not earn expected returns.",
+     "Cybersecurity attacks on Microsoft or its customers could damage trust.",
+     "Evolving regulation of AI, privacy and competition in multiple jurisdictions.",
+     "Dependence on third-party hardware and datacenter capacity."
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.277,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E10": {
+   "evidence_id": "E10",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "8-K"
+   },
+   "data": {
+    "ticker": "MSFT",
+    "cik": "0000789019",
+    "company_name": "Microsoft Corporation",
+    "filing_type": "8-K",
+    "filing_date": "2024-07-28",
+    "period_of_report": "2024-06-30",
+    "accession_number": "0000789019-24-003000",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924003000/mock.htm",
+    "sections": [
+     {
+      "item": "2.02",
+      "title": "Results of Operations and Financial Condition",
+      "text": "The company announced financial results; the press release is furnished as Exhibit 99.1."
+     },
+     {
+      "item": "Exhibit 99.1",
+      "title": "Press release",
+      "text": "Fiscal 2024 revenue was $245,122 million, up 15.7% from the prior year. Operating income was $109,433 million and net income $88,136 million."
+     }
+    ],
+    "risk_factors": [],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search.",
+     "Fallback data is 8-K earnings releases instead of the call transcript."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.225,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E11": {
+   "evidence_id": "E11",
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "AMZN 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "AMZN 10-K SEC filing: what investors need to know",
+      "url": "https://mock.cnbc.com/amzn-10-k-sec-filing-1",
+      "snippet": "[mock] CNBC coverage of AMZN 10-K SEC filing, published 2024-07-02.",
+      "source": "CNBC",
+      "published": "2024-07-02"
+     },
+     {
+      "title": "Analysts weigh in on AMZN 10-K SEC filing",
+      "url": "https://mock.cnbc.com/amzn-10-k-sec-filing-2",
+      "snippet": "[mock] CNBC coverage of AMZN 10-K SEC filing, published 2025-04-07.",
+      "source": "CNBC",
+      "published": "2025-04-07"
+     },
+     {
+      "title": "AMZN 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.seekingalpha.com/amzn-10-k-sec-filing-3",
+      "snippet": "[mock] Seeking Alpha coverage of AMZN 10-K SEC filing, published 2025-01-20.",
+      "source": "Seeking Alpha",
+      "published": "2025-01-20"
+     },
+     {
+      "title": "Five takeaways on AMZN 10-K SEC filing",
+      "url": "https://mock.cnbc.com/amzn-10-k-sec-filing-4",
+      "snippet": "[mock] CNBC coverage of AMZN 10-K SEC filing, published 2025-06-10.",
+      "source": "CNBC",
+      "published": "2025-06-10"
+     },
+     {
+      "title": "Why AMZN 10-K SEC filing matters for the market",
+      "url": "https://mock.finance.yahoo.com/amzn-10-k-sec-filing-5",
+      "snippet": "[mock] Yahoo Finance coverage of AMZN 10-K SEC filing, published 2024-12-18.",
+      "source": "Yahoo Finance",
+      "published": "2024-12-18"
+     },
+     {
+      "title": "AMZN 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.wsj.com/amzn-10-k-sec-filing-6",
+      "snippet": "[mock] The Wall Street Journal coverage of AMZN 10-K SEC filing, published 2024-11-21.",
+      "source": "The Wall Street Journal",
+      "published": "2024-11-21"
+     },
+     {
+      "title": "AMZN 10-K SEC filing: what investors need to know",
+      "url": "https://mock.ft.com/amzn-10-k-sec-filing-7",
+      "snippet": "[mock] Financial Times coverage of AMZN 10-K SEC filing, published 2024-12-21.",
+      "source": "Financial Times",
+      "published": "2024-12-21"
+     },
+     {
+      "title": "Analysts weigh in on AMZN 10-K SEC filing",
+      "url": "https://mock.cnbc.com/amzn-10-k-sec-filing-8",
+      "snippet": "[mock] CNBC coverage of AMZN 10-K SEC filing, published 2024-07-31.",
+      "source": "CNBC",
+      "published": "2024-07-31"
+     },
+     {
+      "title": "AMZN 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.wsj.com/amzn-10-k-sec-filing-9",
+      "snippet": "[mock] The Wall Street Journal coverage of AMZN 10-K SEC filing, published 2024-11-09.",
+      "source": "The Wall Street Journal",
+      "published": "2024-11-09"
+     },
+     {
+      "title": "Five takeaways on AMZN 10-K SEC filing",
+      "url": "https://mock.seekingalpha.com/amzn-10-k-sec-filing-10",
+      "snippet": "[mock] Seeking Alpha coverage of AMZN 10-K SEC filing, published 2025-03-14.",
+      "source": "Seeking Alpha",
+      "published": "2025-03-14"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.515,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E13": {
+   "evidence_id": "E13",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "AMZN earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "AMZN earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": 0.1441,
+     "label": "positive",
+     "positive": 0.55,
+     "negative": 0.4,
+     "neutral": 0.05
+    },
+    "articles": [
+     {
+      "title": "AMZN earnings unveils new products at annual event",
+      "url": "https://mock.marketwatch.com/amzn-earnings-unveils-new-products-at-annual-event-1",
+      "source": "MarketWatch",
+      "published": "2025-06-15",
+      "summary": "[mock] AMZN earnings unveils new products at annual event.",
+      "sentiment_score": 0.4811,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of AMZN earnings",
+      "url": "https://mock.bloomberg.com/regulators-step-up-scrutiny-of-amzn-earnings-2",
+      "source": "Bloomberg",
+      "published": "2025-06-08",
+      "summary": "[mock] Regulators step up scrutiny of AMZN earnings.",
+      "sentiment_score": -0.4395,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings unveils new products at annual event",
+      "url": "https://mock.reuters.com/amzn-earnings-unveils-new-products-at-annual-event-3",
+      "source": "Reuters",
+      "published": "2025-06-16",
+      "summary": "[mock] AMZN earnings unveils new products at annual event.",
+      "sentiment_score": 0.3243,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings shares slip amid margin concerns",
+      "url": "https://mock.seekingalpha.com/amzn-earnings-shares-slip-amid-margin-concerns-4",
+      "source": "Seeking Alpha",
+      "published": "2025-06-01",
+      "summary": "[mock] AMZN earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3667,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Analysts raise price targets on AMZN earnings",
+      "url": "https://mock.wsj.com/analysts-raise-price-targets-on-amzn-earnings-5",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-07",
+      "summary": "[mock] Analysts raise price targets on AMZN earnings.",
+      "sentiment_score": 0.3964,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of AMZN earnings",
+      "url": "https://mock.bloomberg.com/regulators-step-up-scrutiny-of-amzn-earnings-6",
+      "source": "Bloomberg",
+      "published": "2025-06-14",
+      "summary": "[mock] Regulators step up scrutiny of AMZN earnings.",
+      "sentiment_score": -0.4893,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Analysts raise price targets on AMZN earnings",
+      "url": "https://mock.seekingalpha.com/analysts-raise-price-targets-on-amzn-earnings-7",
+      "source": "Seeking Alpha",
+      "published": "2025-06-13",
+      "summary": "[mock] Analysts raise price targets on AMZN earnings.",
+      "sentiment_score": 0.643,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings holds steady in volatile market",
+      "url": "https://mock.reuters.com/amzn-earnings-holds-steady-in-volatile-market-8",
+      "source": "Reuters",
+      "published": "2025-06-14",
+      "summary": "[mock] AMZN earnings holds steady in volatile market.",
+      "sentiment_score": 0.0675,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings beats expectations as demand stays strong",
+      "url": "https://mock.bloomberg.com/amzn-earnings-beats-expectations-as-demand-stays-strong-9",
+      "source": "Bloomberg",
+      "published": "2025-06-28",
+      "summary": "[mock] AMZN earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.7072,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings unveils new products at annual event",
+      "url": "https://mock.cnbc.com/amzn-earnings-unveils-new-products-at-annual-event-10",
+      "source": "CNBC",
+      "published": "2025-06-23",
+      "summary": "[mock] AMZN earnings unveils new products at annual event.",
+      "sentiment_score": 0.3639,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings shares slip amid margin concerns",
+      "url": "https://mock.bloomberg.com/amzn-earnings-shares-slip-amid-margin-concerns-11",
+      "source": "Bloomberg",
+      "published": "2025-06-06",
+      "summary": "[mock] AMZN earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.2887,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings shares slip amid margin concerns",
+      "url": "https://mock.cnbc.com/amzn-earnings-shares-slip-amid-margin-concerns-12",
+      "source": "CNBC",
+      "published": "2025-06-18",
+      "summary": "[mock] AMZN earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.288,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings announces leadership changes",
+      "url": "https://mock.wsj.com/amzn-earnings-announces-leadership-changes-13",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-06",
+      "summary": "[mock] AMZN earnings announces leadership changes.",
+      "sentiment_score": -0.0579,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings announces leadership changes",
+      "url": "https://mock.cnbc.com/amzn-earnings-announces-leadership-changes-14",
+      "source": "CNBC",
+      "published": "2025-06-28",
+      "summary": "[mock] AMZN earnings announces leadership changes.",
+      "sentiment_score": 0.0108,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "AMZN earnings shares slip amid margin concerns",
+      "url": "https://mock.bloomberg.com/amzn-earnings-shares-slip-amid-margin-concerns-15",
+      "source": "Bloomberg",
+      "published": "2025-06-03",
+      "summary": "[mock] AMZN earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3532,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings beats expectations as demand stays strong",
+      "url": "https://mock.marketwatch.com/amzn-earnings-beats-expectations-as-demand-stays-strong-16",
+      "source": "MarketWatch",
+      "published": "2025-06-28",
+      "summary": "[mock] AMZN earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.7316,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings announces leadership changes",
+      "url": "https://mock.wsj.com/amzn-earnings-announces-leadership-changes-17",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-26",
+      "summary": "[mock] AMZN earnings announces leadership changes.",
+      "sentiment_score": -0.0813,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "AMZN earnings unveils new products at annual event",
+      "url": "https://mock.reuters.com/amzn-earnings-unveils-new-products-at-annual-event-18",
+      "source": "Reuters",
+      "published": "2025-06-22",
+      "summary": "[mock] AMZN earnings unveils new products at annual event.",
+      "sentiment_score": 0.4277,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings beats expectations as demand stays strong",
+      "url": "https://mock.seekingalpha.com/amzn-earnings-beats-expectations-as-demand-stays-strong-19",
+      "source": "Seeking Alpha",
+      "published": "2025-06-23",
+      "summary": "[mock] AMZN earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.605,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "AMZN earnings beats expectations as demand stays strong",
+      "url": "https://mock.cnbc.com/amzn-earnings-beats-expectations-as-demand-stays-strong-20",
+      "source": "CNBC",
+      "published": "2025-06-12",
+      "summary": "[mock] AMZN earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.4873,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 1.274,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E12": {
+   "evidence_id": "E12",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "GOOGL"
+   },
+   "data": {
+    "ticker": "GOOGL",
+    "name": "Alphabet Inc.",
+    "market_cap": 2100000000000.0,
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite.",
+     "Partial profile: only name and market cap available in mock mode."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.099,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E15": {
+   "evidence_id": "E15",
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "GOOGL 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "GOOGL 10-K SEC filing: what investors need to know",
+      "url": "https://mock.wsj.com/googl-10-k-sec-filing-1",
+      "snippet": "[mock] The Wall Street Journal coverage of GOOGL 10-K SEC filing, published 2024-09-10.",
+      "source": "The Wall Street Journal",
+      "published": "2024-09-10"
+     },
+     {
+      "title": "Analysts weigh in on GOOGL 10-K SEC filing",
+      "url": "https://mock.ft.com/googl-10-k-sec-filing-2",
+      "snippet": "[mock] Financial Times coverage of GOOGL 10-K SEC filing, published 2024-09-22.",
+      "source": "Financial Times",
+      "published": "2024-09-22"
+     },
+     {
+      "title": "GOOGL 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/googl-10-k-sec-filing-3",
+      "snippet": "[mock] MarketWatch coverage of GOOGL 10-K SEC filing, published 2025-01-14.",
+      "source": "MarketWatch",
+      "published": "2025-01-14"
+     },
+     {
+      "title": "Five takeaways on GOOGL 10-K SEC filing",
+      "url": "https://mock.bloomberg.com/googl-10-k-sec-filing-4",
+      "snippet": "[mock] Bloomberg coverage of GOOGL 10-K SEC filing, published 2024-10-20.",
+      "source": "Bloomberg",
+      "published": "2024-10-20"
+     },
+     {
+      "title": "Why GOOGL 10-K SEC filing matters for the market",
+      "url": "https://mock.cnbc.com/googl-10-k-sec-filing-5",
+      "snippet": "[mock] CNBC coverage of GOOGL 10-K SEC filing, published 2025-02-20.",
+      "source": "CNBC",
+      "published": "2025-02-20"
+     },
+     {
+      "title": "GOOGL 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.seekingalpha.com/googl-10-k-sec-filing-6",
+      "snippet": "[mock] Seeking Alpha coverage of GOOGL 10-K SEC filing, published 2025-04-08.",
+      "source": "Seeking Alpha",
+      "published": "2025-04-08"
+     },
+     {
+      "title": "GOOGL 10-K SEC filing: what investors need to know",
+      "url": "https://mock.cnbc.com/googl-10-k-sec-filing-7",
+      "snippet": "[mock] CNBC coverage of GOOGL 10-K SEC filing, published 2025-03-10.",
+      "source": "CNBC",
+      "published": "2025-03-10"
+     },
+     {
+      "title": "Analysts weigh in on GOOGL 10-K SEC filing",
+      "url": "https://mock.marketwatch.com/googl-10-k-sec-filing-8",
+      "snippet": "[mock] MarketWatch coverage of GOOGL 10-K SEC filing, published 2024-12-03.",
+      "source": "MarketWatch",
+      "published": "2024-12-03"
+     },
+     {
+      "title": "GOOGL 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.ft.com/googl-10-k-sec-filing-9",
+      "snippet": "[mock] Financial Times coverage of GOOGL 10-K SEC filing, published 2025-01-13.",
+      "source": "Financial Times",
+      "published": "2025-01-13"
+     },
+     {
+      "title": "Five takeaways on GOOGL 10-K SEC filing",
+      "url": "https://mock.seekingalpha.com/googl-10-k-sec-filing-10",
+      "snippet": "[mock] Seeking Alpha coverage of GOOGL 10-K SEC filing, published 2025-06-03.",
+      "source": "Seeking Alpha",
+      "published": "2025-06-03"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.544,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E14": {
+   "evidence_id": "E14",
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "GOOGL income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "GOOGL income statement financials: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/googl-income-statement-financials-1",
+      "snippet": "[mock] Yahoo Finance coverage of GOOGL income statement financials, published 2025-05-18.",
+      "source": "Yahoo Finance",
+      "published": "2025-05-18"
+     },
+     {
+      "title": "Analysts weigh in on GOOGL income statement financials",
+      "url": "https://mock.wsj.com/googl-income-statement-financials-2",
+      "snippet": "[mock] The Wall Street Journal coverage of GOOGL income statement financials, published 2024-11-10.",
+      "source": "The Wall Street Journal",
+      "published": "2024-11-10"
+     },
+     {
+      "title": "GOOGL income statement financials - latest developments and outlook",
+      "url": "https://mock.wsj.com/googl-income-statement-financials-3",
+      "snippet": "[mock] The Wall Street Journal coverage of GOOGL income statement financials, published 2025-05-19.",
+      "source": "The Wall Street Journal",
+      "published": "2025-05-19"
+     },
+     {
+      "title": "Five takeaways on GOOGL income statement financials",
+      "url": "https://mock.reuters.com/googl-income-statement-financials-4",
+      "snippet": "[mock] Reuters coverage of GOOGL income statement financials, published 2024-07-06.",
+      "source": "Reuters",
+      "published": "2024-07-06"
+     },
+     {
+      "title": "Why GOOGL income statement financials matters for the market",
+      "url": "https://mock.seekingalpha.com/googl-income-statement-financials-5",
+      "snippet": "[mock] Seeking Alpha coverage of GOOGL income statement financials, published 2024-07-03.",
+      "source": "Seeking Alpha",
+      "published": "2024-07-03"
+     },
+     {
+      "title": "GOOGL income statement financials: risks and opportunities ahead",
+      "url": "https://mock.wsj.com/googl-income-statement-financials-6",
+      "snippet": "[mock] The Wall Street Journal coverage of GOOGL income statement financials, published 2025-06-19.",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-19"
+     },
+     {
+      "title": "GOOGL income statement financials: what investors need to know",
+      "url": "https://mock.wsj.com/googl-income-statement-financials-7",
+      "snippet": "[mock] The Wall Street Journal coverage of GOOGL income statement financials, published 2024-11-18.",
+      "source": "The Wall Street Journal",
+      "published": "2024-11-18"
+     },
+     {
+      "title": "Analysts weigh in on GOOGL income statement financials",
+      "url": "https://mock.marketwatch.com/googl-income-statement-financials-8",
+      "snippet": "[mock] MarketWatch coverage of GOOGL income statement financials, published 2024-07-26.",
+      "source": "MarketWatch",
+      "published": "2024-07-26"
+     },
+     {
+      "title": "GOOGL income statement financials - latest developments and outlook",
+      "url": "https://mock.cnbc.com/googl-income-statement-financials-9",
+      "snippet": "[mock] CNBC coverage of GOOGL income statement financials, published 2025-02-19.",
+      "source": "CNBC",
+      "published": "2025-02-19"
+     },
+     {
+      "title": "Five takeaways on GOOGL income statement financials",
+      "url": "https://mock.ft.com/googl-income-statement-financials-10",
+      "snippet": "[mock] Financial Times coverage of GOOGL income statement financials, published 2025-05-25.",
+      "source": "Financial Times",
+      "published": "2025-05-25"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.506,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E16": {
+   "evidence_id": "E16",
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "AMZN income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "AMZN income statement financials: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/amzn-income-statement-financials-1",
+      "snippet": "[mock] Yahoo Finance coverage of AMZN income statement financials, published 2025-01-28.",
+      "source": "Yahoo Finance",
+      "published": "2025-01-28"
+     },
+     {
+      "title": "Analysts weigh in on AMZN income statement financials",
+      "url": "https://mock.seekingalpha.com/amzn-income-statement-financials-2",
+      "snippet": "[mock] Seeking Alpha coverage of AMZN income statement financials, published 2025-01-09.",
+      "source": "Seeking Alpha",
+      "published": "2025-01-09"
+     },
+     {
+      "title": "AMZN income statement financials - latest developments and outlook",
+      "url": "https://mock.cnbc.com/amzn-income-statement-financials-3",
+      "snippet": "[mock] CNBC coverage of AMZN income statement financials, published 2025-05-29.",
+      "source": "CNBC",
+      "published": "2025-05-29"
+     },
+     {
+      "title": "Five takeaways on AMZN income statement financials",
+      "url": "https://mock.finance.yahoo.com/amzn-income-statement-financials-4",
+      "snippet": "[mock] Yahoo Finance coverage of AMZN income statement financials, published 2025-05-06.",
+      "source": "Yahoo Finance",
+      "published": "2025-05-06"
+     },
+     {
+      "title": "Why AMZN income statement financials matters for the market",
+      "url": "https://mock.seekingalpha.com/amzn-income-statement-financials-5",
+      "snippet": "[mock] Seeking Alpha coverage of AMZN income statement financials, published 2025-01-18.",
+      "source": "Seeking Alpha",
+      "published": "2025-01-18"
+     },
+     {
+      "title": "AMZN income statement financials: risks and opportunities ahead",
+      "url": "https://mock.marketwatch.com/amzn-income-statement-financials-6",
+      "snippet": "[mock] MarketWatch coverage of AMZN income statement financials, published 2025-04-11.",
+      "source": "MarketWatch",
+      "published": "2025-04-11"
+     },
+     {
+      "title": "AMZN income statement financials: what investors need to know",
+      "url": "https://mock.seekingalpha.com/amzn-income-statement-financials-7",
+      "snippet": "[mock] Seeking Alpha coverage of AMZN income statement financials, published 2024-10-18.",
+      "source": "Seeking Alpha",
+      "published": "2024-10-18"
+     },
+     {
+      "title": "Analysts weigh in on AMZN income statement financials",
+      "url": "https://mock.bloomberg.com/amzn-income-statement-financials-8",
+      "snippet": "[mock] Bloomberg coverage of AMZN income statement financials, published 2024-07-23.",
+      "source": "Bloomberg",
+      "published": "2024-07-23"
+     },
+     {
+      "title": "AMZN income statement financials - latest developments and outlook",
+      "url": "https://mock.wsj.com/amzn-income-statement-financials-9",
+      "snippet": "[mock] The Wall Street Journal coverage of AMZN income statement financials, published 2025-01-27.",
+      "source": "The Wall Street Journal",
+      "published": "2025-01-27"
+     },
+     {
+      "title": "Five takeaways on AMZN income statement financials",
+      "url": "https://mock.wsj.com/amzn-income-statement-financials-10",
+      "snippet": "[mock] The Wall Street Journal coverage of AMZN income statement financials, published 2025-03-06.",
+      "source": "The Wall Street Journal",
+      "published": "2025-03-06"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.782,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E17": {
+   "evidence_id": "E17",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "GOOGL earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "GOOGL earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": -0.0028,
+     "label": "neutral",
+     "positive": 0.35,
+     "negative": 0.5,
+     "neutral": 0.15
+    },
+    "articles": [
+     {
+      "title": "GOOGL earnings beats expectations as demand stays strong",
+      "url": "https://mock.marketwatch.com/googl-earnings-beats-expectations-as-demand-stays-strong-1",
+      "source": "MarketWatch",
+      "published": "2025-06-15",
+      "summary": "[mock] GOOGL earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.4714,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "GOOGL earnings faces supply-chain pressure",
+      "url": "https://mock.ft.com/googl-earnings-faces-supply-chain-pressure-2",
+      "source": "Financial Times",
+      "published": "2025-06-19",
+      "summary": "[mock] GOOGL earnings faces supply-chain pressure.",
+      "sentiment_score": -0.4475,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings unveils new products at annual event",
+      "url": "https://mock.wsj.com/googl-earnings-unveils-new-products-at-annual-event-3",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-01",
+      "summary": "[mock] GOOGL earnings unveils new products at annual event.",
+      "sentiment_score": 0.4971,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of GOOGL earnings",
+      "url": "https://mock.finance.yahoo.com/regulators-step-up-scrutiny-of-googl-earnings-4",
+      "source": "Yahoo Finance",
+      "published": "2025-06-11",
+      "summary": "[mock] Regulators step up scrutiny of GOOGL earnings.",
+      "sentiment_score": -0.5922,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of GOOGL earnings",
+      "url": "https://mock.ft.com/regulators-step-up-scrutiny-of-googl-earnings-5",
+      "source": "Financial Times",
+      "published": "2025-06-25",
+      "summary": "[mock] Regulators step up scrutiny of GOOGL earnings.",
+      "sentiment_score": -0.3593,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings announces leadership changes",
+      "url": "https://mock.ft.com/googl-earnings-announces-leadership-changes-6",
+      "source": "Financial Times",
+      "published": "2025-06-29",
+      "summary": "[mock] GOOGL earnings announces leadership changes.",
+      "sentiment_score": 0.0015,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Regulators step up scrutiny of GOOGL earnings",
+      "url": "https://mock.ft.com/regulators-step-up-scrutiny-of-googl-earnings-7",
+      "source": "Financial Times",
+      "published": "2025-06-19",
+      "summary": "[mock] Regulators step up scrutiny of GOOGL earnings.",
+      "sentiment_score": -0.5525,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings shares slip amid margin concerns",
+      "url": "https://mock.cnbc.com/googl-earnings-shares-slip-amid-margin-concerns-8",
+      "source": "CNBC",
+      "published": "2025-06-06",
+      "summary": "[mock] GOOGL earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3886,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings faces supply-chain pressure",
+      "url": "https://mock.reuters.com/googl-earnings-faces-supply-chain-pressure-9",
+      "source": "Reuters",
+      "published": "2025-06-25",
+      "summary": "[mock] GOOGL earnings faces supply-chain pressure.",
+      "sentiment_score": -0.2907,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings holds steady in volatile market",
+      "url": "https://mock.reuters.com/googl-earnings-holds-steady-in-volatile-market-10",
+      "source": "Reuters",
+      "published": "2025-06-18",
+      "summary": "[mock] GOOGL earnings holds steady in volatile market.",
+      "sentiment_score": -0.1188,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Analysts raise price targets on GOOGL earnings",
+      "url": "https://mock.reuters.com/analysts-raise-price-targets-on-googl-earnings-11",
+      "source": "Reuters",
+      "published": "2025-06-11",
+      "summary": "[mock] Analysts raise price targets on GOOGL earnings.",
+      "sentiment_score": 0.5136,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on GOOGL earnings",
+      "url": "https://mock.seekingalpha.com/analysts-raise-price-targets-on-googl-earnings-12",
+      "source": "Seeking Alpha",
+      "published": "2025-06-24",
+      "summary": "[mock] Analysts raise price targets on GOOGL earnings.",
+      "sentiment_score": 0.4935,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on GOOGL earnings",
+      "url": "https://mock.wsj.com/analysts-raise-price-targets-on-googl-earnings-13",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-02",
+      "summary": "[mock] Analysts raise price targets on GOOGL earnings.",
+      "sentiment_score": 0.6442,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "GOOGL earnings announces leadership changes",
+      "url": "https://mock.bloomberg.com/googl-earnings-announces-leadership-changes-14",
+      "source": "Bloomberg",
+      "published": "2025-06-01",
+      "summary": "[mock] GOOGL earnings announces leadership changes.",
+      "sentiment_score": -0.0851,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings faces supply-chain pressure",
+      "url": "https://mock.finance.yahoo.com/googl-earnings-faces-supply-chain-pressure-15",
+      "source": "Yahoo Finance",
+      "published": "2025-06-21",
+      "summary": "[mock] GOOGL earnings faces supply-chain pressure.",
+      "sentiment_score": -0.4198,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings holds steady in volatile market",
+      "url": "https://mock.finance.yahoo.com/googl-earnings-holds-steady-in-volatile-market-16",
+      "source": "Yahoo Finance",
+      "published": "2025-06-25",
+      "summary": "[mock] GOOGL earnings holds steady in volatile market.",
+      "sentiment_score": -0.0283,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Analysts raise price targets on GOOGL earnings",
+      "url": "https://mock.finance.yahoo.com/analysts-raise-price-targets-on-googl-earnings-17",
+      "source": "Yahoo Finance",
+      "published": "2025-06-24",
+      "summary": "[mock] Analysts raise price targets on GOOGL earnings.",
+      "sentiment_score": 0.4157,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "GOOGL earnings faces supply-chain pressure",
+      "url": "https://mock.marketwatch.com/googl-earnings-faces-supply-chain-pressure-18",
+      "source": "MarketWatch",
+      "published": "2025-06-11",
+      "summary": "[mock] GOOGL earnings faces supply-chain pressure.",
+      "sentiment_score": -0.367,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "GOOGL earnings holds steady in volatile market",
+      "url": "https://mock.bloomberg.com/googl-earnings-holds-steady-in-volatile-market-19",
+      "source": "Bloomberg",
+      "published": "2025-06-06",
+      "summary": "[mock] GOOGL earnings holds steady in volatile market.",
+      "sentiment_score": 0.0386,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "GOOGL earnings unveils new products at annual event",
+      "url": "https://mock.cnbc.com/googl-earnings-unveils-new-products-at-annual-event-20",
+      "source": "CNBC",
+      "published": "2025-06-03",
+      "summary": "[mock] GOOGL earnings unveils new products at annual event.",
+      "sentiment_score": 0.518,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 1.17,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.397,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "MSFT Revenue Growth",
+    "top_k": 3,
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.321,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "MSFT Market Share",
+    "top_k": 3,
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.239,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "AMZN"
+   },
+   "ok": true,
+   "latency_ms": 0.116,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "GOOGL"
+   },
+   "ok": true,
+   "latency_ms": 0.112,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.245,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "MSFT",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 0.398,
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "AMZN"
+   },
+   "ok": true,
+   "latency_ms": 0.134,
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "ok": true,
+   "latency_ms": 0.329,
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "ok": false,
+   "latency_ms": 0.06,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for MSFT"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "8-K"
+   },
+   "ok": true,
+   "latency_ms": 0.269,
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.054,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "AMZN",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.073,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'AMZN'"
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "AMZN"
+   },
+   "ok": false,
+   "latency_ms": 0.047,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for AMZN"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.065,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.574,
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "GOOGL"
+   },
+   "ok": true,
+   "latency_ms": 0.133,
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "AMZN earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.365,
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.064,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "GOOGL",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.071,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'GOOGL'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.053,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.072,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.568,
+   "evidence_id": "E14",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.603,
+   "evidence_id": "E15",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "GOOGL"
+   },
+   "ok": false,
+   "latency_ms": 0.046,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for GOOGL"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.842,
+   "evidence_id": "E16",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.064,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "GOOGL earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.26,
+   "evidence_id": "E17",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "comparative_analysis",
+    "title": "MSFT, AMZN, GOOGL: Comparative Analysis",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "data_gaps_and_limitations": "- AMZN has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- GOOGL has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Earnings call for MSFT' (earnings_transcript MSFT, 8-K): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search. [E10] is less reliable than the primary source.\n- Step 'Latest 10-K for AMZN' (sec_filing_search AMZN, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Earnings call for AMZN' (earnings_transcript AMZN earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment. [E13] is less reliable than the primary source.\n- Step 'Latest 10-K for GOOGL' (sec_filing_search GOOGL, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search. [E15] is less reliable than the primary source.\n- Step 'Income statement for GOOGL' (financial_data_api GOOGL income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Income statement for AMZN' (financial_data_api AMZN income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for GOOGL' (earnings_transcript GOOGL earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment. [E17] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E10] sec_filing_search instead of earnings_transcript; [E11] web_search instead of sec_filing_search; [E13] news_sentiment instead of earnings_transcript; [E15] web_search instead of sec_filing_search; [E14] web_search instead of financial_data_api; [E16] web_search instead of financial_data_api; [E17] news_sentiment instead of earnings_transcript.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E1",
+      "title": "vector_db_search: Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Go",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "company_profile: MSFT",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E7",
+      "title": "financial_data_api: income_statement, MSFT, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E8",
+      "title": "company_profile: AMZN",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E9",
+      "title": "sec_filing_search: MSFT, 10-K",
+      "source_type": "SEC filing",
+      "date": "2024-08-04",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm"
+     },
+     {
+      "id": "E10",
+      "title": "sec_filing_search: MSFT, 8-K",
+      "source_type": "SEC filing",
+      "date": "2024-07-28",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924003000/mock.htm"
+     },
+     {
+      "id": "E11",
+      "title": "web_search: AMZN 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E13",
+      "title": "news_sentiment: AMZN earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E12",
+      "title": "company_profile: GOOGL",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E15",
+      "title": "web_search: GOOGL 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E14",
+      "title": "web_search: GOOGL income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E16",
+      "title": "web_search: AMZN income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E17",
+      "title": "news_sentiment: GOOGL earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 1.2,
+   "evidence_id": "E18",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "permanent"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ]
+ ],
+ "failures": [
+  [
+   "earnings_transcript",
+   {
+    "ticker": "MSFT",
+    "filing_type": "8-K"
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search."
+  ],
+  [
+   "sec_filing_search",
+   {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "AMZN earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment."
+  ],
+  [
+   "sec_filing_search",
+   {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "GOOGL income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "AMZN income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "GOOGL earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment."
+  ]
+ ],
+ "disambiguation": {
+  "level": "low",
+  "proceed_reading": "Proceeding as requested.",
+  "assumptions": [
+   "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+  ],
+  "clarifying_questions": [],
+  "tickers": [
+   "MSFT",
+   "AMZN",
+   "GOOGL"
+  ],
+  "timeframe": "latest reported period as of 2026-10-01",
+  "themes": [],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [
+  "Step 'Earnings call for MSFT' (earnings_transcript MSFT, 8-K): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search. [E10] is less reliable than the primary source.",
+  "Step 'Latest 10-K for AMZN' (sec_filing_search AMZN, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search. [E11] is less reliable than the primary source.",
+  "Step 'Earnings call for AMZN' (earnings_transcript AMZN earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment. [E13] is less reliable than the primary source.",
+  "Step 'Latest 10-K for GOOGL' (sec_filing_search GOOGL, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search. [E15] is less reliable than the primary source.",
+  "Step 'Income statement for GOOGL' (financial_data_api GOOGL income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search. [E14] is less reliable than the primary source.",
+  "Step 'Income statement for AMZN' (financial_data_api AMZN income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search. [E16] is less reliable than the primary source.",
+  "Step 'Earnings call for GOOGL' (earnings_transcript GOOGL earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment. [E17] is less reliable than the primary source."
+ ],
+ "verification": {
+  "checked": 0,
+  "supported": 0,
+  "partially_supported": 0,
+  "unsupported": 0,
+  "unverifiable": 0,
+  "uncited": 0,
+  "auto_cited": 0,
+  "flagged": []
+ },
+ "report_checks": {
+  "missing_sections": [
+   "methodology",
+   "revenue_growth",
+   "market_share",
+   "margins",
+   "competitive_advantages",
+   "conclusion"
+  ],
+  "unknown_citations": [],
+  "uncited_sources": [
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "E12"
+  ]
+ },
+ "trace_path": "C:\\Users\\user\\AppData\\Local\\Temp\\ara_tokens_rf_3loe5\\traces\\session-20261001-203223-9955.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-10-01T20:32:23.640+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Report type 'comparative_analysis' (comparison, multi_company); companies ['MSFT', 'AMZN', 'GOOGL']; ambiguity 0.10 (low: +0.10: no timeframe stated).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-10-01T20:32:23.643+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "disambiguate",
+   "rationale": "Proceeding as requested.",
+   "assumptions": [
+    "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+   ],
+   "questions": []
+  },
+  {
+   "seq": 4,
+   "ts": "2026-10-01T20:32:23.643+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 5,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 0.397
+  },
+  {
+   "seq": 6,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "MSFT Revenue Growth",
+    "top_k": 3,
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 7,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 0.321
+  },
+  {
+   "seq": 8,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "MSFT Market Share",
+    "top_k": 3,
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 9,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 0.239
+  },
+  {
+   "seq": 10,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "AMZN"
+   }
+  },
+  {
+   "seq": 11,
+   "ts": "2026-10-01T20:32:23.644+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 0.116
+  },
+  {
+   "seq": 12,
+   "ts": "2026-10-01T20:32:23.645+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+    "top_k": 3,
+    "ticker": "GOOGL"
+   }
+  },
+  {
+   "seq": 13,
+   "ts": "2026-10-01T20:32:23.645+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 0.112
+  },
+  {
+   "seq": 14,
+   "ts": "2026-10-01T20:32:23.645+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Memory recall found 3 prior finding(s).",
+   "node": "recall"
+  },
+  {
+   "seq": 15,
+   "ts": "2026-10-01T20:32:23.645+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 2129,
+   "completion_tokens": 487,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for MSFT\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"MSFT\"}, \"depends_on\": [], \"reason\": \"Company facts for MSFT\"}, {\"id\": "
+  },
+  {
+   "seq": 16,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for MSFT\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"MSFT\"}, \"depends_on\": [], \"reason\": \"Company facts for MSFT\"}, {\"id\": \"s2\", \"goal\": \"Income statement for MSFT\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for MSFT\"}, {\"id\": \"s3\", \"goal\": \"Earnings call for MSFT\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for MSFT\"}, {\"id\": \"s4\", \"goal\": \"Latest 10-K for MSFT\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"MSFT\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for MSFT\"}, {\"id\": \"s5\", \"goal\": \"Company facts for AMZN\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"AMZN\"}, \"depends_on\": [], \"reason\": \"Company facts for AMZN\"}, {\"id\": \"s6\", \"goal\": \"Income statement for AMZN\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for AMZN\"}, {\"id\": \"s7\", \"goal\": \"Earnings call for AMZN\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for AMZN\"}, {\"id\": \"s8\", \"goal\": \"Latest 10-K for AMZN\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"AMZN\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for AMZN\"}, {\"id\": \"s9\", \"goal\": \"Company facts for GOOGL\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"GOOGL\"}, \"depends_on\": [], \"reason\": \"Company facts for GOOGL\"}, {\"id\": \"s10\", \"goal\": \"Income statement for GOOGL\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for GOOGL\"}, {\"id\": \"s11\", \"goal\": \"Earnings call for GOOGL\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for GOOGL\"}, {\"id\": \"s12\", \"goal\": \"Latest 10-K for GOOGL\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"GOOGL\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for GOOGL\"}]}"
+  },
+  {
+   "seq": 17,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "scripted",
+   "steps": 12
+  },
+  {
+   "seq": 18,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for MSFT",
+   "step_id": "s1",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 19,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for MSFT",
+   "step_id": "s2",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 20,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for MSFT",
+   "step_id": "s3",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 21,
+   "ts": "2026-10-01T20:32:23.646+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for MSFT",
+   "step_id": "s4",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 22,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for AMZN",
+   "step_id": "s5",
+   "args": {
+    "ticker": "AMZN"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 23,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for AMZN",
+   "step_id": "s6",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 24,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for AMZN",
+   "step_id": "s7",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 25,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for AMZN",
+   "step_id": "s8",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 26,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for GOOGL",
+   "step_id": "s9",
+   "args": {
+    "ticker": "GOOGL"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 27,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for GOOGL",
+   "step_id": "s10",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 28,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for GOOGL",
+   "step_id": "s11",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 29,
+   "ts": "2026-10-01T20:32:23.647+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for GOOGL",
+   "step_id": "s12",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 30,
+   "ts": "2026-10-01T20:32:23.648+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s2",
+   "prompt_tokens": 1695,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 31,
+   "ts": "2026-10-01T20:32:23.648+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s2"
+  },
+  {
+   "seq": 32,
+   "ts": "2026-10-01T20:32:23.649+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s3",
+   "prompt_tokens": 1684,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 33,
+   "ts": "2026-10-01T20:32:23.649+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s3"
+  },
+  {
+   "seq": 34,
+   "ts": "2026-10-01T20:32:23.649+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 35,
+   "ts": "2026-10-01T20:32:23.649+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 0.245
+  },
+  {
+   "seq": 36,
+   "ts": "2026-10-01T20:32:23.649+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s1 done: company_profile returned E6",
+   "step_id": "s1"
+  },
+  {
+   "seq": 37,
+   "ts": "2026-10-01T20:32:23.650+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "MSFT",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 38,
+   "ts": "2026-10-01T20:32:23.650+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "latency_ms": 0.398
+  },
+  {
+   "seq": 39,
+   "ts": "2026-10-01T20:32:23.650+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "AMZN"
+   }
+  },
+  {
+   "seq": 40,
+   "ts": "2026-10-01T20:32:23.651+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "latency_ms": 0.134
+  },
+  {
+   "seq": 41,
+   "ts": "2026-10-01T20:32:23.651+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 42,
+   "ts": "2026-10-01T20:32:23.651+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "sec_filing_search",
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "latency_ms": 0.329
+  },
+  {
+   "seq": 43,
+   "ts": "2026-10-01T20:32:23.651+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 44,
+   "ts": "2026-10-01T20:32:23.651+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for MSFT",
+   "latency_ms": 0.06
+  },
+  {
+   "seq": 45,
+   "ts": "2026-10-01T20:32:23.652+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s2 done: financial_data_api returned E7",
+   "step_id": "s2"
+  },
+  {
+   "seq": 46,
+   "ts": "2026-10-01T20:32:23.652+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s6",
+   "prompt_tokens": 1695,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 47,
+   "ts": "2026-10-01T20:32:23.652+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s5 done: company_profile returned E8",
+   "step_id": "s5"
+  },
+  {
+   "seq": 48,
+   "ts": "2026-10-01T20:32:23.653+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s7",
+   "prompt_tokens": 1684,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 49,
+   "ts": "2026-10-01T20:32:23.653+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s4 done: sec_filing_search returned E9",
+   "step_id": "s4"
+  },
+  {
+   "seq": 50,
+   "ts": "2026-10-01T20:32:23.653+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s6"
+  },
+  {
+   "seq": 51,
+   "ts": "2026-10-01T20:32:23.653+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s7"
+  },
+  {
+   "seq": 52,
+   "ts": "2026-10-01T20:32:23.653+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 53,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "sec_filing_search",
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "latency_ms": 0.269
+  },
+  {
+   "seq": 54,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=sec_filing_search, error_class=permanent"
+  },
+  {
+   "seq": 55,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "AMZN"
+   }
+  },
+  {
+   "seq": 56,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for AMZN",
+   "latency_ms": 0.047
+  },
+  {
+   "seq": 57,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 58,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'",
+   "latency_ms": 0.065
+  },
+  {
+   "seq": 59,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 60,
+   "ts": "2026-10-01T20:32:23.654+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'",
+   "latency_ms": 0.054
+  },
+  {
+   "seq": 61,
+   "ts": "2026-10-01T20:32:23.655+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 62,
+   "ts": "2026-10-01T20:32:23.655+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "latency_ms": 0.574
+  },
+  {
+   "seq": 63,
+   "ts": "2026-10-01T20:32:23.655+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "AMZN",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 64,
+   "ts": "2026-10-01T20:32:23.655+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s3 done: earnings_transcript returned E10",
+   "step_id": "s3"
+  },
+  {
+   "seq": 65,
+   "ts": "2026-10-01T20:32:23.655+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+  },
+  {
+   "seq": 66,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "AMZN earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 67,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'AMZN'",
+   "latency_ms": 0.073
+  },
+  {
+   "seq": 68,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "GOOGL"
+   }
+  },
+  {
+   "seq": 69,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 70,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "latency_ms": 1.365
+  },
+  {
+   "seq": 71,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 72,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "latency_ms": 0.133
+  },
+  {
+   "seq": 73,
+   "ts": "2026-10-01T20:32:23.657+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s7 done: earnings_transcript returned E13",
+   "step_id": "s7"
+  },
+  {
+   "seq": 74,
+   "ts": "2026-10-01T20:32:23.658+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s10",
+   "prompt_tokens": 1696,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 75,
+   "ts": "2026-10-01T20:32:23.658+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s10"
+  },
+  {
+   "seq": 76,
+   "ts": "2026-10-01T20:32:23.658+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s9 done: company_profile returned E12",
+   "step_id": "s9"
+  },
+  {
+   "seq": 77,
+   "ts": "2026-10-01T20:32:23.658+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "AMZN",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 78,
+   "ts": "2026-10-01T20:32:23.658+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s8 done: sec_filing_search returned E11",
+   "step_id": "s8"
+  },
+  {
+   "seq": 79,
+   "ts": "2026-10-01T20:32:23.659+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "GOOGL",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 80,
+   "ts": "2026-10-01T20:32:23.659+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'GOOGL'",
+   "latency_ms": 0.071
+  },
+  {
+   "seq": 81,
+   "ts": "2026-10-01T20:32:23.659+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 82,
+   "ts": "2026-10-01T20:32:23.659+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'",
+   "latency_ms": 0.072
+  },
+  {
+   "seq": 83,
+   "ts": "2026-10-01T20:32:23.659+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+  },
+  {
+   "seq": 84,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 85,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E14",
+   "cache_hit": false,
+   "latency_ms": 0.568
+  },
+  {
+   "seq": 86,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s11",
+   "prompt_tokens": 1684,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 87,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'AMZN'",
+   "latency_ms": 0.064
+  },
+  {
+   "seq": 88,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 89,
+   "ts": "2026-10-01T20:32:23.660+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'",
+   "latency_ms": 0.053
+  },
+  {
+   "seq": 90,
+   "ts": "2026-10-01T20:32:23.661+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "GOOGL 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 91,
+   "ts": "2026-10-01T20:32:23.661+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E15",
+   "cache_hit": false,
+   "latency_ms": 0.603
+  },
+  {
+   "seq": 92,
+   "ts": "2026-10-01T20:32:23.661+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 93,
+   "ts": "2026-10-01T20:32:23.661+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s11"
+  },
+  {
+   "seq": 94,
+   "ts": "2026-10-01T20:32:23.661+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'AMZN'"
+  },
+  {
+   "seq": 95,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 96,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s12 done: sec_filing_search returned E15",
+   "step_id": "s12"
+  },
+  {
+   "seq": 97,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "GOOGL"
+   }
+  },
+  {
+   "seq": 98,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for GOOGL",
+   "latency_ms": 0.046
+  },
+  {
+   "seq": 99,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "GOOGL",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 100,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'GOOGL'",
+   "latency_ms": 0.064
+  },
+  {
+   "seq": 101,
+   "ts": "2026-10-01T20:32:23.662+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'GOOGL'"
+  },
+  {
+   "seq": 102,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "GOOGL earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 103,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s10 done: financial_data_api returned E14",
+   "step_id": "s10"
+  },
+  {
+   "seq": 104,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "AMZN income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 105,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E16",
+   "cache_hit": false,
+   "latency_ms": 0.842
+  },
+  {
+   "seq": 106,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 107,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E17",
+   "cache_hit": false,
+   "latency_ms": 1.26
+  },
+  {
+   "seq": 108,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 109,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s6 done: financial_data_api returned E16",
+   "step_id": "s6"
+  },
+  {
+   "seq": 110,
+   "ts": "2026-10-01T20:32:23.664+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "step s11 done: earnings_transcript returned E17",
+   "step_id": "s11"
+  },
+  {
+   "seq": 111,
+   "ts": "2026-10-01T20:32:23.665+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "deterministic check: all 12 planned step(s) done, no failed or skipped step, no gap noted; review call skipped"
+  },
+  {
+   "seq": 114,
+   "ts": "2026-10-01T20:32:23.678+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "synthesize",
+   "prompt_tokens": 5193,
+   "completion_tokens": 19,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "=== SECTION: executive_summary ===\nScripted text for executive_summary. [E1]"
+  },
+  {
+   "seq": 116,
+   "ts": "2026-10-01T20:32:23.681+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "thought",
+   "text": "Reflection: 6 section(s) missing ['methodology', 'revenue_growth', 'market_share', 'margins', 'competitive_advantages', 'conclusion']",
+   "node": "reflect"
+  },
+  {
+   "seq": 117,
+   "ts": "2026-10-01T20:32:23.681+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1753,
+   "completion_tokens": 4,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"action\": \"done\"}"
+  },
+  {
+   "seq": 118,
+   "ts": "2026-10-01T20:32:23.681+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 119,
+   "ts": "2026-10-01T20:32:23.683+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "comparative_analysis",
+    "title": "MSFT, AMZN, GOOGL: Comparative Analysis",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "data_gaps_and_limitations": "- AMZN has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- GOOGL has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Earnings call for MSFT' (earnings_transcript MSFT, 8-K): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for MSFT); data from sec_filing_search. [E10] is less reliable than the primary source.\n- Step 'Latest 10-K for AMZN' (sec_filing_search AMZN, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'AMZN'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Earnings call for AMZN' (earnings_transcript AMZN earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for AMZN); data from news_sentiment. [E13] is less reliable than the primary source.\n- Step 'Latest 10-K for GOOGL' (sec_filing_search GOOGL, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'GOOGL'); data from web_search. [E15] is less reliable than the primary source.\n- Step 'Income statement for GOOGL' (financial_data_api GOOGL income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'GOOGL'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Income statement for AMZN' (financial_data_api AMZN income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'AMZN'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for GOOGL' (earnings_transcript GOOGL earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for GOOGL); data from news_sentiment. [E17] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E10] sec_filing_search instead of earnings_transcript; [E11] web_search instead of sec_filing_search; [E13] news_sentiment instead of earnings_transcript; [E15] web_search instead of sec_filing_search; [E14] web_search instead of financial_data_api; [E16] web_search instead of financial_data_api; [E17] news_sentiment instead of earnings_transcript.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E1",
+      "title": "vector_db_search: Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Go",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "company_profile: MSFT",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E7",
+      "title": "financial_data_api: income_statement, MSFT, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E8",
+      "title": "company_profile: AMZN",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E9",
+      "title": "sec_filing_search: MSFT, 10-K",
+      "source_type": "SEC filing",
+      "date": "2024-08-04",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm"
+     },
+     {
+      "id": "E10",
+      "title": "sec_filing_search: MSFT, 8-K",
+      "source_type": "SEC filing",
+      "date": "2024-07-28",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924003000/mock.htm"
+     },
+     {
+      "id": "E11",
+      "title": "web_search: AMZN 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E13",
+      "title": "news_sentiment: AMZN earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E12",
+      "title": "company_profile: GOOGL",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E15",
+      "title": "web_search: GOOGL 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E14",
+      "title": "web_search: GOOGL income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E16",
+      "title": "web_search: AMZN income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E17",
+      "title": "news_sentiment: GOOGL earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   }
+  },
+  {
+   "seq": 120,
+   "ts": "2026-10-01T20:32:23.683+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E18",
+   "cache_hit": false,
+   "latency_ms": 1.2
+  },
+  {
+   "seq": 121,
+   "ts": "2026-10-01T20:32:23.684+00:00",
+   "session_id": "session-20261001-203223-9955",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 10,
+   "facts": 15,
+   "findings": 1
+  }
+ ]
+}

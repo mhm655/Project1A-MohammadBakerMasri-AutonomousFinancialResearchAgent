@@ -35,6 +35,7 @@ anywhere.
 | **Error handling**: an error taxonomy with per-class retries and exponential backoff, one circuit breaker per data provider (stops research when several are down), fallback chains with at least two alternatives per network tool, gaps and fallback use stated in the report, and seeded failure injection (`--fail-rate`) | Built (Day 9) |
 | **Query analysis**: query type, complexity and a scored ambiguity level with its reasons; for ambiguous requests, documented assumptions (e.g. "the banks" = six largest US banks) and the questions it would have asked; flags for private companies, recent IPOs and fast-changing situations (M&A, leadership changes, restatements) | Built (Day 10) |
 | **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |
+| **Optimisation**: execute calls carry one tool schema, per-provider synthesis budget, deterministic review, ticker enforcement in plans, section-targeted memory recall, 500-character memory chunks; every change logged with before/after numbers in [docs/optimization_log.md](docs/optimization_log.md) | Built (Day 13) |
 
 The full design is in the [architecture specification](docs/architecture_specification.md).
 
@@ -159,6 +160,7 @@ tests/        pytest suite
 |---|---|
 | [docs/architecture_specification.md](docs/architecture_specification.md) | The full design: cognitive loop, tools, memory, synthesis, error handling, evaluation |
 | [docs/architecture_diagram.svg](docs/architecture_diagram.svg) | Architecture diagram |
+| [docs/optimization_log.md](docs/optimization_log.md) | Day 13: each optimisation with its evidence and before/after numbers |
 | [ERROR_LOG.md](ERROR_LOG.md) | The 7 deliberate errors found in the project document |
 | [tools/schemas/](tools/schemas/) | The 12 tool definitions (OpenAI function format plus `x-ara` metadata) |
 

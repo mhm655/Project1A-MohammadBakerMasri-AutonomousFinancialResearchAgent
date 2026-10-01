@@ -90,7 +90,17 @@ class AgentSettings:
     max_replans: int = 3
     max_reflections: int = 2
     #: Prompt budget for the largest prompts (synthesis). Groq free tier: ~7,000 input tokens per minute.
+    #: This is the default for providers not listed in ``prompt_tokens_by_provider``.
     max_prompt_tokens: int = 6000
+    #: Per-provider caps: Gemini takes far larger prompts than the Groq and Ollama free tiers.
+    prompt_tokens_by_provider: dict[str, int] = field(default_factory=dict)
+    #: Share of the cap used as the budget. Token counts are estimates (one Qwen prompt measured 107%).
+    prompt_budget_share: float = 0.9
+
+    def prompt_budget(self, provider: str | None) -> int:
+        """Prompt-token budget for the synthesis call when ``provider`` is the one that will answer."""
+        cap = self.prompt_tokens_by_provider.get(provider or "", self.max_prompt_tokens)
+        return int(cap * self.prompt_budget_share)
 
 
 @dataclass(frozen=True)

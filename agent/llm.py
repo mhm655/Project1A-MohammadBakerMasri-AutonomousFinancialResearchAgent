@@ -639,6 +639,26 @@ class LLMClient:
         options.update(overrides)
         return cls(providers, **options)
 
+    def _ready_and_cooling(self, now: float) -> tuple[list[Provider], list[Provider]]:
+        # Providers cooling down after a rate limit or an unreachable server go last rather than being
+        # dropped: per-minute limits clear within seconds, and a last resort beats no answer.
+        ready = [p for p in self.providers if self._cooldown_until.get(p.name, 0.0) <= now]
+        # Cooling providers go last, except those out of daily quota (cooled for longer than a minute
+        # limit could explain), which are skipped until their cooldown ends.
+        cooling = [p for p in self.providers if p not in ready
+                   and self._cooldown_until[p.name] - now <= self.cooldown_s + 60]
+        return ready, cooling
+
+    def next_provider_name(self) -> str | None:
+        """Name of the provider :meth:`complete` would try first right now (None if all are set aside)."""
+        ready, cooling = self._ready_and_cooling(self._clock())
+        queue = ready + cooling
+        return queue[0].name if queue else None
+
+    def any_provider_ready(self) -> bool:
+        """True if at least one provider is not cooling down (rate limit, outage or exhausted quota)."""
+        return bool(self._ready_and_cooling(self._clock())[0])
+
     def complete(
         self,
         messages: list[dict[str, Any]],
@@ -672,13 +692,7 @@ class LLMClient:
         )
         errors: list[LLMProviderError] = []
         now = self._clock()
-        # Providers cooling down after a rate limit or an unreachable server go last rather than being
-        # dropped: per-minute limits clear within seconds, and a last resort beats no answer.
-        ready = [p for p in self.providers if self._cooldown_until.get(p.name, 0.0) <= now]
-        # Cooling providers go last, except those out of daily quota (cooled for longer than a minute
-        # limit could explain), which are skipped until their cooldown ends.
-        cooling = [p for p in self.providers if p not in ready
-                   and self._cooldown_until[p.name] - now <= self.cooldown_s + 60]
+        ready, cooling = self._ready_and_cooling(now)
         queue = ready + cooling
         if not queue:
             raise AllProvidersFailedError([LLMProviderError(p.name, "quota_exhausted", "daily quota used up; skipped")

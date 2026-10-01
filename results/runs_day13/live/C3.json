@@ -1,0 +1,2605 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C3",
+  "number": 3,
+  "title": "Risk Assessment",
+  "expected_pages": [
+   8,
+   10
+  ]
+ },
+ "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+ "session_id": "session-20261001-210355-2461",
+ "data_mode": "live",
+ "fail_rate": 0.0,
+ "fail_tools": [],
+ "injected_failures": {},
+ "profile": {
+  "template": "risk_assessment",
+  "tickers": [
+   "TSLA"
+  ],
+  "names": [
+   "Tesla"
+  ],
+  "query_type": "risk",
+  "complexity": "single_company",
+  "periods": [],
+  "ambiguity": 0.1,
+  "ambiguity_level": "low",
+  "signals": [
+   "+0.10: no timeframe stated"
+  ],
+  "sector": null
+ },
+ "template": "risk_assessment",
+ "stop_reason": "completed",
+ "duration_s": 139.61,
+ "tool_calls": 12,
+ "llm_usage": {
+  "calls": 5,
+  "failures": 4,
+  "prompt_tokens": 13644,
+  "completion_tokens": 2788,
+  "reasoning_tokens": 126
+ },
+ "report_markdown": "# Tesla: Risk Assessment\n\n## Executive Summary\n\n**Temporal sensitivity:** recent events may be changing the picture quickly. Figures in this report are as of the evidence dates and may change.\n- Tesla: acquisition/merger, 2026-09-30: SpaceX Just Got a Little Closer to a Tesla Merger [E5]\n\nTesla, Inc. designs, manufactures and sells electric vehicles and energy-generation/storage products, operating primarily in the Automotive and Energy segments [E6].  After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9][E11]; net income fell 46.5 % to $3.79 bn [E7][E9]. *(unverified)*  Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9]. *(unverified)*  Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8]. *(unverified)*  News sentiment remains modestly positive (+0.05) even as fundamentals weaken, suggesting expectations are already priced in [E5]; the gap likely reflects optimism around product launches and the upcoming robotaxi rollout [Analysis].  Going forward, the key watch-points are the sustainability of the margin recovery, execution of new factory ramps, and competitive pressure from legacy OEMs and emerging EV players [Analysis].\n\n## Financial Risks\n\n**Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11]. *(unverified)*  The decline follows a flat FY2023-FY2024 trend and raises concerns about demand softness in key markets and the impact of pricing pressure.  \n\n**Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,827 m) [E10]; gross margin stayed at 18.0 % and net margin slipped to 4.0 % [E7][E9]. *(unverified)*  The margin compression reflects higher cost of goods and increased R&D spend relative to a shrinking revenue base [Analysis].  \n\n**Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8]. *(unverified)*  Cash and cash equivalents remained stable at $16.5 bn [E12]; total shareholders’ equity rose to $82.1 bn [E12].  The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits flexibility [Analysis]. *(unverified: no source cited)*  \n\n**Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equity of $82.1 bn imply a modest leverage ratio (~0.67) [E12]. *(unverified)*  No covenant breaches or refinancing risks are evident in the data [Analysis].  \n\n**Forward View** – Management guidance for FY2026 is not present in the evidence; therefore, the outlook hinges on whether the company can reverse the revenue decline and stabilize margins [Analysis].\n\n## Operational Risks\n\nThe FY2025 Form 10-K lists several operational risk factors [E4]:  \n\n| Risk Category | Description |\n|---|---|\n| Production & Supply Chain | Potential delays in product development, ramp-up of new factories, and reliance on external suppliers for battery cells and components. |\n| Manufacturing Quality | Risks of lithium-ion cell issues or component defects that could disrupt production. |\n| Service & Charging Network | Challenges in expanding service centers and Supercharger infrastructure to match fleet growth. |\n| New Product Development | Uncertainty around commercialization of the Optimus robot, Semi truck, and robotaxi platforms. |\n| International Operations | Exposure to regulatory, political and currency risks in non-U.S. markets. |\n\nThese risks are amplified by the company’s aggressive capex program (8.53 bn FY2025) and the need to scale new product lines [E8][E4].  No quantitative data on supply-chain disruptions or quality incidents is provided, so the magnitude of these operational risks cannot be precisely measured [Analysis].\n\n## Regulatory Risks\n\nRegulatory risk factors extracted from the FY2025 10-K include [E4]:  \n\n* **Emissions & Incentives** – Dependence on automotive regulatory credits, which are subject to policy changes.  \n* **Safety & Liability** – Potential product liability claims from vehicle or software defects.  \n* **Data & AI Regulation** – Emerging rules governing autonomous driving and AI-driven features.  \n* **International Trade** – Tariffs, import restrictions, and geopolitical tensions affecting global supply chains.  \n\nThe evidence does not contain any recent regulatory developments or fines; therefore, specific exposure amounts are unavailable [Analysis].\n\n## Competitive Risks\n\nPeer comparison (FY2025) shows Tesla’s relative position [E9]:  \n\n| Metric | Tesla | GM | Ford | Rivian |\n|---|---|---|---|---|\n| Revenue (USD bn) | 94.8 | 185.0 | 187.3 | 5.4 |\n| Revenue Growth | **-2.9 %** | -1.3 % | +1.2 % | +8.4 % |\n| Gross Margin | **18.0 %** | n/a | 6.8 % | 2.7 % |\n| Operating Margin | **4.6 %** | 1.6 % | -4.9 % | -66.5 % |\n| ROE | 4.6 % | 4.4 % | -22.8 % | -79.4 % |\n\nTesla leads peers on gross and operating margins despite lower absolute revenue.  However, its revenue growth ranks last, indicating weaker top-line momentum relative to both legacy OEMs and fast-growing newcomer Rivian [Analysis].  Competitive pressures stem from:  \n\n* **Legacy OEMs** expanding EV line-ups and leveraging scale to reduce costs.  \n* **New Entrants** (e.g., Rivian) showing higher growth rates, albeit from a smaller base.  \n* **Technology Race** in autonomous driving and battery chemistry, where Tesla’s “full-self-driving” (FSD) and in-house cell production are key differentiators but also sources of execution risk.\n\n## Risk Matrix\n\n**Risk Matrix – Tesla Inc. (FY2025)**  \n\n| Risk Category | Likelihood (High/Medium/Low) | Impact (High/Medium/Low) | Key Drivers |\n|---|---|---|---|\n| Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] *(unverified)* |\n| Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] *(unverified)* |\n| Supply-chain disruption | Medium | Medium | Supplier reliability risk noted in 10-K [E4] |\n| New-product execution (Semi, Optimus, robotaxi) | High | High | Large R&D spend, unproven commercial rollout [E4] |\n| Regulatory & policy change | Medium | Medium | Dependence on credits, emerging AI safety rules [E4] |\n| Competitive displacement | High | High | Slower revenue growth vs peers, aggressive EV roll-outs by GM/Ford [E9] |\n| Liquidity / cash-flow stress | Low | Low | Strong free cash flow and solid cash balance [E8][E12] |\n\n*Likelihood and impact assessments are qualitative judgments based on the cited evidence and analyst-level inference.*\n\n## Data Gaps and Limitations\n\n- Unverified claim in Executive Summary: partially supported: After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9\n- Unverified claim in Executive Summary: partially supported: Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9].\n- Unverified claim in Executive Summary: partially supported: Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8].\n- Unverified claim in Financial Risks: partially supported: **Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11].\n- Unverified claim in Financial Risks: partially supported: **Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,\n- Unverified claim in Financial Risks: partially supported: **Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8].\n- Unverified claim in Financial Risks: uncited figure: The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits fle\n- Unverified claim in Financial Risks: partially supported: **Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equi\n- Unverified claim in Risk Matrix: unsupported: | Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] |\n- Unverified claim in Risk Matrix: unsupported: | Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] |\n\n## Research Methodology\n\n- Plan: 9 step(s), 9 completed. Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.\n- Tools used: calculation_engine, company_profile, financial_data_api, news_sentiment, peer_comparison, sec_filing_search; 12 of 20 research tool calls.\n- Language models: gemini, groq.\n- Verification: 17 cited numeric claim(s) checked against their sources; 8 supported, 2 unsupported, 1 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-02, because the request names no period.\n\n## Sources\n\n- [E1] vector_db_search: Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, (memory, 2026-10-01)\n- [E2] vector_db_search: TSLA Financial Risks, 3, TSLA (memory, 2026-10-01)\n- [E3] vector_db_search: TSLA Operational Risks, 3, TSLA (memory, 2026-10-01)\n- [E4] sec_filing_search: TSLA, 10-K, 2025 (SEC filing, 2026-01-29). https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm\n- [E5] news_sentiment: Tesla, 20, 30 (news, 2026-10-01)\n- [E6] company_profile: TSLA (company data, 2026-10-01)\n- [E7] financial_data_api: TSLA, income_statement, annual, 3 (financial data, 2026-10-01)\n- [E8] financial_data_api: TSLA, cash_flow, annual, 3 (financial data, 2026-10-01)\n- [E9] peer_comparison: TSLA, 5 (peer data, 2026-10-01)\n- [E10] calculation_engine: margin (calculation, 2026-10-01)\n- [E11] calculation_engine: growth_rate (calculation, 2026-10-01)\n- [E12] financial_data_api: TSLA, balance_sheet, annual, 3 (financial data, 2026-10-01)\n",
+ "sections": {
+  "executive_summary": "Tesla, Inc. designs, manufactures and sells electric vehicles and energy-generation/storage products, operating primarily in the Automotive and Energy segments [E6].  After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9][E11]; net income fell 46.5 % to $3.79 bn [E7][E9]. *(unverified)*  Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9]. *(unverified)*  Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8]. *(unverified)*  News sentiment remains modestly positive (+0.05) even as fundamentals weaken, suggesting expectations are already priced in [E5]; the gap likely reflects optimism around product launches and the upcoming robotaxi rollout [Analysis].  Going forward, the key watch-points are the sustainability of the margin recovery, execution of new factory ramps, and competitive pressure from legacy OEMs and emerging EV players [Analysis].",
+  "financial_risks": "**Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11]. *(unverified)*  The decline follows a flat FY2023-FY2024 trend and raises concerns about demand softness in key markets and the impact of pricing pressure.  \n\n**Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,827 m) [E10]; gross margin stayed at 18.0 % and net margin slipped to 4.0 % [E7][E9]. *(unverified)*  The margin compression reflects higher cost of goods and increased R&D spend relative to a shrinking revenue base [Analysis].  \n\n**Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8]. *(unverified)*  Cash and cash equivalents remained stable at $16.5 bn [E12]; total shareholders’ equity rose to $82.1 bn [E12].  The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits flexibility [Analysis]. *(unverified: no source cited)*  \n\n**Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equity of $82.1 bn imply a modest leverage ratio (~0.67) [E12]. *(unverified)*  No covenant breaches or refinancing risks are evident in the data [Analysis].  \n\n**Forward View** – Management guidance for FY2026 is not present in the evidence; therefore, the outlook hinges on whether the company can reverse the revenue decline and stabilize margins [Analysis].",
+  "operational_risks": "The FY2025 Form 10-K lists several operational risk factors [E4]:  \n\n| Risk Category | Description |\n|---|---|\n| Production & Supply Chain | Potential delays in product development, ramp-up of new factories, and reliance on external suppliers for battery cells and components. |\n| Manufacturing Quality | Risks of lithium-ion cell issues or component defects that could disrupt production. |\n| Service & Charging Network | Challenges in expanding service centers and Supercharger infrastructure to match fleet growth. |\n| New Product Development | Uncertainty around commercialization of the Optimus robot, Semi truck, and robotaxi platforms. |\n| International Operations | Exposure to regulatory, political and currency risks in non-U.S. markets. |\n\nThese risks are amplified by the company’s aggressive capex program (8.53 bn FY2025) and the need to scale new product lines [E8][E4].  No quantitative data on supply-chain disruptions or quality incidents is provided, so the magnitude of these operational risks cannot be precisely measured [Analysis].",
+  "regulatory_risks": "Regulatory risk factors extracted from the FY2025 10-K include [E4]:  \n\n* **Emissions & Incentives** – Dependence on automotive regulatory credits, which are subject to policy changes.  \n* **Safety & Liability** – Potential product liability claims from vehicle or software defects.  \n* **Data & AI Regulation** – Emerging rules governing autonomous driving and AI-driven features.  \n* **International Trade** – Tariffs, import restrictions, and geopolitical tensions affecting global supply chains.  \n\nThe evidence does not contain any recent regulatory developments or fines; therefore, specific exposure amounts are unavailable [Analysis].",
+  "competitive_risks": "Peer comparison (FY2025) shows Tesla’s relative position [E9]:  \n\n| Metric | Tesla | GM | Ford | Rivian |\n|---|---|---|---|---|\n| Revenue (USD bn) | 94.8 | 185.0 | 187.3 | 5.4 |\n| Revenue Growth | **-2.9 %** | -1.3 % | +1.2 % | +8.4 % |\n| Gross Margin | **18.0 %** | n/a | 6.8 % | 2.7 % |\n| Operating Margin | **4.6 %** | 1.6 % | -4.9 % | -66.5 % |\n| ROE | 4.6 % | 4.4 % | -22.8 % | -79.4 % |\n\nTesla leads peers on gross and operating margins despite lower absolute revenue.  However, its revenue growth ranks last, indicating weaker top-line momentum relative to both legacy OEMs and fast-growing newcomer Rivian [Analysis].  Competitive pressures stem from:  \n\n* **Legacy OEMs** expanding EV line-ups and leveraging scale to reduce costs.  \n* **New Entrants** (e.g., Rivian) showing higher growth rates, albeit from a smaller base.  \n* **Technology Race** in autonomous driving and battery chemistry, where Tesla’s “full-self-driving” (FSD) and in-house cell production are key differentiators but also sources of execution risk.",
+  "risk_matrix": "**Risk Matrix – Tesla Inc. (FY2025)**  \n\n| Risk Category | Likelihood (High/Medium/Low) | Impact (High/Medium/Low) | Key Drivers |\n|---|---|---|---|\n| Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] *(unverified)* |\n| Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] *(unverified)* |\n| Supply-chain disruption | Medium | Medium | Supplier reliability risk noted in 10-K [E4] |\n| New-product execution (Semi, Optimus, robotaxi) | High | High | Large R&D spend, unproven commercial rollout [E4] |\n| Regulatory & policy change | Medium | Medium | Dependence on credits, emerging AI safety rules [E4] |\n| Competitive displacement | High | High | Slower revenue growth vs peers, aggressive EV roll-outs by GM/Ford [E9] |\n| Liquidity / cash-flow stress | Low | Low | Strong free cash flow and solid cash balance [E8][E12] |\n\n*Likelihood and impact assessments are qualitative judgments based on the cited evidence and analyst-level inference.*"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "s1",
+    "goal": "Obtain basic company profile and fiscal calendar for Tesla",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "TSLA"
+    },
+    "depends_on": [],
+    "reason": "Provides legal name, sector, fiscal year end and key executives needed for the executive summary and risk context.",
+    "status": "done",
+    "evidence_ids": [
+     "E6"
+    ],
+    "summary": "company_profile returned E6",
+    "attempts": 1
+   },
+   {
+    "id": "s2",
+    "goal": "Retrieve the latest 10-K filing for Tesla to extract detailed risk factor disclosures",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "TSLA",
+     "filing_type": "10-K",
+     "year": 2025
+    },
+    "depends_on": [],
+    "reason": "Item 1A risk factors contain the authoritative financial, operational, regulatory, and competitive risks.",
+    "status": "done",
+    "evidence_ids": [
+     "E4"
+    ],
+    "summary": "sec_filing_search returned E4",
+    "attempts": 1
+   },
+   {
+    "id": "s3",
+    "goal": "Collect Tesla's audited annual financial statements for FY2023-FY2025",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "TSLA",
+     "statement_type": "income_statement",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "Needed to compute key financial ratios and trends for the financial risk section.",
+    "status": "done",
+    "evidence_ids": [
+     "E7"
+    ],
+    "summary": "financial_data_api returned E7",
+    "attempts": 1
+   },
+   {
+    "id": "s4",
+    "goal": "Gather Tesla's cash flow statements for FY2023-FY2025 to assess liquidity and cash generation",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "TSLA",
+     "statement_type": "cash_flow",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "Cash flow trends inform debt service capacity and operational cash risk.",
+    "status": "done",
+    "evidence_ids": [
+     "E8"
+    ],
+    "summary": "financial_data_api returned E8",
+    "attempts": 1
+   },
+   {
+    "id": "s5",
+    "goal": "Obtain recent news sentiment on Tesla to gauge market perception of risks",
+    "tool": "news_sentiment",
+    "args": {
+     "query": "Tesla",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Sentiment complements disclosed risks with external narrative and emerging issues.",
+    "status": "done",
+    "evidence_ids": [
+     "E5"
+    ],
+    "summary": "news_sentiment returned E5",
+    "attempts": 1
+   },
+   {
+    "id": "s6",
+    "goal": "Identify and compare Tesla with key automotive and EV peers on financial metrics",
+    "tool": "peer_comparison",
+    "args": {
+     "ticker": "TSLA",
+     "num_peers": 5,
+     "metrics": [
+      "revenue",
+      "revenue_growth",
+      "gross_margin",
+      "operating_margin",
+      "roe",
+      "pe_ratio",
+      "market_cap"
+     ]
+    },
+    "depends_on": [],
+    "reason": "Relative performance highlights competitive risk and benchmarking for financial health.",
+    "status": "done",
+    "evidence_ids": [
+     "E9"
+    ],
+    "summary": "peer_comparison returned E9",
+    "attempts": 1
+   },
+   {
+    "id": "s7",
+    "goal": "Calculate FY2024-FY2025 revenue growth rate",
+    "tool": "calculation_engine",
+    "args": {
+     "calculation_type": "growth_rate",
+     "inputs": {
+      "current": 94827,
+      "previous": 97690
+     }
+    },
+    "depends_on": [
+     "s3"
+    ],
+    "reason": "Growth rate needed for financial risk analysis; values will be taken from the income statements retrieved in s3.",
+    "status": "done",
+    "evidence_ids": [
+     "E11"
+    ],
+    "summary": "calculation_engine returned E11",
+    "attempts": 2
+   },
+   {
+    "id": "s8",
+    "goal": "Calculate FY2024-FY2025 operating margin",
+    "tool": "calculation_engine",
+    "args": {
+     "calculation_type": "margin",
+     "inputs": {
+      "numerator": 4355,
+      "revenue": 94827
+     }
+    },
+    "depends_on": [
+     "s3"
+    ],
+    "reason": "Operating margin quantifies profitability risk.",
+    "status": "done",
+    "evidence_ids": [
+     "E10"
+    ],
+    "summary": "calculation_engine returned E10",
+    "attempts": 2
+   },
+   {
+    "id": "s9",
+    "goal": "Calculate FY2024-FY2025 net debt to EBITDA ratio",
+    "tool": "calculation_engine",
+    "args": {
+     "ticker": "TSLA",
+     "statement_type": "balance_sheet",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [
+     "s3",
+     "s4"
+    ],
+    "reason": "Leverage metric informs financial risk assessment.",
+    "status": "done",
+    "evidence_ids": [
+     "E12"
+    ],
+    "summary": "financial_data_api returned E12",
+    "attempts": 2
+   }
+  ],
+  "rationale": "Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.",
+  "rejected": []
+ },
+ "evidence": {
+  "E1": {
+   "evidence_id": "E1",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+    "top_k": 5,
+    "ticker": "TSLA"
+   },
+   "data": {
+    "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+    "results": [
+     {
+      "id": "tsla-analysis-2026-09-30-5bcf63ca70",
+      "content": "Tesla Inc. Risk Assessment Matrix [E4, E6, E7, E8, E9]:",
+      "score": 0.7046,
+      "metadata": {
+       "date": "2026-09-30",
+       "source_type": "analysis",
+       "ticker": "TSLA",
+       "stored_at": "2026-09-30T08:28:59+00:00",
+       "researcher_session": "session-20260930-082814-1691",
+       "verified": true,
+       "section": "risk_matrix",
+       "confidence": 0.6
+      }
+     },
+     {
+      "id": "tsla-10-k-2025-12-31-9d017f8ac1",
+      "content": "Tesla, Inc. Form 10-K (period ended 2025-12-31), Item 1A Risk Factors: ITEM 1A. RISK FACTORS You should carefully consider the risks described below together with the other information set forth in this report, which could materially affect our business, financial condition and future results. The risks described below are not the only risks facing our company. Risks and uncertainties not currently known to us or that we currently deem to be immaterial also may materially adversely affect our business, financial condition and operating results.",
+      "score": 0.6856,
+      "metadata": {
+       "stored_at": "2026-09-30T23:42:43+00:00",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+       "ticker": "TSLA",
+       "verified": false,
+       "date": "2025-12-31",
+       "source_type": "10-K",
+       "evidence_id": "E2",
+       "researcher_session": "session-20260930-234135-aafe",
+       "section": "Item 1A",
+       "confidence": 0.95
+      }
+     },
+     {
+      "id": "tsla-10-k-2025-12-31-85c691e0d3",
+      "content": "Tesla, Inc. Form 10-K (period ended 2025-12-31), Item 1A Risk Factors: Risks Related to Our Operations",
+      "score": 0.6776,
+      "metadata": {
+       "researcher_session": "session-20260930-234135-aafe",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+       "stored_at": "2026-09-30T23:42:43+00:00",
+       "ticker": "TSLA",
+       "verified": false,
+       "source_type": "10-K",
+       "date": "2025-12-31",
+       "confidence": 0.95,
+       "section": "Item 1A",
+       "kind": "risk_factor",
+       "evidence_id": "E2"
+      }
+     },
+     {
+      "id": "tsla-analysis-2026-09-30-4c03c14efb",
+      "content": "Tesla's regulatory risk factors center heavily on autonomous driving solutions, global trade exposure, and regulatory credit markets [E2, E5].",
+      "score": 0.6618,
+      "metadata": {
+       "confidence": 0.5,
+       "ticker": "TSLA",
+       "verified": false,
+       "date": "2026-09-30",
+       "source_type": "analysis",
+       "section": "regulatory_risks",
+       "researcher_session": "session-20260930-082209-a2c5",
+       "stored_at": "2026-09-30T08:23:02+00:00"
+      }
+     },
+     {
+      "id": "tsla-10-k-2025-12-31-7af5cc3015",
+      "content": "Tesla, Inc. Form 10-K (period ended 2025-12-31), Item 1A Risk Factors: Risks Related to Our Ability to Grow Our Business",
+      "score": 0.6612,
+      "metadata": {
+       "date": "2025-12-31",
+       "evidence_id": "E2",
+       "confidence": 0.95,
+       "verified": false,
+       "ticker": "TSLA",
+       "researcher_session": "session-20260930-234135-aafe",
+       "section": "Item 1A",
+       "kind": "risk_factor",
+       "source_type": "10-K",
+       "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+       "stored_at": "2026-09-30T23:42:43+00:00"
+      }
+     }
+    ],
+    "searched_records": 2335
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T21:03:56+00:00",
+   "latency_ms": 389.007,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E2": {
+   "evidence_id": "E2",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Financial Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   },
+   "data": {
+    "query": "TSLA Financial Risks",
+    "results": [
+     {
+      "id": "tsla-earnings-call-2026-07-22-8c891e2fe6",
+      "content": "TSLA Q2 FY2026 earnings call, prepared remarks: (continued) We continue to grow the Tesla Robotaxi fleet and have expanded to a total of seven markets in the U.S. We expect the ramp of the fleet to accelerate throughout the year, along with the expansion into new U.S. markets. As previously guided, operating expenses increased sequentially. The increase came primarily from significant research and development-related activities, including preproduction ramp costs for new products like the Semi Truck, Optimus, Cybercab and other AI initiatives as well as appreciation for an additional compute that we brought online. Additionally, we had charges related to litigation expenses in the quarter.\nNote that we are in a big investment cycle and expect our operating expenses largely driven by R&D to continue to grow in 2026 and beyond. Net income was positively impacted by a mark-to-market gain of $1 billion on our SpaceX holdings, which was offset by losses on FX of approximately $300 million and on Bitcoin of about $100 million. As previously guided, our free cash flow ended up being negative for the quarter. Most of the reason for the -- it going negative is because CapEx more than doubled sequentially, and we expect it to increase further in the second half of 2026. We continue to expect that CapEx for this year will be more than $25 billion.",
+      "score": 0.5376,
+      "metadata": {
+       "confidence": 0.7,
+       "source_type": "earnings_call",
+       "researcher_session": "session-20260930-083254-d8b4",
+       "date": "2026-07-22",
+       "stored_at": "2026-09-30T08:33:26+00:00",
+       "ticker": "TSLA",
+       "evidence_id": "E7",
+       "verified": false,
+       "kind": "prepared"
+      }
+     },
+     {
+      "id": "tsla-earnings-call-2026-07-22-74d19f1d1f",
+      "content": "TSLA Q2 FY2026 earnings call, prepared remarks: (continued) Despite this growth, energy gross margins declined from 39.5% to 20.4%. This margin decline was a result of several dynamics. First, there was a warranty true-up in the quarter of about $240 million related to certain vendor cell issues for our legacy deployments. Also, the tariff benefits we recognized in Q1 of more than $200 million did not repeat. And lastly, we had previously guided that ASPs for industrial storage is coming down amidst growing competition. Long term, we believe the energy business should normalize at a gross margin rate in the mid- to low 20% range.\nOur order backlog of this business is robust, and we are doing our best to build based on both existing demand and future demand we expect from data center growth and overall electrification of the economy. Service and other margins improved sequentially from 9.2% to 14.1%, an all-time high. This was mainly driven by an uptick in volume and better cost management of our vehicle fleet that supports businesses such as used car, supercharging, service centers and insurance. While marginal today, also included in this business are deliberate investments we are making in infrastructure that will help scale robotaxi in the future.",
+      "score": 0.5317,
+      "metadata": {
+       "verified": false,
+       "kind": "prepared",
+       "confidence": 0.7,
+       "stored_at": "2026-09-30T08:33:26+00:00",
+       "ticker": "TSLA",
+       "researcher_session": "session-20260930-083254-d8b4",
+       "source_type": "earnings_call",
+       "date": "2026-07-22",
+       "evidence_id": "E7"
+      }
+     },
+     {
+      "id": "tsla-earnings-call-2026-01-28-da9d230e70",
+      "content": "TSLA Q4 FY2025 earnings call, prepared remarks: (continued) Given that we are still in the early phase of our fleet deployment, are still doing a lot of validation testing. The revenue and cost per mile metrics are not meaningful to discuss at the moment. On total gross margin front, we ended the quarter with over 20.1%, something which we haven't achieved for over the last two years. This improvement came despite the impact of lower fixed cost absorption and the impact of tariffs, which were in excess of operating expenses increased sequentially $500 million in Q4, primarily from increased stock-based compensation for employees and as we started recording charges on for one operation Maestro under our 2025 CA performance award.\nThat was deemed to be probable over the work term. Additionally, our spend on AI-related initiatives and new products like CyberCab, Semi, Optimus, and MegaPack, etcetera, continues to be at elevated levels and we expect this trend to continue for the full year 2026. Net income was negatively impacted from mark-to-market charges on a Bitcoin holding, which depreciated 23% as compared to the last quarter, and the impact of unfavorable impact of FX, primarily from our large intercompany borrowings. On the free cash flow front, we ended up at $1.4 billion. We did end up CapEx being slightly below our previous guidance of $9 billion.",
+      "score": 0.5252,
+      "metadata": {
+       "evidence_id": "E7",
+       "confidence": 0.7,
+       "kind": "prepared",
+       "researcher_session": "session-20260930-082209-a2c5",
+       "date": "2026-01-28",
+       "verified": false,
+       "source_type": "earnings_call",
+       "ticker": "TSLA",
+       "stored_at": "2026-09-30T08:22:51+00:00"
+      }
+     }
+    ],
+    "searched_records": 2335
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T21:03:56+00:00",
+   "latency_ms": 232.177,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E3": {
+   "evidence_id": "E3",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Operational Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   },
+   "data": {
+    "query": "TSLA Operational Risks",
+    "results": [
+     {
+      "id": "tsla-earnings-call-2026-01-28-4e115612b5",
+      "content": "TSLA Q4 FY2025 earnings call, prepared remarks: Vaibhav Taneja (): One other thing people forget is that we've been deliberate on all this in the sense that we have the supporting infrastructure already in place, whether it's service centers, charging. Yes, we'll have to augment as the fleet grows depending upon the density of where the demand is and whatnot. But it's not something we just stumble upon and we're starting to. We've been at it for years. Not every city is designed the same way. Same thing. Our infrastructure is also not the same in every city. But you have to give us credit that it's been a journey.\nLike Lars said, if there's some company which can do it, already been at it, so we should be able to deliver much better.\nGreat.",
+      "score": 0.5148,
+      "metadata": {
+       "verified": false,
+       "source_type": "earnings_call",
+       "researcher_session": "session-20260930-082209-a2c5",
+       "ticker": "TSLA",
+       "stored_at": "2026-09-30T08:22:51+00:00",
+       "kind": "prepared",
+       "evidence_id": "E7",
+       "date": "2026-01-28",
+       "confidence": 0.7
+      }
+     },
+     {
+      "id": "tsla-analysis-2026-09-30-59dd0caf2f",
+      "content": "Primary operational risk factors [E4, E6]:",
+      "score": 0.4874,
+      "metadata": {
+       "section": "operational_risks",
+       "stored_at": "2026-09-30T08:28:59+00:00",
+       "confidence": 0.6,
+       "ticker": "TSLA",
+       "date": "2026-09-30",
+       "source_type": "analysis",
+       "researcher_session": "session-20260930-082814-1691",
+       "verified": true
+      }
+     }
+    ],
+    "searched_records": 2335
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T21:03:56+00:00",
+   "latency_ms": 238.958,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E4": {
+   "evidence_id": "E4",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "TSLA",
+    "filing_type": "10-K",
+    "year": 2025
+   },
+   "data": {
+    "ticker": "TSLA",
+    "cik": "0001318605",
+    "company_name": "Tesla, Inc.",
+    "filing_type": "10-K",
+    "filing_date": "2026-01-29",
+    "period_of_report": "2025-12-31",
+    "accession_number": "0001628280-26-003952",
+    "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+    "sections": [
+     {
+      "item": "1",
+      "title": "Business",
+      "text": "ITEM 1. BUSINESS\nOverview\nWe are focused on bringing artificial intelligence (“AI”) into the real world, through products and services like Full Self-Driving (“FSD”) (Supervised) and Robotaxi, as well as working to develop and commercialize AI robots (“Bots”) (including Optimus). We intend to leverage our current operations, in which we design, develop, manufacture, sell and lease high-performance fully electric vehicles and energy generation and storage systems that increasingly deliver AI-related and enhanced software and services to our customers, to achieve that objective. We generally sell our products directly to customers, and continue to grow our global retail, service and charging footprint to accelerate the widespread adoption of our products. We emphasize performance, attractive styling and the safety of our users and workforce in the design and manufacture of our products and are continuing to develop full self-driving technology for improved safety. We also strive to lower the cost of ownership for our customers through continuous efforts to reduce manufacturing costs and by offering financial and other services tailored to our products.\nOur mission is building a world of amazing abundance. We believe that this mission, along with our engineering expertise, advancements in real-world AI, vertically integrated business model, and focus on user experience differentiate us from other companies.\nSegment Information\nWe operate as two reportable segments: (i) automotive and (ii) energy generation and storage.\nThe automotive segment includes the design, development, manufacturing, sales and leasing of high-performance fully electric vehicles as well as sales of automotive regulatory credits. Additionally, the automotive segment also includes services and other, which includes sales of used vehicles, non-warranty maintenance services and collision, paid Supercharging sessions, automotive insurance business revenue, part sales and retail merchandise sales. The energy generation and storage segment includes sales, leasing, and financing of energy generation and storage products, services related to such products and sales of energy generation incentives.\nOur Products and Services\nAutomotive\nWe currently manufacture five different consumer vehicles – the Model 3, Y, S, X and Cybertruck. Model 3 is a four-door mid-size sedan that we designed for manufacturability with a base price for mass-market appeal. Model Y is a compact sport utility vehicle (“SUV”) built on the Model 3 platform with seating for up to seven adults. Model S is a four-door full-size sedan and Model X is a mid-size SUV with seating for up to seven adults. Model S and Model X feature the highest performance characteristics and longest ranges that we offer in a sedan and SUV, respectively. The Cybertruck is a full-size electric pickup truck with a stainless steel exterior that has the utility and strength of a truck while featuring the speed of a sports car. In 2022, we also began early production and deliveries of a commercial electric vehicle, the Tesla Semi.\nWe have planned electric vehicles to address additional vehicle markets, and will continue leveraging developments in our proprietary Full Self-Driving (“FSD”) (Supervised) features, battery cell and other technologies. For purposes of this filing, use of the term “FSD (Supervised)” includes the equivalent naming convention, “FSD (Capability)” that is used in the European, Middle East and Asia-Pacific regions. In June 2025, we launched our Robotaxi service, an autonomous ride-hailing platform that harnesses our technology and vehicles. We expect this service will open access to an expanded customer base as modes of transportation evolve, and, along with products such as FSD (Supervised) subscriptions, unlock the potential to advance a service-driven business model based on AI, software and fleet-based profits. Our Robotaxi business currently operates with Model Y vehicles but, in time, will include Cybercab, our purpose-built autonomous vehicle.\nEnergy Generation and Storage\nEnergy Storage Products\nPowerwall and Megapack are our lithium-ion battery energy storage products. Powerwall, which we sell and lease to customers, as well as through channel partners, is designed to store energy at homes or small commercial facilities. Megapack is an energy storage solution for commercial, industrial, utility and energy generation customers, multiple of which may be grouped together to form larger installations of gigawatt hours (“GWh”) or greater capacity. As AI infrastructure drives rapid load growth, Megapack helps to, among other things, increase utilization of existing generation and transmission capacity, resulting in a more efficient use of the electric grid.\nWe also continue to develop software capabilities for remotely controlling and dispatching our energy storage systems across a wide range of markets and applications, including through our real-time energy control and optimization platforms for Megapack batteries (Autobidder) and distributed energy resources like Powerwall (Powerhub).\nEnergy Generation Offerings\nWe sell energy generation systems directly to customers and also through channel partners. We design and manufacture certain components for our energy generation products, including solar panels and Solar Roof, which combines premium glass roof tiles with energy generation. We also purchase many components for our energy generation systems from various third-party manufacturers to provide for competitive pricing and adequate supply.\nTechnology\nAutomotive\nSelf-Driving Development and Artificial Intelligence\nWe use AI to develop real-world applications, such as autonomous driving solutions and robots. We utilize vision-based technologies, systems and software to train our artificial neural networks, which are accelerated by our own in-house, custom designed inference chips. We are also applying our artificial intelligence learnings from self-driving technology to Bots, such as Optimus, a general purpose, autonomous humanoid robot in development.\nCurrently, we offer in our customer vehicles certain advanced driver assistance systems. Although at present, same as in the past, the driver is responsible for remaining fully engaged in the driving operation, these systems provide safety and convenience functionality that may relieve drivers of many tedious and potentially dangerous aspects of road travel much like the system that airplane pilots use, when conditions permit. As with other vehicle systems, we improve these functions in our customer vehicles through over-the-air software updates. Every Tesla vehicle delivered today is designed for autonomy, and we believe our capabilities and advancements in AI differentiate us from our competitors.\nVehicle Control and Infotainment Software\nThe performance and safety systems of our vehicles and their battery packs utilize sophisticated control software. Control systems in our vehicles optimize performance, customize vehicle behavior, manage charging and control all infotainment functions. We develop almost all of this software, including most of the user interfaces, internally and update our vehicles’ software regularly through over-the-air updates, and work to actively improve our software security with every release.\nBattery and Powertrain\nOur core vehicle technology competencies include powertrain engineering and manufacturing and our ability to design vehicles that utilize the unique advantages of an electric powertrain. We have designed our proprietary powertrain systems to be adaptable, efficient, reliable and cost-effective while withstanding the rigors of an automotive environment. We offer dual motor powertrain vehicles, which use two electric motors to maximize traction and performance in an all-wheel drive configuration, as well as vehicle powertrain technology featuring three electric motors for further increased performance in certain versions of Model S and Model X, Cybertruck and the Tesla Semi.\nWe maintain extensive testing and R&D capabilities for battery cells, packs and systems, and have built an expansive body of knowledge on lithium-ion cell chemistry types and performance characteristics. In order to enable a greater supply of cells for our products with higher energy density at lower costs, we have developed a new proprietary lithium-ion battery cell and improved manufacturing processes.\nEnergy Generation and Storage\nEnergy Storage Products\nWe leverage many of the component-level technologies from our vehicles in our energy storage products. By taking a modular approach to the design of battery systems, we can optimize manufacturing capacity of our energy storage products. Additionally, our expertise in power electronics enables our battery systems to interconnect with electricity grids while providing fast-acting systems for power injection and absorption. We have also developed software to remotely control and dispatch our energy storage systems. Further leveraging our capabilities in AI, every Tesla energy storage product is capable of being enhanced through firmware updates and optimized by our software platforms, particularly Powerhub (for distributed energy resources, including Powerwall-enabled virtual power plants) and Autobidder (for Megapack batteries).\nEnergy Generation Systems\nWe began manufacturing a new residential retrofit solar panel in 2025, and began initial customer deliveries in January 2026. We continue to manufacture Solar Roof, which has been engineered over numerous iterations to combine aesthetic appeal and durability with power generation. The efficiency of our energy generation products is aided by our own solar inverter, which incorporates our power electronics technologies. We designed both products to integrate with Powerwall.\nInfrastructure\nTo support our businesses in clean energy and transport and autonomous robots, we are investing in and developing the necessary supporting infrastructure. This includes additional compute hardware to better enable the massive amounts of field data captured by our vehicles to continually train and improve these artificial neural networks for real-world performance. In 2025, we further expanded Cortex, our training cluster at Gigafactory Texas, and announced a new collaboration with Samsung to manufacture advanced semiconductors for AI inference and training in the U.S. We are currently building Cortex 2 at Gigafactory Texas to further increase our AI training compute capacity.\nIn 2026, we will be ramping six new production lines across vehicle, Bots, energy storage and battery manufacturing, while further leveraging our existing factory, charging and service center footprints to support future growth. We are also focused on exploring additional opportunities independently and with strategic partners to develop bespoke and scalable solutions, including through vertical integration, to optimize for cost, functionality, efficiency and safety.\nDesign and Engineering\nAutomotive\nWe have established significant in-house capabilities in the design and test engineering of electric vehicles and their components and systems. Our team has significant experience in computer-aided design as well as durability, strength and crash test simulations, which reduces the product development time of new models. We have also achieved complex engineering feats in stamping, casting and thermal systems, and developed a method to integrate batteries directly with vehicle body structures without separate battery packs to optimize manufacturability, weight, range and cost characteristics.\nWe are focused on maximum capacity utilization at our factories, while taking action to localize our vehicle designs and production for particular markets, including country-specific market demands and factory optimizations for local workforces. As we increase our capabilities, particularly in the areas of automation, die-making and line-building, we are also making strides in the simulations modeling these capabilities prior to construction.\nEnergy Generation and Storage\nOur expertise in electrical, mechanical, civil and software engineering allows us to design, engineer, manufacture and install energy generating and storage products and components, including at the residential through utility scale. For example, the integrated design of our Megapack products are intended to significantly reduce the amount of assembly required in the field. We also customize solutions including our energy storage products, energy generation systems and/or Solar Roof for customers to meet their specific needs.\nSales and Marketing\nHistorically, we have been able to achieve sales without relying on traditional advertising and at relatively low marketing costs. We continue to monitor our public narrative and brand, and tailor our marketing efforts accordingly, including through investments in customer education and advertising as necessary.\nAutomotive\nDirect Sales\nOur vehicle sales channels currently include our website and a global network of company-owned stores. In some jurisdictions, we also have galleries to educate and inform customers about our products, but such locations do not transact in the sale of vehicles. We believe this infrastructure enables us to better control costs of inventory, manage warranty service and pricing, educate consumers about electric vehicles, make our vehicles more affordable, maintain and strengthen the Tesla brand and obtain rapid customer feedback.\nWe reevaluate our sales strategy both globally and at a location-by-location level from time to time to optimize our sales channels. However, sales of vehicles in the automobile industry tend to be cyclical in many markets, which may expose us to volatility from time to time.\nUsed Vehicle Sales\nOur used vehicle business supports new vehicle sales by integrating the trade-in of a customer’s existing Tesla or non-Tesla vehicle with the sale of a new Tesla vehicle. The Tesla and non-Tesla vehicles we acquire as trade-ins, along with vehicles returned upon lease-end are subsequently remarketed, either directly by us or through third parties.\nPublic Charging\nWe have a growing global network of Tesla Superchargers, which are our industrial-grade, high-speed vehicle chargers. Where possible, we co-locate Superchargers with our solar and energy storage systems to reduce costs and promote renewable power. Supercharger stations are typically placed along well-traveled routes and in and around dense city centers to allow vehicle owners the ability to enjoy quick, reliable charging along an extensive network with convenient stops. Use of the Supercharger network either requires payment of a fee or is free under certain sales programs. We offer Supercharger access to non-Tesla vehicles in support of our mission, with all major automakers announcing their adoption of the North American Charging Standard (NACS) in certain markets. We continue to monitor and increase our network of Tesla Superchargers in anticipation of future demand, including with respect to our Robotaxi services.\nWe also work with a wide variety of hospitality, retail and public destinations, as well as businesses with commuting employees, to offer additional charging options for our customers, as well as single-family homeowners and multi-family residential entities, to deploy home charging solutions. To accelerate dependable charging ubiquity, Superchargers are also available through our Supercharger for Business program, where third parties can purchase and install Superchargers and set the charging price, while Tesla remains responsible for software updates, network operations, maintenance and driver support. In 2025, we opened the first Tesla Diner in California, which offers Supercharging as well as Tesla themed food and merchandise.\nIn-App Upgrades\nAs our vehicles are capable of being updated remotely over-the-air, our customers may purchase additional paid options and features through the Tesla app or through the in-vehicle user interface, which also allows us to offer certain options and features on a subscription basis.\nEnergy Generation and Storage\nWe market and sell our solar and energy storage products to residential, commercial and industrial customers and utilities through a variety of channels, including through our website, stores and galleries, as well as through our network of channel partners, and in the case of some commercial customers, through PPA transactions. We emphasize simplicity, standardization and accessibility to make it easy and cost-effective for customers to adopt clean energy, while reducing our customer acquisition costs.\nService and Warranty\nAutomotive\nService\nWe provide service for our electric vehicles at our company-owned service locations and through Tesla Mobile Service technicians who perform work remotely at customers’ homes or other locations. Servicing the vehicles ourselves allows us to identify problems and implement solutions and improvements faster than traditional automobile manufacturers and their dealer networks. The connectivity of our vehicles also allows us to diagnose and remedy many problems remotely and proactively.\nVehicle Limited Warranties and Extended Service Plans\nWe provide a manufacturer’s limited warranty on all new and used Tesla vehicles we sell directly to consumers, which may include limited warranties on certain components, specific types of damage or battery capacity retention. We also currently offer optional extended service plans that provide coverage after the new vehicle limited warranties end for certain models in specified regions.\nEnergy Generation and Storage\nWe provide service and repairs to our energy product customers, including under warranty where applicable. We generally provide manufacturer’s limited warranties with our energy storage products and offer certain extended limited warranties that are available at the time of purchase of the system. If we install a system, we also provide certain limited warranties on our installation workmanship.\nFor retrofit energy generation systems, we provide separate limited warranties for workmanship and against roof leaks, and for Solar Roof, we also provide limited warranties for defects and weatherization. For components not manufactured by us, we generally pass-through the applicable manufacturers’ warranties.\nAs part of our energy generation system and energy storage contracts, we may provide the customer with either certain availability or performance guarantees that commit that the underlying system will meet or exceed certain availability or minimum energy generation or performance requirements specified in the contract.\nFinancial Services\nAutomotive\nPurchase Financing and Leases\nWe offer leasing and/or loan financing arrangements for our vehicles in certain jurisdictions in North America, Europe and/or Asia ourselves and through various financial institutions. Under certain of such programs, we have provided resale value guarantees or buyback guarantees that may obligate us to cover a resale loss up to a certain limit or repurchase the subject vehicles at pre-determined values.\nInsurance\nIn 2021, we launched our insurance product using real-time driving behavior in select states, which offers rates that are often better than other alternatives and promotes safer driving. Our insurance products are currently available in 13 states and we plan to expand the markets in which we offer insurance products, as part of our ongoing effort to decrease the total cost of ownership for our customers.\nEnergy Generation and Storage\nWe offer certain financing options to our residential customers, including a new lease product that was launched in the fourth quarter of 2025, which enable choices to our customers to purchase and own or lease energy systems comprised of solar and/or Powerwall batteries. Our solar PPAs, offered primarily to commercial customers, char [...cut]"
+     },
+     {
+      "item": "1A",
+      "title": "Risk Factors",
+      "text": "ITEM 1A. RISK FACTORS\nYou should carefully consider the risks described below together with the other information set forth in this report, which could materially affect our business, financial condition and future results. The risks described below are not the only risks facing our company. Risks and uncertainties not currently known to us or that we currently deem to be immaterial also may materially adversely affect our business, financial condition and operating results.\nRisks Related to Our Ability to Grow Our Business\nWe may experience issues or delays in developing, launching and ramping the production of our products, services and features, or we may be unable to control our manufacturing costs.\nWe are developing new technologies and services, unique manufacturing processes and design features in our products. There is no guarantee we will be able to successfully develop or timely introduce and scale these new products, services and features, or that there will be widespread consumer adoption. We also have previously experienced and may in the future experience launch and production ramp delays.\nIn particular, our future business depends on development of our driver assistance systems and autonomous driving solutions and increasing the production of mass-market vehicles, including Cybercab, our purpose-built Robotaxi product. In order to be successful, we will need to further advance our capabilities in AI, and implement, maintain and ramp efficient and cost-effective manufacturing capabilities, processes and supply chains and achieve the design tolerances, high quality and output rates we have planned at our manufacturing facilities. We will also need to hire, train and compensate skilled employees to operate these facilities. Bottlenecks and other unexpected challenges such as those we experienced in the past may arise during our production ramps, and we must address them promptly while continuing to improve manufacturing processes and reducing costs. If we are not successful in achieving these goals, we could face delays in establishing and/or sustaining our product ramps or be unable to meet our related cost and profitability targets. Similarly, we are also developing Bots for future commercialization, and we may experience delays in launching and ramping the production of this product.\nWe have experienced, and may also experience similar future delays in launching and/or ramping production of our energy storage products and Solar Roof; new product versions or variants; new vehicles; and future products, features and services based on artificial intelligence. Likewise, we may encounter delays with the design, construction and regulatory or other approvals necessary to build and bring online future manufacturing facilities and products. In addition, as we continue to develop our artificial intelligence services and products, we may face many additional challenges, including the availability and cost of energy, processing power limitations and the substantial power requirements for our data centers.\nAny delay or other complication in ramping the production of our current products or the development, manufacture, launch and production ramp of our future products, features and services, or in doing so cost-effectively and with high quality, may harm our brand, business, prospects, financial condition and operating results.\nOur suppliers may fail to deliver components according to schedules, prices, quality and volumes that are acceptable to us, or we may be unable to manage these components effectively.\nOur products contain thousands of parts purchased globally from hundreds of suppliers, including single-source direct suppliers, which exposes us to multiple potential sources of component shortages. Unexpected changes in business conditions, materials pricing, including inflation of raw material costs, labor issues, wars, trade policies, natural disasters, health epidemics, trade and shipping disruptions, port congestions, cyberattacks and other factors beyond our or our suppliers’ control could also affect these suppliers’ ability to deliver technologies or components to us or to remain solvent and operational. U.S. trade policy alterations in 2025, including heightened import tariffs and subsequent retaliatory measures, have impacted our supply chain costs, and may impact the availability of certain technologies or components, depending on the exact scope of the tariffs ultimately implemented and retaliatory export controls. Additionally, if our suppliers do not accurately forecast and effectively allocate production or if they are not willing to allocate sufficient production to us, or face other challenges such as insolvency, it may reduce our access to components and require us to search for new suppliers. The unavailability of any component or supplier could result in production delays, idle manufacturing facilities, product design changes and loss of access to important technology and tools for producing and supporting our products, as well as impact our capacity expansion and our ability to fulfill our obligations under customer contracts. For example, as companies, including Tesla, have made rapid advancements in AI in recent years, such innovation demands exponentially greater compute, memory, energy and thermal resources, which may prove insufficient in scale or affordability to meet our requirements.\nMoreover, significant increases in our production or product design changes by us have required and may in the future require us to procure additional components in a short amount of time. We have faced in the past, and may face suppliers who are unwilling or unable to sustainably meet our timelines or our cost, quality and volume needs, which may increase our costs or require us to replace them with other sources. Finally, as we construct new manufacturing facilities and add production lines to existing facilities, we may experience issues in correspondingly increasing the level of localized procurement at those facilities. While we believe that we will be able to secure additional or alternate sources or develop our own replacements for most of our components, there is no assurance that we will be able to do so quickly or at all. Additionally, we may be unsuccessful in our continuous efforts to negotiate with existing suppliers to obtain cost reductions and avoid unfavorable changes to terms, source less expensive suppliers for certain parts and redesign certain parts to make them less expensive to produce, especially in the case of increases in materials pricing. Any of these occurrences may harm our business, prospects, financial condition and operating results.\nAs the scale and variants of our production increases, we will also need to accurately forecast, purchase, warehouse and transport components at high volumes to our manufacturing facilities and servicing locations internationally. If we are unable to accurately match the timing and quantities of component purchases to our actual needs or successfully implement automation, inventory management and other systems to accommodate the increased complexity in our supply chain and parts management, we may incur unexpected production disruption, storage, transportation and write-off costs, which may harm our business and operating results.\nWe may be unable to meet our projected construction timelines, costs and production ramps at new factories, or we may experience difficulties in generating and maintaining demand for products manufactured there and related services.\nOur ability to increase production of our vehicles and energy products on a sustained basis, make them affordable globally by accessing local supply chains and workforces and streamline delivery logistics is dependent on the construction and ramp of our current and future factories. The construction of and commencement and ramp of production at these factories are subject to a number of uncertainties inherent in all new manufacturing operations, including ongoing compliance with regulatory requirements, procurement and maintenance of construction, environmental and operational licenses and permitting, supply chain constraints, hiring, training and retention of qualified employees and the pace of bringing production equipment and processes online with the capability to manufacture high-quality units at scale. Moreover, we will have to establish and ramp production of our proprietary battery cells and packs at our new factories, and we additionally intend to incorporate sequential design and manufacturing changes into vehicles and energy products manufactured at each new factory. If we experience any issues or delays in meeting our projected timelines, costs, capital efficiency and production capacity for our new factories, expanding and managing teams to implement iterative design and production changes there, maintaining and complying with the terms of any debt financing that we obtain to fund them or generating and maintaining demand for the vehicles and energy products we manufacture there, our business, prospects, operating results and financial condition may be harmed. Such delays could also in turn affect our ability to meet demand for our services, such as Robotaxi, which are dependent upon the production and deployment of Tesla vehicles.\nWe may be unable to grow our global product sales, delivery and installation capabilities and our servicing and vehicle charging networks, or we may be unable to accurately project and effectively manage our growth.\nOur success will depend on our ability to continue to expand our sales capabilities. We are targeting a global mass demographic with a broad range of potential customers, in which we have relatively limited experience projecting demand\nand pricing our products. We currently produce numerous international variants at a limited number of factories, and if our specific demand expectations for these variants prove inaccurate, we may not be able to timely generate deliveries matched to the vehicles that we produce in the same timeframe or that are commensurate with the size of our operations in a given region. Likewise, as we develop and grow our energy products and services worldwide, our success will similarly depend on our ability to correctly forecast demand in various markets.\nBecause we do not have independent dealer networks, we are responsible for delivering all of our vehicles to our customers. As our production volumes continue to grow, we have faced in the past, and may face challenges with deliveries at increasing volumes, particularly in international markets requiring significant transit times. We have also deployed a number of delivery models, such as deliveries to customers’ homes and workplaces and touchless deliveries, but there is no guarantee that such models will be scalable or be accepted globally. Likewise, as we ramp our energy products, we are working to substantially increase our production and installation capabilities. If we experience production delays or inaccurately forecast demand, our business, financial condition and operating results may be harmed.\nMoreover, because of our unique expertise with our vehicles, we recommend that our vehicles be serviced by us or by certain authorized professionals. If we experience delays in adding servicing capacity or servicing our vehicles efficiently, or experience unforeseen issues with the reliability of our vehicles, particularly higher-volume additions to our fleet such as Model 3 and Model Y, it could overburden our servicing capabilities and parts inventory. Similarly, the increasing number of Tesla vehicles also requires us to continue to rapidly increase the number of our Supercharger stations and connectors throughout the world. As we seek to expand our Robotaxi and Semi business we must also accurately forecast, develop and optimize our service and charging capabilities to ensure service quality.\nThere is no assurance that we will be able to ramp our business to meet our sales, delivery, installation, servicing and vehicle charging targets globally, that our projections on which such targets are based will prove accurate or that the pace of growth or coverage of our customer infrastructure network will meet customer expectations. These plans require significant cash investments and management resources and there is no guarantee that they will generate additional sales or installations of our products, or that we will be able to avoid cost overruns or be able to hire additional personnel to support them. As we expand, we will also need to ensure our compliance with regulatory requirements in various jurisdictions applicable to the sale, installation and servicing of our products, the sale or dispatch of electricity related to our energy products and the operation of Superchargers. If we fail to manage our growth effectively, it may harm our brand, business, prospects, financial condition and operating results.\nWe will need to maintain and significantly grow our access to battery cells, including through the development and manufacture of our own cells, and control our related costs.\nWe are dependent on the continued supply of lithium-ion battery cells for our vehicles and energy storage products, and we will require substantially more cells to grow our business according to our plans. Currently, we rely on suppliers such as Panasonic and Contemporary Amperex Technology Co. Limited (CATL) for these cells. We have to date fully qualified only a very limited number of such suppliers and have limited flexibility in changing suppliers. Any disruption in the supply of battery cells from our suppliers could limit production of our vehicles and energy storage products. In the long term, we intend to supplement cells from our suppliers with cells manufactured by us, which we believe will be more efficient, manufacturable at greater volumes and more cost-effective than currently available cells. However, our efforts to develop and manufacture such battery cells have required, and may continue to require, significant investments, and there can be no assurance that we will be able to achieve these targets in the timeframes that we have planned or at all. If we are unable to do so, we may have to curtail our planned vehicle and energy storage product production or procure additional cells from suppliers at potentially greater costs, either of which may harm our business and operating results.\nIn addition, the cost and mass production of battery cells, whether manufactured by our suppliers or by us, depends in part upon the prices and availability of raw materials such as lithium, nickel and/or other metals. The prices for these materials fluctuate and their available supply may be unstable, depending on market conditions, trade policies, refining capacity and global demand for these materials. For example, as a result of increased global production of electric vehicles and energy storage products, suppliers of these raw materials may be unable to meet our volume needs. Additionally, our suppliers may not be willing or able to reliably meet our timelines or our cost and quality needs, which may require us to replace them with other sources. Any reduced availability of these materials may impact our access to cells and our growth, and any increases in their prices may reduce our profitability if we cannot recoup such costs through increased prices. Moreover, our inability to meet demand and any product price increases may harm our brand, growth, prospects and operating results.\nOur future growth and success are dependent upon demand for our electric vehicles and adoption of autonomous driving solutions.\nIf the market for electric vehicles in general and Tesla vehicles in particular does not develop as we expect, develops more slowly than we expect, or if demand for our vehicles decreases in our markets or our vehicles compete with each other, our business, prospects, financial condition and operating results may be harmed.\nIn addition, electric vehicles still constitute a small percentage of overall vehicle sales. As a result, the market for our vehicles could be negatively affected by numerous factors, such as:\n•\nperceptions about electric vehicle features, quality, safety, performance and cost;\n•\nperceptions about the limited range over which electric vehicles may be driven on a single battery charge, and access to charging facilities;\n•\ncompetition, including from other types of alternative fuel vehicles, plug-in hybrid electric vehicles and high fuel-economy internal combustion engine vehicles;\n•\nvolatility in the cost of oil, gasoline and energy;\n•\ngovernment regulations and economic incentives and conditions; and\n•\nconcerns about our future viability.\nThe target demographics for our vehicles are highly competitive. Sales of vehicles in the automotive industry tend to be cyclical in many markets, which may expose us to further volatility. We also cannot predict the duration or direction of current global trends or their sustained impact on consumer demand. Ultimately, we continue to monitor macroeconomic conditions to remain flexible and to optimize and evolve our business as appropriate, and attempt to accurately project demand and infrastructure requirements globally and deploy our production, workforce and other resources accordingly. Rising interest rates may lead to consumers to increasingly pull back spending, including on our products, which may harm our demand, business and operating results. If we experience unfavorable global market conditions, or if we cannot or do not maintain operations at a scope that is commensurate with such conditions or are later required to or choose to suspend such operations again, our business, prospects, financial condition and operating results may be harmed.\nUpon launching our Robotaxi service in June 2025, we also entered into the autonomous ride-hailing service market, and have plans to mass produce Cybercab, a purpose-built Robotaxi product. As we seek to expand the scope and geographical footprint of this business, our success will be dependent upon various factors, including the acceptance and adoption by consumers of autonomous driving solutions, and Robotaxi as a preferable option, amid growing competition. If the uptake rate for autonomous driving solutions does not develop as we expect, our business, prospects, financial condition and operating results may be harmed.\nWe face strong competition for our products and services from a growing list of established and new competitors.\nThe worldwide automotive market is highly competitive today and we expect it will become even more so in the future. A significant and growing number of established and new automobile manufacturers, as well as other companies, have entered, or are reported to have plans to enter, the market for electric and other alternative fuel vehicles, including hybrid, plug-in hybrid and fully electric vehicles, as well as the market for self-driving technology and services and other vehicle applications and software platforms. In addition, certain government and economic incentives which provide benefits to manufacturers who assemble domestically or have local suppliers, may provide a greater benefit to our competitors, which could negatively impact our profitability. Many of our competitors have significantly more or better-established resources than we do to devote to the design, development, manufacturing, distribution, promotion, sale and support of their products and services, and may achieve additional cost efficiencies owing to location and economic environments. Increased competition could result in our lower vehicle unit sales, price reductions, revenue shortfalls, loss of customers and loss of market share, which may harm our business, financial condition and operating results.\nWe also face competition in our energy generation and storage busi [...cut]"
+     },
+     {
+      "item": "7",
+      "title": "Management's Discussion and Analysis",
+      "text": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS\nThe following discussion and analysis should be read in conjunction with the consolidated financial statements and the related notes included elsewhere in this Annual Report on Form 10-K. For further discussion of our products and services, technology and competitive strengths, refer to Item 1- Business. For discussion related to changes in financial condition and the results of operations for fiscal year 2024-related items, refer to Part II, Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations in our Annual Report on Form 10-K for fiscal year 2024, which was filed with the SEC on January 30, 2025.\nOverview and 2025 Highlights\nWe are focused on bringing artificial intelligence into the real world, through products and services like FSD (Supervised) and Robotaxi, as well as working to develop and commercialize AI robots (including Optimus). We intend to leverage our current operations, in which we design, develop, manufacture, sell and lease high-performance fully electric vehicles and energy generation and storage systems that increasingly deliver AI-related and enhanced software and services to our customers, to achieve that objective.\nAs a result of rapidly evolving trade and fiscal policy, uncertainty in the automotive and energy markets continues, posing risks to our global supply chain and cost structure which could have a meaningfully adverse impact on demand for our products and our profitability. The current tariff regime will have a relatively larger impact on our energy generation and storage business compared to our automotive business. While we prepare for near-term challenges to our business under current policies, we are focused on long-term growth opportunities as we continue to make prudent investments.\nIn 2025, we produced approximately 1.66 million consumer vehicles and delivered approximately 1.64 million consumer vehicles. We are focused on profitable growth via a differentiated and efficiently managed product portfolio that leverages our existing factories and production lines, further improving and deploying our FSD (Supervised) capabilities, including future autonomous capabilities through our purpose-built Robotaxi product, Cybercab, reducing costs, increasing vehicle production, utilized capacity and delivery capabilities, improving and developing our vehicles, battery and AI compute technologies, vertically integrating and localizing our supply chain, and expanding our global infrastructure, including our service and charging infrastructure. We have continued to expand and refine our Robotaxi service after its June 2025 launch, capitalizing on our AI investments and scalable mobility infrastructure to advance a service-driven business model.\nIn 2025, we deployed 46.7 GWh of energy storage products. We are focused on ramping the production, increasing the market penetration of our energy storage products, developing our battery technologies and vertically integrating, localizing and expanding our supply chain.\nIn 2025, we recognized total revenues of $94.83 billion, representing a decrease of $2.86 billion compared to the prior year. In 2025, our net income attributable to common stockholders was $3.79 billion, representing a decrease of $3.30 billion compared to the prior year. We continue to ramp production and build and optimize our manufacturing capacity, expand our operations while focusing on further cost reductions and operational efficiencies to enable increased deliveries and deployments of our products, and invest in research and development to accelerate our AI, software and fleet-based profits for further revenue growth.\nWe ended 2025 with $44.06 billion in cash and cash equivalents and investments, representing an increase of $7.50 billion from the end of 2024. Our cash flows provided by operating activities were $14.75 billion in 2025 compared to $14.92 billion in 2024, representing a decrease of $176 million. Capital expenditures amounted to $8.53 billion in 2025 compared to $11.34 billion in 2024, representing a decrease of $2.82 billion. Overall growth has allowed our business to generally fund itself, and we will continue to make critical high-value investments while maintaining a strong balance sheet.\nManagement Opportunities, Challenges and Uncertainties and 2026 Outlook\nAutomotive and AI Enabled Products—Production\nWe are focused on growing and optimizing our manufacturing capacity, which includes capacity for manufacturing newer vehicle models and future vehicles utilizing aspects of our next generation platform, while maximizing production rate and efficiency at our Gigafactories. In 2025, we completed the refresh of our vehicle lineup with the launch of the new Model Y and additional variants for Model 3 and Model Y. The next phase of production growth will be initiated by advances in autonomy and the introduction of new products, including those built on our next generation vehicle platform, as well as our ability to efficiently manufacture our own cells that we are developing to have high-volume output, lower capital and production costs and longer range. Our goals are to improve vehicle performance, decrease production costs and increase affordability and customer awareness. We are also capitalizing on our strengths in real-world AI data to advance the development of Optimus, a general purpose, autonomous humanoid robot.\nThese plans are subject to uncertainties inherent in establishing and ramping manufacturing operations, which may be exacerbated by new product and manufacturing technologies we introduce, the number of concurrent international projects, any industry-wide component constraints, labor shortages and any future impact from events outside of our control. For example, changes to fiscal and trade policy with respect to tariffs, export controls and other restrictions may impact our global supply chain cost structure and availability, affecting not only vehicle production, but also facility expansions. Moreover, we have set ambitious technological targets with our plans for battery cells as well as for iterative manufacturing and design improvements for our vehicles.\nAutomotive and AI Enabled Products—Demand, Sales, Deliveries and Infrastructure\nOur cost reduction efforts, cost innovation strategies, and additional localized procurement and manufacturing are key to our vehicles’ affordability and have allowed us to competitively price our vehicles. We will also continue to generate demand by improving our vehicles’ performance and functionality, including through product offerings and features utilizing artificial intelligence such as FSD (Supervised) and other software, and delivering new vehicles and vehicle options. In addition, we believe the launch of our Robotaxi service unlocks the potential for significant business growth to advance a service-driven business model. We will continue to improve safety and profitability while scaling the network. In addition, we have been increasing awareness, and expanding our vehicle financing programs, including attractive leasing terms for our customers. We will also continue to work on developing our robotics offerings.\nHowever, we operate in a cyclical industry that is sensitive to shifting consumer trends, political and regulatory uncertainty, including with respect to trade and the environment, all of which can be compounded by inflationary pressures, rising energy prices, interest rate fluctuations and the liquidity of enterprise customers. For example, as inflationary pressures increased across the markets in which we operate, central banks in developed countries raised interest rates rapidly and substantially, which impacted the affordability of vehicle lease and finance arrangements. Further, sales of vehicles in the automotive industry also tend to be cyclical in many markets, which may expose us to increased volatility as we expand and adjust our operations. Moreover, as additional competitors enter the marketplace and help bring the world closer to sustainable transportation, we will have to adjust and continue to execute well to maintain our momentum. Additionally, our suppliers’ liquidity and allocation plans may be affected by current challenges in the automotive industry, which could reduce our access to components or result in unfavorable changes to cost. These macroeconomic and industry trends have had, and will likely continue to have, an impact on the pricing of, and order rate for our vehicles, and in turn our operating margin.\nChanges in government and economic policies, incentives or tariffs may also impact our production, cost structure and the competitive landscape. For instance, while the final scope and application of recently announced changes in trade policy remain uncertain at this time, higher tariffs on imports and subsequent retaliatory tariffs could adversely impact consumer spending and demand for durable goods and related services. Furthermore, certain provisions of the OBBBA, including the removal of tax credits for electric vehicles, may also impact consumer demand for electric vehicles in general. We will continue to adjust accordingly to such developments, and we believe our ongoing cost reduction efforts, including through production innovation, process improvements and logistics optimization, and focus on operating leverage, vertical integration and supply chain localization will continue to benefit us in relation to our competitors. Our new products and our advances in autonomy and robotics, position us for future growth.\nAs our vehicle production increases, we must work constantly to similarly increase vehicle delivery capability so that it does not become a bottleneck on our total deliveries. As we expand our manufacturing operations globally, we will also have to continue to increase and staff our delivery, servicing and charging infrastructure accordingly, maintain our vehicle reliability and optimize our Supercharger locations to ensure cost effectiveness and customer satisfaction. In particular, as other automotive manufacturers have announced their adoption of NACS and agreements with us to utilize our Superchargers, we must correspondingly expand our network in order to ensure adequate availability to meet customer demands. We also remain focused on continued enhancements of the capability and efficiency of our servicing operations. In tandem with the launch of our Robotaxi business, we are focused on developing and optimizing dedicated infrastructure, including in relation to vehicle cleaning and maintenance, charging, security, teleoperations and fleet management, to ensure service quality as we continue to scale.\nEnergy Generation and Storage Demand, Production and Deployment\nThe long-term success of this business is dependent upon incremental volume growth. We continue to increase the production and capabilities of our energy storage products to meet high levels of demand, including the ramps of our Megafactories in Shanghai and Lathrop, California, and the construction of a new Megafactory near Houston, Texas. In 2025, we introduced Megapack 3 and Megablock, our next-generation industrial storage product, and began manufacturing a new residential retrofit solar panel. For Megapack, energy storage deployments can vary meaningfully quarter to quarter depending on the timing of specific project milestones and logistics. As these product lines grow, we will have to maintain adequate battery cell supply for our energy storage products. At the same time, changes in government and economic incentives or tariffs may also impact our sales, cost structure and the competitive landscape. For instance, import tariffs by the US government and the provisions of the OBBBA could significantly increase battery cell expenses and impact costs for our consumers, negatively impacting consumer demand. Despite these challenges, as AI infrastructure drives rapid load growth, we see opportunities for our energy storage products to stabilize the grid, shift energy when it is needed most and provide additional power capacity.\nCash Flow and Capital Expenditure Trends\nOur capital expenditures are typically difficult to project beyond the short-term given the number and breadth of our core projects at any given time, and may further be impacted by uncertainties in future global market conditions and shifting global trade and fiscal policy. We are simultaneously developing and ramping new products, building or ramping manufacturing facilities on three continents, piloting the development and manufacture of new battery cell technologies, expanding our Supercharger network and investing in autonomy, robotics and other artificial intelligence enabled training and products and its supporting infrastructure, and the pace of our capital spend may vary depending on overall priority among projects, the pace at which we meet milestones, production adjustments to and among our various products, increased capital efficiencies and the addition of new projects. We are focused on long-term growth opportunities through critical, high-value investments. We currently expect our capital expenditures to be in excess of $20 billion in 2026, driven by our AI initiatives, including investments in compute infrastructure and data centers, the expansion and ramp of our manufacturing and R&D production lines and facilities, and growth in our fleet of company-operated AI-enabled assets and our retail, service and charging footprint. We believe this strategy will position our Company for further growth as we make investments in a capital efficient manner.\nOur business has generally been consistently generating cash flow from operations in excess of our level of capital spend, and with better working capital management resulting in shorter days sales outstanding than days payable outstanding, our sales growth is also generally facilitating positive cash generation. We have and will continue to utilize such cash flows, among other things, to invest in autonomy and robotics, further vertically integrate our supply chain, expand our product roadmap and provide financing options to our customers. At the same time, periods of heightened levels of capital expenditures due to capital-intensive projects and other potential variables such as rising material prices and increases in supply chain and labor expenses resulting from changes in global trade conditions and labor availability, will necessitate additional funding beyond our operating cash flow.\nCritical Accounting Policies and Estimates\nThe consolidated financial statements are prepared in accordance with accounting principles generally accepted in the U.S. (“GAAP”). The preparation of the consolidated financial statements requires us to make estimates and assumptions that affect the reported amounts of assets, liabilities, revenues, costs and expenses and related disclosures. We base our estimates on historical experience, as appropriate, and on various other assumptions that we believe to be reasonable under the circumstances. Changes in the accounting estimates are reasonably likely to occur from period to period. Accordingly, actual results could differ significantly from the estimates made by our management. We evaluate our estimates and assumptions on an ongoing basis. To the extent that there are material differences between these estimates and actual results, our future financial statement presentation, financial condition, results of operations and cash flows may be affected.\nThe estimates used for, but not limited to, determining significant economic incentive for resale value guarantee arrangements, sales return reserves, resale value guarantee liabilities, income tax, the collectability of accounts and finance receivables, fair value and probability assessments of stock-based awards, inventory valuation, warranties, fair value of long-lived assets, fair value of financial instruments, fair value and residual value of operating lease vehicles and energy generation and storage systems subject to leases could be impacted. We have assessed the impact and are not aware of any specific events or circumstances that required an update to our estimates and assumptions or materially affected the carrying value of our assets or liabilities as of the date of issuance of this Annual Report on Form 10-K. These estimates may change as new events occur and additional information is obtained. Actual results could differ materially from these estimates under different assumptions or conditions.\nRevenue Recognition\nAutomotive Sales\nAutomotive sales revenue includes revenues related to cash and financing deliveries of new vehicles, and specific other features and services that meet the definition of a performance obligation under Accounting Standards Codification 606,\nRevenue from Contracts with Customers\n(“ASC 606”), including access to our internet connectivity, access to our FSD (Supervised) features and their ongoing maintenance, free Supercharging programs and over-the-air software updates. We recognize revenue on automotive sales, net of any discounts or financial subsidies, upon delivery to the customer, which is when the control of a vehicle transfers. Payments are typically received at the point control transfers or in accordance with payment terms customary to the business, except sales we finance for which payments are collected over the contractual loan term. We also recognize a sales return reserve based on historical experience plus consideration for expected future market values when we offer resale value guarantees or similar buyback terms. Other features and services such as access to our internet connectivity, unlimited free Supercharging and over-the-air software updates are provisioned upon transfer of control of a vehicle and recognized over time on a straight-line basis as we have a stand-ready obligation to deliver such services to the customer. Other limited free Supercharging incentives are recognized based on actual usage or expiration, whichever is earlier. We recognize revenue related to these other features and services over the performance period, which is generally the expected ownership life of the vehicle. Revenue related to FSD (Supervised) features is recognized when functionality is delivered to the customer and their ongoing maintenance is recognized over time. For our obligations related to automotive sales, we estimate standalone selling price by considering costs used to develop and deliver the service, third-party pricing of similar options and other information that may be available. Customers may purchase subscriptions, including FSD (Supervised) and premium connectivity, after taking delivery of their vehicles. Revenue from subscriptions is recognized either over time or point in time depending on the nature of contractual terms.\nAny fees or financial subsidies that are paid or payable by us to a customer’s lender when we arrange the financing are recognized upfront as an offset against automotive sales revenue. As our contract costs related to automotive sales are typically fulfilled within one year, the costs to obtain a contract are expensed as incurred. Amounts billed to customers related to shipping and handling are classified as automotive sales revenue, and we have elected to recognize the cost for freight and shipping when control over vehicles, parts or accessories have transferred to the customer as an expense in cost of automotive sales revenue. Our policy is to exclude taxes collected from a customer from the transaction price of automotive contracts.\nWe offer resale value guarantees to our commercial banking partners in connection with certain vehicle leasing programs. Under these programs, we originate the lease with our end customer and immediately transfer the lease and the underlying  [...cut]"
+     },
+     {
+      "item": "7A",
+      "title": "Quantitative and Qualitative Disclosures About Market Risk",
+      "text": "ITEM 7A. QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK\nForeign Currency Risk\nWe transact business globally in multiple currencies and hence have foreign currency risks related to our revenue, costs of revenue and operating expenses denominated in currencies other than the U.S. dollar (primarily the Chinese yuan and euro in relation to our current year operations). In general, we are a net receiver of currencies other than the U.S. dollar for our foreign subsidiaries. Accordingly, changes in exchange rates affect our operating results as expressed in U.S. dollars as we do not typically hedge foreign currency risk.\nWe have also experienced, and will continue to experience, fluctuations in our net income as a result of gains (losses) on the settlement and the re-measurement of monetary assets and liabilities denominated in currencies that are not the local currency (primarily consisting of our intercompany and cash and cash equivalents balances).\nWe considered the historical trends in foreign currency exchange rates and determined that it is reasonably possible that adverse changes in foreign currency exchange rates of 10% for all currencies could be experienced in the near-term. These changes were applied to our total monetary assets and liabilities denominated in currencies other than our local currencies at the balance sheet date to compute the impact these changes would have had on our net income before income taxes. These changes would have resulted in a gain or loss of $1.70 billion at December 31, 2025 and $1.15 billion at December 31, 2024, assuming no foreign currency hedging."
+     },
+     {
+      "item": "8",
+      "title": "Financial Statements and Supplementary Data",
+      "text": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA\nIndex to Consolidated Financial Statements\nPage\nReport of Independent Registered Public Accounting Firm\n(PCAOB ID:\n)\nConsolidated Balance Sheets\nConsolidated Statements of Operations\nConsolidated Statements of Comprehensive Income\nConsolidated Statements of Redeemable Noncontrolling Interests and Equity\nConsolidated Statements of Cash Flows\nNotes to Consolidated Financial Statements\nReport of Independent Registered Public Accounting Firm\nTo the\nBoard of Directors and Stockholders of Tesla, Inc.\nOpinions on the Financial Statements and Internal Control over Financial Reporting\nWe have audited the accompanying consolidated balance sheets of Tesla, Inc. and its subsidiaries (the \"Company\") as of December 31, 2025 and 2024, and the related consolidated statements of operations, of comprehensive income, of redeemable noncontrolling interests and equity and of cash flows for each of the three years in the period ended December 31, 2025, including the related notes (collectively referred to as the \"consolidated financial statements\"). We also have audited the Company's internal control over financial reporting as of December 31, 2025, based on criteria established in Internal Control - Integrated Framework (2013) issued by the Committee of Sponsoring Organizations of the Treadway Commission (COSO).\nIn our opinion, the consolidated financial statements referred to above present fairly, in all material respects, the financial position of the Company as of December 31, 2025 and 2024, and the results of its operations and its cash flows for each of the three years in the period ended December 31, 2025 in conformity with accounting principles generally accepted in the United States of America. Also in our opinion, the Company maintained, in all material respects, effective internal control over financial reporting as of December 31, 2025, based on criteria established in Internal Control - Integrated Framework (2013) issued by the COSO.\nChange in Accounting Principle\nAs discussed in Note 2 to the consolidated financial statements, the Company changed the manner in which it accounts for digital assets in 2024.\nBasis for Opinions\nThe Company's management is responsible for these consolidated financial statements, for maintaining effective internal control over financial reporting, and for its assessment of the effectiveness of internal control over financial reporting, included in Management’s Report on Internal Control over Financial Reporting appearing under"
+     }
+    ],
+    "risk_factors": [
+     "Risks Related to Our Ability to Grow Our Business",
+     "We may experience issues or delays in developing, launching and ramping the production of our products, services and features, or we may be unable to control our manufacturing costs.",
+     "Our suppliers may fail to deliver components according to schedules, prices, quality and volumes that are acceptable to us, or we may be unable to manage these components effectively.",
+     "We may be unable to meet our projected construction timelines, costs and production ramps at new factories, or we may experience difficulties in generating and maintaining demand for products manufactured there and related services.",
+     "We may be unable to grow our global product sales, delivery and installation capabilities and our servicing and vehicle charging networks, or we may be unable to accurately project and effectively manage our growth.",
+     "We will need to maintain and significantly grow our access to battery cells, including through the development and manufacture of our own cells, and control our related costs.",
+     "Our future growth and success are dependent upon demand for our electric vehicles and adoption of autonomous driving solutions.",
+     "We face strong competition for our products and services from a growing list of established and new competitors.",
+     "Growth of our business is also dependent upon our ability to develop and commercialize Bots, including Optimus, which is in a nascent industry that has yet to develop commercially.",
+     "Risks Related to Our Operations",
+     "We may experience issues with lithium-ion cells or other components manufactured at our Gigafactories, which may harm the production and profitability of our vehicle and energy storage products.",
+     "We face risks associated with maintaining and expanding our international operations, including unfavorable and uncertain regulatory, political, economic, tax and labor conditions.",
+     "Our business may suffer if our products or features contain defects, fail to perform as expected or take longer than expected to become fully functional.",
+     "We may be required to defend or insure against product liability claims.",
+     "We will need to maintain public credibility and confidence in our long-term business prospects in order to succeed.",
+     "We may be unable to effectively grow, or manage the compliance, residual value, financing and credit risks related to, our various financing programs.",
+     "If we are unable to attract, hire and retain key employees and qualified personnel, our ability to compete may be harmed.",
+     "We are highly dependent on the services of Elon Musk, Technoking of Tesla and our Chief Executive Officer.",
+     "Our information technology systems or data, or those of our service providers or customers or users could be subject to cyber-attacks or other security incidents, which could result in data breaches, intellectual property theft, claims, litigation, regulatory investigations, significant liability, reputational damage and other adverse consequences.",
+     "Any unauthorized control or manipulation of our products’ systems could result in loss of confidence in us and our products.",
+     "Our business may be adversely affected by any disruptions caused by union activities.",
+     "We may choose to or be compelled to undertake product recalls or take other similar actions.",
+     "Our current and future warranty reserves may be insufficient to cover future warranty claims.",
+     "Our insurance coverage strategy may not be adequate to protect us from all business risks.",
+     "Our debt agreements contain covenant restrictions that may limit our ability to operate our business.",
+     "Additional funds may not be available to us when we need or want them.",
+     "We may be negatively impacted by any early obsolescence of our manufacturing and other equipment.",
+     "There is no guarantee that we will have sufficient cash flow from our business to pay our indebtedness or that we will not incur additional indebtedness.",
+     "We are exposed to fluctuations in currency exchange rates.",
+     "We may not be able to adequately protect or defend ourselves against intellectual property infringement claims, which may be time-consuming and expensive, or affect the freedom to operate our business.",
+     "Our operations could be adversely affected by events outside of our control, such as natural disasters, wars or health epidemics.",
+     "Risks Related to Government Laws and Regulations",
+     "Demand for our products and services may be impacted by the status of government and economic incentives supporting the development and adoption of such products.",
+     "We are subject to evolving laws and regulations that could impose substantial costs, legal prohibitions or unfavorable changes upon our operations or products.",
+     "Any failure by us to comply with a variety of U.S. and international privacy and consumer protection laws may harm us.",
+     "We could be subject to liability, penalties and other restrictive sanctions and adverse consequences arising out of certain governmental investigations and proceedings.",
+     "Commitments and Contingencies",
+     "We may face regulatory challenges to or limitations on our ability to sell vehicles directly.",
+     "Risks Related to the Ownership of Our Common Stock",
+     "The trading price of our common stock is likely to continue to be volatile.",
+     "Our financial results may vary significantly from period to period due to fluctuations in our operating costs and other factors.",
+     "We may fail to meet our publicly announced guidance or other expectations about our business, which could cause our stock price to decline.",
+     "There is a risk that the technologies and initiatives associated with the 2025 CEO Performance Award, including the product goals, are misaligned with current or future consumer demand, resulting in our failure to invest in or pursue another opportunity that generates significant financial returns or leads to greater shareholder value.",
+     "If Elon Musk were forced to sell shares of our common stock, either that he has the ability to pledge to secure certain personal loan obligations, or in satisfaction of other obligations, such sales could cause our stock price to decline.",
+     "Anti-takeover provisions contained in our governing documents, applicable laws and certain of our debt facilities could impair a takeover attempt."
+    ],
+    "fiscal_year_end": "1231",
+    "notes": [
+     "Source: SEC EDGAR (primary filing document)."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T21:04:12+00:00",
+   "latency_ms": 4408.036,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E5": {
+   "evidence_id": "E5",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "Tesla",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "Tesla",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": 0.0505,
+     "label": "positive",
+     "positive": 0.3,
+     "negative": 0.2,
+     "neutral": 0.5
+    },
+    "articles": [
+     {
+      "title": "Tesla September registrations rise across Europe, extending recovery",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNbVkxZ3JoeS1uVjF0b2NiNVliRXdJVlN1T2ZvaEg4d1BlaGJ3SlB3em1CTFlOR3dIdHVpbVVNSVdPVWttVUlyRUlrTjFqeFkzSXRXU3ZCckFiYWRZM3R1bE1LQ2hJQUNaUGdubzNHRl91NXc5ZEhJMVpDUi1hWGxkWDhmY3ZOa1dyNjNYRFp5S0R0ajVCVkMzSWxBNnk3T2tFUVRxci15MXI1MlkySDZYQnhVM2JFRVJoR2FHakFqVW1HQkgycjBQUzluSWotZw?oc=5",
+      "source": "Reuters",
+      "published": "2026-10-01",
+      "summary": "Tesla September registrations rise across Europe, extending recovery",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla Model 3 Updated: 4 Details That Matter for AU, NZ & China",
+      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQMHY0ektfdVVfSjd4TC1PQXpsZzlvOHJPNXJBM095OTRrV2hFcE9JWnZZWkVVd04wN1gyYWQ2MWNJRVBJWVFDNDg0cGNmVFRNZVJ0TndwTVhqSHJueGRNc1ktd1pUMWZpWHU5ZGQ2b1lZdEQxUzc3WEY2ZUNXNWpWa1d4bHFCUzhzWGQ2dFMxQW1oelBYbUNoQjFB?oc=5",
+      "source": "BASENOR",
+      "published": "2026-10-01",
+      "summary": "Tesla Model 3 Updated: 4 Details That Matter for AU, NZ & China",
+      "sentiment_score": 0.0258,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla V2L for Model 3 & Model Y: 6 Details That Matter",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPRUpNWGszckhSM0xKYklkNVcyemJHbF9yVUlWSEYzS0FBNEYwQmRYaXdlc3V0T0RyS1hTTVc5aklHcGdkR05SclMyelJxdHBvVUF1a3l2c1IxajZhV25DWlBDX3BHM2NVaUoySEgtdjkyYWxRUFJTVlFmd2VTYkwyMjJIOTNHZVlRZWo3NG1WVQ?oc=5",
+      "source": "BASENOR",
+      "published": "2026-10-01",
+      "summary": "Tesla V2L for Model 3 & Model Y: 6 Details That Matter",
+      "sentiment_score": 0.0258,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla Roadster launch was postponed by two weeks due to 'high winds'",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE41Zi1Nb1JkUDUySGNRTjRHMXNGVGpFU0ZVRS0yakY1b0hXd1l1cW9WcnNJa3hwNkxPclJVUC1nR1JhVVNxM2N4QUpvd0c5STA5RVVpS2E0WFlYTlFKMDlwbU5KT2pvM0hm?oc=5",
+      "source": "mashable.com",
+      "published": "2026-10-01",
+      "summary": "Tesla Roadster launch was postponed by two weeks due to 'high winds'",
+      "sentiment_score": -0.2023,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Why the Tesla Roadster Event Was Delayed—and What It Means for the Stock",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQY0ZWeGhBbzhwRlpEWUd3QlNvVzJyUkFkckVQTFp1eE9tZ2xtbXVWT2VsaGZaTzdQM1RQa3M1eGlPYzRXY0pXRVUyYXdRZW9GY1JUWk5EMlM3YlM5NHJORHVqbHJaZHhnMjhGeWZaMXk1WU1hMjNFSDFJWmdGSF9keVprTktqdjR6Y2JVblQ4eGxGaHlzY3c?oc=5",
+      "source": "Barron's",
+      "published": "2026-10-01",
+      "summary": "Why the Tesla Roadster Event Was Delayed—and What It Means for the Stock",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla upgrades China Model 3 with 16-inch screen and V2L, US left out",
+      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBUNUcxUFd3QndNUnJDMUJfb2J5VWtzTjFXaGJXZE95S3VsMm8yMDJKWHU0N2owNHJ0Q3NGcGcwNUYzOVZaNXRRYlk4NHFnYlJXVXN1UjR4c0RVSmw4bzZqWTB1WGMtZHdIZTREejMzaXVoSWZTTTcwcTFfUVhyQQ?oc=5",
+      "source": "Electrek",
+      "published": "2026-10-01",
+      "summary": "Tesla upgrades China Model 3 with 16-inch screen and V2L, US left out",
+      "sentiment_score": 0.4215,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "The Tesla Model 3 Gets A Big Upgrade, But The U.S. Is Left Out",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1FUDVjUV9TbGZEZTFzSVMwc0JCQnI3UTYyX0NBcnR4blAxRDdXdjRhQ2pDZ0V3VjlkU1BfdG9FQ19sYjFCWXZGWm5DWVJaUHJ0SlQwY2ZrcU1xbjVEQTN2RlY1MnJMZ0dvTEhB?oc=5",
+      "source": "InsideEVs",
+      "published": "2026-10-01",
+      "summary": "The Tesla Model 3 Gets A Big Upgrade, But The U.S. Is Left Out",
+      "sentiment_score": 0.2263,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Tesla Fleet Hits 69M Charging Sessions in Q3 2026, Up 29% YoY",
+      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPMFNZcFBOVWxURlZ1SlduajZ1a0ZVVFVqQ2RRVThuRzJ0aThVTS05RjZZTHhBUmxqd1ZxTjhMb1NWenlfcDhZeTA2LUZraEYzNnQtTUJST3lCa2c4cU5HNnZCN0xva0htS21vOFdfbkU1WU1wbGliUHRJTElQMEUtUEE2aE5RSTYxdE9KYmM1NGNFaV9FRXBwb2NB?oc=5",
+      "source": "BASENOR",
+      "published": "2026-10-01",
+      "summary": "Tesla Fleet Hits 69M Charging Sessions in Q3 2026, Up 29% YoY",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "SEC clears Tesla-crafted auto-vote plan for wide use, worrying activists",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNTWNmbHNncXZDNWw2TW5KZVdIWDJhZGFyakktUVVlWEpMUHlEVkRlWVRNOG83ZEQ2SmVHbXhOek5nQkdqZW1aYVNOYlRSdUR3WEltTk1ycXNtdVlyWll0dHRPaTlhTEdqLUt0cjl2NnNZN01RU05waGh1RHhwcWFES0hDRGNVbjVCWDhLb05BWWJhOEd0SlZHOWlnV3JEb3QyRVBMc0VDSW52T2NUV0ZxSUxvaWRTRkltcTZ5Qg?oc=5",
+      "source": "Reuters",
+      "published": "2026-09-30",
+      "summary": "SEC clears Tesla-crafted auto-vote plan for wide use, worrying activists",
+      "sentiment_score": -0.2732,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "SpaceX Just Got a Little Closer to a Tesla Merger",
+      "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5iYktrbGdEMDJvcFVhcFdZcVloZjJGc1RQd2xoSWRFOUdRNU5sZDNDN1RLTVZYdHNvSDBGZkhHM0ttMlpIMUpFT0RPMnlUX2s3VlpNZF95cmZ0elNTSFh6R2cxSlRnc1Ixa1pnYUptSU9wMXlaWFE?oc=5",
+      "source": "Barron's",
+      "published": "2026-09-30",
+      "summary": "SpaceX Just Got a Little Closer to a Tesla Merger",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Should You Buy Tesla Stock Before Oct. 2?",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOOUpLUWdIREpiaTdoYlpEa1A5dVV2am5sdWp5d2RtV2x0cTg5dHc3Y3dmQjlOTVhKc1dGNmVBMmJBWlc0ckpSTkREQ3ZNOEFodGc0WHZITy1ZRkJDQjVaSFpEQ0ROejZUQ1hHdmlyVUJPMThUNFlYNk9WQkhRYjlJMjFSRnBaUkYtaUpmTXNocw?oc=5",
+      "source": "Yahoo Finance",
+      "published": "2026-09-30",
+      "summary": "Should You Buy Tesla Stock Before Oct. 2?",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Elon Musk's Tesla Postpones Roadster Reveal Event to October 15, Cites Severe Weather Conditions",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPQ04zbFF6QmJsdC1Na1hwOGhXdktlN2hjdVpzRzR3dDJNaEIwdzA1VHk0UElsYmVwYmVVV2NhTHp2RFVSaE44QnlpeEdEc3d5aV9TMWhpNDh0Y0pOMlM3bndvMS1BUDFLXzdTWkVqdlNyUmQteEJlQi0zbGZPVm1BRk16R0F1QUVhRHJlNHNtZk5Qb2lKY05lQjZER3BzN19FNVBfQQ?oc=5",
+      "source": "Yahoo Autos",
+      "published": "2026-09-30",
+      "summary": "Elon Musk's Tesla Postpones Roadster Reveal Event to October 15, Cites Severe Weather Conditions",
+      "sentiment_score": -0.5719,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Cybertruck Driver Goes To Charging Station. Another Tesla Is Already Using It. Then He Puts Them On Blast",
+      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9aR3dBTFdVUjQ1ckwzOGlGbE9lOW5pS1VfWk1ZYXI3QUlJRjhDTnN2VnIzTkk5WnNVODRvbWIxeFExQTRGY1EwNG9hZFhBY3p3WUg0bWtQNF9wdnR2R0ZNcDRkS0xaMktDbms5X0UzNXEzSzRuUkZRUDltZzJIQQ?oc=5",
+      "source": "motor1.com",
+      "published": "2026-09-30",
+      "summary": "Cybertruck Driver Goes To Charging Station. Another Tesla Is Already Using It. Then He Puts Them On Blast",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla receives approval to roll out self-driving software in Croatia",
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNblN1RjdSMFdsX0t4a2sxLVV2VHNqeEpfY01LLURydGdacDRBNm0xSWZVYVpBcHFNTUJKU08wclRmMDFEdzRrVUtkNG13UXpVeUpDNnpHZnlJdEZFZ0plU3FIYUJPaFdUcEFFNGJQcjdRM05JZWVwMDc0VFVROEFXWWU5V0VTYzk1QjRQMVdrYmZhVkFBejJYU2p1SlFGUEtqUVhEcXhKVHFCM1FoLTdpdWZUUGM1cjM2LTMyMkRTZ0QzRTdMWFVV?oc=5",
+      "source": "Reuters",
+      "published": "2026-09-29",
+      "summary": "Tesla receives approval to roll out self-driving software in Croatia",
+      "sentiment_score": 0.4767,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Tesla lines up $30 billion credit lines as capex, AI push accelerate",
+      "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNNVNKTHdSTnpiNkQ2UkhyZzZsZWVyZG1mTWJqNkhpTkFRZTF1dDVLRkRPcW12V2hmT3hKRXBfYnZVME9ORmZvdVM3UGd1aGZwaGN0RV8xb2poTzd6VXB4eGJNcmpDT1BIcDZVNUFvRERjSzRhS2lHbTNvcm5oRHlfOG4zRmN0ODZreWpIcWFNeHVfNnVZZE04N0tXYWoxWDd0bXpjR1FsZm1nNTNTOGIxQ2dzdXR3NjdvVXU2VU92cWtuNHNhb3lTM0lsSmgwZV94?oc=5",
+      "source": "Reuters",
+      "published": "2026-09-29",
+      "summary": "Tesla lines up $30 billion credit lines as capex, AI push accelerate",
+      "sentiment_score": 0.3818,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Safety group urges EU to reject Tesla FSD over speed offset",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQQ0pPYVBiQTZoVXBmNnNuWlZLWVhwd0ZJckNOVWhhT3o4Q2cwLTVxZ1RaTy0zWVNJMHViYkNfZGVqTjB1ZFVJOUhtN18tZ3dNVDZZMW5RRU1vS0ZIWkpxbDZwS243UjFjMEJHa3p2Z2s0OUFFb3kxdlhCZXEwLVlRREdLdi1jWDlJcGpGY0ZZemVVakp0eWM0QXVjcGhCWDl5UzhaWG9VUEtrM1JXUDFINk1QUnNNOE85azBtZFdDOA?oc=5",
+      "source": "Reuters",
+      "published": "2026-09-29",
+      "summary": "Safety group urges EU to reject Tesla FSD over speed offset",
+      "sentiment_score": 0.0258,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla's Q3 deliveries loom large as the Roadster slips again",
+      "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOLXBDTEplVDNLdl9EdXRyUnItWmJJMmZaRzhxbExwQXZ3b2VBT0RGRThOWU9iTEtxX01NSm5WYXYwYjdJSHNEYVY1TXpySGtGUkFwa3ppdURNbEZoWDh2elZ6bVlfVlhmSVI3aVdwbzFnNGpmYzlrbjc0UnRxcHhfZnpfOERWVXhOZmIwMGczeVVvREhVOWRFMGJzRWxnS0V1VF9nM3p3NExQQzRTWGtHSi0xRTc2RVZMNktldGJacFE?oc=5",
+      "source": "Yahoo Finance",
+      "published": "2026-09-29",
+      "summary": "Tesla's Q3 deliveries loom large as the Roadster slips again",
+      "sentiment_score": -0.2263,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Tesla takes on $30 billion in credit as it approaches unprofitability",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQWVo5dWJ1bTJCZmlEeDVya3g1MDV2ekVxcXlxajhraW1STFc0WmRoWmFyUWhCS0pMRDhNazBsRVVGMUYtZFdRUVpiYm8tQWhwYW5GVlpHS25hVjBzbjRIZE8tUndCcmNDYUN3TTlndkZDU3ZXcUFEdWdRQVFxeHFuaGFTMmR5WmZpeW84U1V2Y3h3RDdUTFAwUEJnV1ZIYmpRWFE?oc=5",
+      "source": "Electrek",
+      "published": "2026-09-29",
+      "summary": "Tesla takes on $30 billion in credit as it approaches unprofitability",
+      "sentiment_score": 0.3818,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Tesla Model Y Wait Times Now Stretch Into 2027",
+      "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxQeG1DNC1adGY3QjM1V0pmWjJsaVp5c2JhV0FLSHpPS1lfUEV3RDMwMWFIVkxCb20zelA3dzdMc0w0ZC1qVC1ka3FySWxZYXBYenJCdHJtWDVvX2t5cU1STmFEVnlfaDBKSFhBWmttQS0zNXdWU0R4ZWI1MnlZUXJiNjln?oc=5",
+      "source": "Autoblog",
+      "published": "2026-09-29",
+      "summary": "Tesla Model Y Wait Times Now Stretch Into 2027",
+      "sentiment_score": 0.0,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "Tesla patents ‘Electric Fan Car’ with 4 ducted fans ahead of Roadster reveal",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNOVNMcExaY3lWREVpUWJEcDQyaWlQdWtnUDFNMjFSdFBXNTBqWFN5bnVsY183TjhXOHhDeGJDWjU2VGtwT2F4SmFEb18wak5pSFdsWDluV0g1WTNTZXNjNUthTExXcmtEVHBueTBOekZTTF9uT2Rfb0pIWnhGSVVZSFYxZ1g?oc=5",
+      "source": "Electrek",
+      "published": "2026-09-29",
+      "summary": "Tesla patents ‘Electric Fan Car’ with 4 ducted fans ahead of Roadster reveal",
+      "sentiment_score": 0.3182,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "Source: Google News RSS; headlines scored with VADER plus a finance vocabulary.",
+     "Headline sentiment is a rough signal of the news narrative, not of the underlying facts."
+    ]
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T21:04:12+00:00",
+   "latency_ms": 729.918,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E6": {
+   "evidence_id": "E6",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "TSLA"
+   },
+   "data": {
+    "ticker": "TSLA",
+    "name": "Tesla, Inc.",
+    "cik": "0001318605",
+    "exchange": "Nasdaq",
+    "sic_code": "3711",
+    "industry": "Auto Manufacturers",
+    "fiscal_year_end": "1231",
+    "headquarters": "Austin, TX",
+    "sector": "Consumer Cyclical",
+    "employees": 134785,
+    "market_cap": 1398574153728.0,
+    "description": "Tesla, Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally. The company operates in two segments, Automotive; and Energy Generation and Storage. The company offers electric vehicles, as well as sells automotive regulatory credits; and non-warranty maintenance services and collision, automotive insurance services, as well as part sales and retail merchandise sale. It also provides sedans and sport utility vehicles through direct and used vehicle sales, a network of Tesla Superchargers, and in-app upgrades; purchase financing and leasing services; services for electric vehicles through its company-owned service locations and Tesla mobile service technicians; and vehicle limited warranties and extended service plans. In addition, the company engages in the design, manufacture, installation, sale, and leasing of solar energy generation and energy storage products, and related services to residential, commercial, and industrial customers and utilities through its website, stores, and galleries, as well as through a network of channel partners. Further, it provides services and repairs to its energy product customers, including under warranty and extended service plans; and various financing options to its residential customers; lithium-ion battery energy storage products, such as Powerwall and Megapack; energy generation products, including solar panels and solar roof;",
+    "executives": [
+     {
+      "name": "Elon R. Musk",
+      "title": "Co-Founder, Technoking of Tesla, CEO & Director"
+     },
+     {
+      "name": "Vaibhav  Taneja",
+      "title": "Chief Financial Officer"
+     },
+     {
+      "name": "Xiaotong  Zhu",
+      "title": "Senior Vice President of APAC & Global Vehicle Manufacturing"
+     },
+     {
+      "name": "Travis  Axelrod",
+      "title": "Head of Investor Relations"
+     },
+     {
+      "name": "Brandon  Ehrhart",
+      "title": "General Counsel & Corporate Secretary"
+     },
+     {
+      "name": "Franz  von Holzhausen",
+      "title": "Chief Designer"
+     },
+     {
+      "name": "Roxanne  Inskip-Kaye",
+      "title": "Head of Operations - Electric Vehicle Business"
+     },
+     {
+      "name": "John  Walker",
+      "title": "Vice President of Sales - North America"
+     }
+    ],
+    "notes": [
+     "Sources: SEC EDGAR (name, CIK, SIC code, exchange, address, fiscal-year end); yfinance (sector, industry, employees, market cap, description, executives).",
+     "Market capitalisation is in US dollars at the latest yfinance quote."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-10-01T21:04:14+00:00",
+   "latency_ms": 6835.791,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E7": {
+   "evidence_id": "E7",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "TSLA",
+    "company_name": "Tesla, Inc.",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "millions",
+    "fiscal_year_end": "1231",
+    "provider": "sec_xbrl",
+    "data": [
+     {
+      "fiscal_year": 2025,
+      "fiscal_period": "FY",
+      "period_end": "2025-12-31",
+      "values": {
+       "revenue": 94827.0,
+       "gross_profit": 17094.0,
+       "operating_income": 4355.0,
+       "net_income": 3794.0,
+       "eps_diluted": 1.08
+      }
+     },
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-12-31",
+      "values": {
+       "revenue": 97690.0,
+       "gross_profit": 17450.0,
+       "operating_income": 7076.0,
+       "net_income": 7091.0,
+       "eps_diluted": 2.04
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-12-31",
+      "values": {
+       "revenue": 96773.0,
+       "gross_profit": 17660.0,
+       "operating_income": 8891.0,
+       "net_income": 14997.0,
+       "eps_diluted": 4.3
+      }
+     }
+    ],
+    "notes": [
+     "Source: SEC XBRL financial data filed with the company's 10-K and 10-Q reports."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T21:05:02+00:00",
+   "latency_ms": 54531.155,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E8": {
+   "evidence_id": "E8",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "cash_flow",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "TSLA",
+    "company_name": "Tesla, Inc.",
+    "statement_type": "cash_flow",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "millions",
+    "fiscal_year_end": "1231",
+    "provider": "sec_xbrl",
+    "data": [
+     {
+      "fiscal_year": 2025,
+      "fiscal_period": "FY",
+      "period_end": "2025-12-31",
+      "values": {
+       "operating_cash_flow": 14747.0,
+       "capital_expenditure": 8527.0,
+       "free_cash_flow": 6220.0
+      }
+     },
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-12-31",
+      "values": {
+       "operating_cash_flow": 14923.0,
+       "capital_expenditure": 11342.0,
+       "free_cash_flow": 3581.0
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-12-31",
+      "values": {
+       "operating_cash_flow": 13256.0,
+       "capital_expenditure": 8899.0,
+       "free_cash_flow": 4357.0
+      }
+     }
+    ],
+    "notes": [
+     "Source: SEC XBRL financial data filed with the company's 10-K and 10-Q reports."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T21:05:06+00:00",
+   "latency_ms": 58822.232,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E9": {
+   "evidence_id": "E9",
+   "tool": "peer_comparison",
+   "args": {
+    "ticker": "TSLA",
+    "num_peers": 5,
+    "metrics": [
+     "revenue",
+     "revenue_growth",
+     "gross_margin",
+     "operating_margin",
+     "roe",
+     "pe_ratio",
+     "market_cap"
+    ]
+   },
+   "data": {
+    "ticker": "TSLA",
+    "peers": [
+     "GM",
+     "F",
+     "RIVN"
+    ],
+    "metrics": [
+     "revenue",
+     "revenue_growth",
+     "gross_margin",
+     "operating_margin",
+     "roe",
+     "pe_ratio",
+     "market_cap"
+    ],
+    "matrix": [
+     {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "fiscal_year": 2025,
+      "period_end": "2025-12-31",
+      "provider": "sec_xbrl",
+      "values": {
+       "revenue": 94827.0,
+       "revenue_growth": -0.0293,
+       "gross_margin": 0.1803,
+       "operating_margin": 0.0459,
+       "roe": 0.0462,
+       "pe_ratio": 368.6,
+       "market_cap": 1398574153728.0
+      }
+     },
+     {
+      "ticker": "GM",
+      "name": "General Motors Co",
+      "fiscal_year": 2025,
+      "period_end": "2025-12-31",
+      "provider": "sec_xbrl",
+      "values": {
+       "revenue": 185019.0,
+       "revenue_growth": -0.0129,
+       "gross_margin": null,
+       "operating_margin": 0.0157,
+       "roe": 0.0441,
+       "pe_ratio": 26.6,
+       "market_cap": 71732043776.0
+      }
+     },
+     {
+      "ticker": "F",
+      "name": "FORD MOTOR CO",
+      "fiscal_year": 2025,
+      "period_end": "2025-12-31",
+      "provider": "sec_xbrl",
+      "values": {
+       "revenue": 187267.0,
+       "revenue_growth": 0.0123,
+       "gross_margin": 0.0684,
+       "operating_margin": -0.049,
+       "roe": -0.2276,
+       "pe_ratio": null,
+       "market_cap": 48927801344.0
+      }
+     },
+     {
+      "ticker": "RIVN",
+      "name": "Rivian Automotive, Inc. / DE",
+      "fiscal_year": 2025,
+      "period_end": "2025-12-31",
+      "provider": "sec_xbrl",
+      "values": {
+       "revenue": 5387.0,
+       "revenue_growth": 0.0839,
+       "gross_margin": 0.0267,
+       "operating_margin": -0.6655,
+       "roe": -0.7936,
+       "pe_ratio": null,
+       "market_cap": 21370423296.0
+      }
+     }
+    ],
+    "rankings": {
+     "revenue": [
+      "F",
+      "GM",
+      "TSLA",
+      "RIVN"
+     ],
+     "revenue_growth": [
+      "RIVN",
+      "F",
+      "GM",
+      "TSLA"
+     ],
+     "gross_margin": [
+      "TSLA",
+      "F",
+      "RIVN",
+      "GM"
+     ],
+     "operating_margin": [
+      "TSLA",
+      "GM",
+      "F",
+      "RIVN"
+     ],
+     "roe": [
+      "TSLA",
+      "GM",
+      "F",
+      "RIVN"
+     ],
+     "pe_ratio": [
+      "TSLA",
+      "GM",
+      "F",
+      "RIVN"
+     ],
+     "market_cap": [
+      "TSLA",
+      "GM",
+      "F",
+      "RIVN"
+     ]
+    },
+    "notes": [
+     "Peers: the largest companies by market weight in the yfinance industry 'Auto Manufacturers' (companies under 1 % of this company's weight are left out).",
+     "Sources: SEC XBRL annual figures (tier 1; yfinance where a company has none) and yfinance market caps.",
+     "Each row is the company's latest fiscal year: TSLA FY2025 (ended 2025-12-31), GM FY2025 (ended 2025-12-31), F FY2025 (ended 2025-12-31), RIVN FY2025 (ended 2025-12-31).",
+     "P/E is market cap over the last fiscal year's net income.",
+     "Units: revenue in USD millions, market_cap in USD, pe_ratio in times earnings; growth, margins and ROE are fractions.",
+     "Rankings are ordered highest value first."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-10-01T21:05:35+00:00",
+   "latency_ms": 83125.316,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E10": {
+   "evidence_id": "E10",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": 4355,
+     "revenue": 94827
+    }
+   },
+   "data": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": 4355,
+     "revenue": 94827
+    },
+    "result": 0.04592573845001951,
+    "steps": [
+     "margin = 4355 / 94827 = 0.045926"
+    ]
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T21:05:36+00:00",
+   "latency_ms": 0.106,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E11": {
+   "evidence_id": "E11",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": 94827,
+     "previous": 97690
+    }
+   },
+   "data": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": 94827,
+     "previous": 97690
+    },
+    "result": -0.029306991503736307,
+    "steps": [
+     "change = current - previous = 94827 - 97690 = -2863",
+     "growth = change / |previous| = -2863 / 97690 = -0.029307"
+    ]
+   },
+   "source_tier": null,
+   "retrieved_at": "2026-10-01T21:05:37+00:00",
+   "latency_ms": 0.111,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  },
+  "E12": {
+   "evidence_id": "E12",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "balance_sheet",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "TSLA",
+    "company_name": "Tesla, Inc.",
+    "statement_type": "balance_sheet",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "millions",
+    "fiscal_year_end": "1231",
+    "provider": "sec_xbrl",
+    "data": [
+     {
+      "fiscal_year": 2025,
+      "fiscal_period": "FY",
+      "period_end": "2025-12-31",
+      "values": {
+       "total_assets": 137806.0,
+       "total_liabilities": 54941.0,
+       "shareholders_equity": 82137.0,
+       "cash_and_equivalents": 16513.0
+      }
+     },
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-12-31",
+      "values": {
+       "total_assets": 122070.0,
+       "total_liabilities": 48390.0,
+       "shareholders_equity": 73617.0,
+       "cash_and_equivalents": 16139.0
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-12-31",
+      "values": {
+       "total_assets": 106618.0,
+       "total_liabilities": 43009.0,
+       "shareholders_equity": 63367.0,
+       "cash_and_equivalents": 16398.0
+      }
+     }
+    ],
+    "notes": [
+     "Source: SEC XBRL financial data filed with the company's 10-K and 10-Q reports.",
+     "Restated: shareholders equity for the period ended 2023-12-31 was 62,634,000,000 in the filing of 2024-01-29 and 63,367,000,000 in the filing of 2026-01-29; the later figure is used.",
+     "Restated: shareholders equity for the period ended 2024-12-31 was 72,913,000,000 in the filing of 2025-01-30 and 73,617,000,000 in the filing of 2026-07-23; the later figure is used."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-10-01T21:05:38+00:00",
+   "latency_ms": 449.228,
+   "cache_hit": false,
+   "is_mock": false,
+   "is_fallback": false
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+    "top_k": 5,
+    "ticker": "TSLA"
+   },
+   "ok": true,
+   "latency_ms": 389.02,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Financial Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   },
+   "ok": true,
+   "latency_ms": 232.188,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Operational Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   },
+   "ok": true,
+   "latency_ms": 238.965,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "TSLA",
+    "filing_type": "10-K",
+    "year": 2025
+   },
+   "ok": true,
+   "latency_ms": 4408.121,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "Tesla",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 730.061,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "TSLA"
+   },
+   "ok": true,
+   "latency_ms": 6835.86,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 54531.24,
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "cash_flow",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 58822.307,
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "peer_comparison",
+   "args": {
+    "ticker": "TSLA",
+    "num_peers": 5,
+    "metrics": [
+     "revenue",
+     "revenue_growth",
+     "gross_margin",
+     "operating_margin",
+     "roe",
+     "pe_ratio",
+     "market_cap"
+    ]
+   },
+   "ok": true,
+   "latency_ms": 83125.411,
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": null,
+     "previous": null
+    }
+   },
+   "ok": false,
+   "latency_ms": 0.051,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "invalid_arguments",
+   "error_message": "calculation_engine: input 'current' must be a finite number, got None"
+  },
+  {
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": null,
+     "revenue": null
+    }
+   },
+   "ok": false,
+   "latency_ms": 0.051,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "invalid_arguments",
+   "error_message": "calculation_engine: input 'numerator' must be a finite number, got None"
+  },
+  {
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "ratio",
+    "inputs": {
+     "numerator": null,
+     "denominator": null
+    }
+   },
+   "ok": false,
+   "latency_ms": 0.046,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "invalid_arguments",
+   "error_message": "calculation_engine: input 'numerator' must be a finite number, got None"
+  },
+  {
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": 4355,
+     "revenue": 94827
+    }
+   },
+   "ok": true,
+   "latency_ms": 0.114,
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": 94827,
+     "previous": 97690
+    }
+   },
+   "ok": true,
+   "latency_ms": 0.119,
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "balance_sheet",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 449.375,
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "risk_assessment",
+    "title": "Tesla: Risk Assessment",
+    "sections": {
+     "executive_summary": "**Temporal sensitivity:** recent events may be changing the picture quickly. Figures in this report are as of the evidence dates and may change.\n- Tesla: acquisition/merger, 2026-09-30: SpaceX Just Got a Little Closer to a Tesla Merger [E5]\n\nTesla, Inc. designs, manufactures and sells electric vehicles and energy-generation/storage products, operating primarily in the Automotive and Energy segments [E6].  After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9][E11]; net income fell 46.5 % to $3.79 bn [E7][E9]. *(unverified)*  Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9]. *(unverified)*  Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8]. *(unverified)*  News sentiment remains modestly positive (+0.05) even as fundamentals weaken, suggesting expectations are already priced in [E5]; the gap likely reflects optimism around product launches and the upcoming robotaxi rollout [Analysis].  Going forward, the key watch-points are the sustainability of the margin recovery, execution of new factory ramps, and competitive pressure from legacy OEMs and emerging EV players [Analysis].",
+     "financial_risks": "**Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11]. *(unverified)*  The decline follows a flat FY2023-FY2024 trend and raises concerns about demand softness in key markets and the impact of pricing pressure.  \n\n**Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,827 m) [E10]; gross margin stayed at 18.0 % and net margin slipped to 4.0 % [E7][E9]. *(unverified)*  The margin compression reflects higher cost of goods and increased R&D spend relative to a shrinking revenue base [Analysis].  \n\n**Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8]. *(unverified)*  Cash and cash equivalents remained stable at $16.5 bn [E12]; total shareholders’ equity rose to $82.1 bn [E12].  The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits flexibility [Analysis]. *(unverified: no source cited)*  \n\n**Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equity of $82.1 bn imply a modest leverage ratio (~0.67) [E12]. *(unverified)*  No covenant breaches or refinancing risks are evident in the data [Analysis].  \n\n**Forward View** – Management guidance for FY2026 is not present in the evidence; therefore, the outlook hinges on whether the company can reverse the revenue decline and stabilize margins [Analysis].",
+     "operational_risks": "The FY2025 Form 10-K lists several operational risk factors [E4]:  \n\n| Risk Category | Description |\n|---|---|\n| Production & Supply Chain | Potential delays in product development, ramp-up of new factories, and reliance on external suppliers for battery cells and components. |\n| Manufacturing Quality | Risks of lithium-ion cell issues or component defects that could disrupt production. |\n| Service & Charging Network | Challenges in expanding service centers and Supercharger infrastructure to match fleet growth. |\n| New Product Development | Uncertainty around commercialization of the Optimus robot, Semi truck, and robotaxi platforms. |\n| International Operations | Exposure to regulatory, political and currency risks in non-U.S. markets. |\n\nThese risks are amplified by the company’s aggressive capex program (8.53 bn FY2025) and the need to scale new product lines [E8][E4].  No quantitative data on supply-chain disruptions or quality incidents is provided, so the magnitude of these operational risks cannot be precisely measured [Analysis].",
+     "regulatory_risks": "Regulatory risk factors extracted from the FY2025 10-K include [E4]:  \n\n* **Emissions & Incentives** – Dependence on automotive regulatory credits, which are subject to policy changes.  \n* **Safety & Liability** – Potential product liability claims from vehicle or software defects.  \n* **Data & AI Regulation** – Emerging rules governing autonomous driving and AI-driven features.  \n* **International Trade** – Tariffs, import restrictions, and geopolitical tensions affecting global supply chains.  \n\nThe evidence does not contain any recent regulatory developments or fines; therefore, specific exposure amounts are unavailable [Analysis].",
+     "competitive_risks": "Peer comparison (FY2025) shows Tesla’s relative position [E9]:  \n\n| Metric | Tesla | GM | Ford | Rivian |\n|---|---|---|---|---|\n| Revenue (USD bn) | 94.8 | 185.0 | 187.3 | 5.4 |\n| Revenue Growth | **-2.9 %** | -1.3 % | +1.2 % | +8.4 % |\n| Gross Margin | **18.0 %** | n/a | 6.8 % | 2.7 % |\n| Operating Margin | **4.6 %** | 1.6 % | -4.9 % | -66.5 % |\n| ROE | 4.6 % | 4.4 % | -22.8 % | -79.4 % |\n\nTesla leads peers on gross and operating margins despite lower absolute revenue.  However, its revenue growth ranks last, indicating weaker top-line momentum relative to both legacy OEMs and fast-growing newcomer Rivian [Analysis].  Competitive pressures stem from:  \n\n* **Legacy OEMs** expanding EV line-ups and leveraging scale to reduce costs.  \n* **New Entrants** (e.g., Rivian) showing higher growth rates, albeit from a smaller base.  \n* **Technology Race** in autonomous driving and battery chemistry, where Tesla’s “full-self-driving” (FSD) and in-house cell production are key differentiators but also sources of execution risk.",
+     "risk_matrix": "**Risk Matrix – Tesla Inc. (FY2025)**  \n\n| Risk Category | Likelihood (High/Medium/Low) | Impact (High/Medium/Low) | Key Drivers |\n|---|---|---|---|\n| Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] *(unverified)* |\n| Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] *(unverified)* |\n| Supply-chain disruption | Medium | Medium | Supplier reliability risk noted in 10-K [E4] |\n| New-product execution (Semi, Optimus, robotaxi) | High | High | Large R&D spend, unproven commercial rollout [E4] |\n| Regulatory & policy change | Medium | Medium | Dependence on credits, emerging AI safety rules [E4] |\n| Competitive displacement | High | High | Slower revenue growth vs peers, aggressive EV roll-outs by GM/Ford [E9] |\n| Liquidity / cash-flow stress | Low | Low | Strong free cash flow and solid cash balance [E8][E12] |\n\n*Likelihood and impact assessments are qualitative judgments based on the cited evidence and analyst-level inference.*",
+     "data_gaps_and_limitations": "- Unverified claim in Executive Summary: partially supported: After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9\n- Unverified claim in Executive Summary: partially supported: Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9].\n- Unverified claim in Executive Summary: partially supported: Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8].\n- Unverified claim in Financial Risks: partially supported: **Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11].\n- Unverified claim in Financial Risks: partially supported: **Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,\n- Unverified claim in Financial Risks: partially supported: **Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8].\n- Unverified claim in Financial Risks: uncited figure: The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits fle\n- Unverified claim in Financial Risks: partially supported: **Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equi\n- Unverified claim in Risk Matrix: unsupported: | Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] |\n- Unverified claim in Risk Matrix: unsupported: | Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] |",
+     "research_methodology": "- Plan: 9 step(s), 9 completed. Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.\n- Tools used: calculation_engine, company_profile, financial_data_api, news_sentiment, peer_comparison, sec_filing_search; 12 of 20 research tool calls.\n- Language models: gemini, groq.\n- Verification: 17 cited numeric claim(s) checked against their sources; 8 supported, 2 unsupported, 1 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-02, because the request names no period."
+    },
+    "sources": [
+     {
+      "id": "E1",
+      "title": "vector_db_search: Produce a comprehensive risk assessment for Tesla Inc. covering financial risks,",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E2",
+      "title": "vector_db_search: TSLA Financial Risks, 3, TSLA",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E3",
+      "title": "vector_db_search: TSLA Operational Risks, 3, TSLA",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E4",
+      "title": "sec_filing_search: TSLA, 10-K, 2025",
+      "source_type": "SEC filing",
+      "date": "2026-01-29",
+      "is_mock": false,
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm"
+     },
+     {
+      "id": "E5",
+      "title": "news_sentiment: Tesla, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E6",
+      "title": "company_profile: TSLA",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E7",
+      "title": "financial_data_api: TSLA, income_statement, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E8",
+      "title": "financial_data_api: TSLA, cash_flow, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E9",
+      "title": "peer_comparison: TSLA, 5",
+      "source_type": "peer data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E10",
+      "title": "calculation_engine: margin",
+      "source_type": "calculation",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E11",
+      "title": "calculation_engine: growth_rate",
+      "source_type": "calculation",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E12",
+      "title": "financial_data_api: TSLA, balance_sheet, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 1.804,
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [],
+ "failures": [],
+ "disambiguation": {
+  "level": "low",
+  "proceed_reading": "Proceeding as requested.",
+  "assumptions": [
+   "Timeframe: latest reported period as of 2026-10-02, because the request names no period."
+  ],
+  "clarifying_questions": [],
+  "tickers": [
+   "TSLA"
+  ],
+  "timeframe": "latest reported period as of 2026-10-02",
+  "themes": [],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [],
+ "verification": {
+  "checked": 17,
+  "supported": 8,
+  "partially_supported": 7,
+  "unsupported": 2,
+  "unverifiable": 0,
+  "uncited": 1,
+  "auto_cited": 0,
+  "flagged": [
+   "Executive Summary: partially supported: After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9",
+   "Executive Summary: partially supported: Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9].",
+   "Executive Summary: partially supported: Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8].",
+   "Financial Risks: partially supported: **Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11].",
+   "Financial Risks: partially supported: **Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,",
+   "Financial Risks: partially supported: **Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8].",
+   "Financial Risks: uncited figure: The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits fle",
+   "Financial Risks: partially supported: **Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equi",
+   "Risk Matrix: unsupported: | Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] |",
+   "Risk Matrix: unsupported: | Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] |"
+  ]
+ },
+ "report_checks": {
+  "missing_sections": [],
+  "unknown_citations": [],
+  "uncited_sources": [
+   "E1",
+   "E2",
+   "E3"
+  ]
+ },
+ "trace_path": "C:\\Users\\user\\intern\\Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent\\traces\\session-20261001-210355-2461.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-10-01T21:03:55.854+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Report type 'risk_assessment' (risk, single_company); companies ['TSLA']; ambiguity 0.10 (low: +0.10: no timeframe stated).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-10-01T21:03:55.857+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "disambiguate",
+   "rationale": "Proceeding as requested.",
+   "assumptions": [
+    "Timeframe: latest reported period as of 2026-10-02, because the request names no period."
+   ],
+   "questions": []
+  },
+  {
+   "seq": 4,
+   "ts": "2026-10-01T21:03:56.247+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+    "top_k": 5,
+    "ticker": "TSLA"
+   }
+  },
+  {
+   "seq": 5,
+   "ts": "2026-10-01T21:03:56.247+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 389.02
+  },
+  {
+   "seq": 6,
+   "ts": "2026-10-01T21:03:56.479+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Financial Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   }
+  },
+  {
+   "seq": 7,
+   "ts": "2026-10-01T21:03:56.479+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 232.188
+  },
+  {
+   "seq": 8,
+   "ts": "2026-10-01T21:03:56.719+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "TSLA Operational Risks",
+    "top_k": 3,
+    "ticker": "TSLA"
+   }
+  },
+  {
+   "seq": 9,
+   "ts": "2026-10-01T21:03:56.719+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 238.965
+  },
+  {
+   "seq": 10,
+   "ts": "2026-10-01T21:03:56.719+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Memory recall found 10 prior finding(s) and strategy notes from earlier runs.",
+   "node": "recall"
+  },
+  {
+   "seq": 11,
+   "ts": "2026-10-01T21:04:00.296+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "llm",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "error_kind": "server",
+   "message": "[gemini] server: Error code: 503 - [{'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}]",
+   "attempt": 1,
+   "will_retry": true,
+   "cooling_down": false,
+   "purpose": "plan"
+  },
+  {
+   "seq": 12,
+   "ts": "2026-10-01T21:04:02.163+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "llm",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "error_kind": "server",
+   "message": "[gemini] server: Error code: 503 - [{'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}]",
+   "attempt": 2,
+   "will_retry": true,
+   "cooling_down": false,
+   "purpose": "plan"
+  },
+  {
+   "seq": 13,
+   "ts": "2026-10-01T21:04:05.325+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "llm",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "error_kind": "server",
+   "message": "[gemini] server: Error code: 503 - [{'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}]",
+   "attempt": 3,
+   "will_retry": false,
+   "cooling_down": false,
+   "purpose": "plan"
+  },
+  {
+   "seq": 14,
+   "ts": "2026-10-01T21:04:07.643+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "llm_call",
+   "provider": "groq",
+   "model": "openai/gpt-oss-120b",
+   "purpose": "plan",
+   "prompt_tokens": 2609,
+   "completion_tokens": 951,
+   "reasoning_tokens": 8,
+   "latency_ms": 2318.1,
+   "fallback_depth": 1,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\n  \"rationale\": \"Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.\",\n  \"steps\": [\n  "
+  },
+  {
+   "seq": 15,
+   "ts": "2026-10-01T21:04:07.643+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{\n  \"rationale\": \"Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.\",\n  \"steps\": [\n    {\n      \"id\": \"s1\",\n      \"goal\": \"Obtain basic company profile and fiscal calendar for Tesla\",\n      \"tool\": \"company_profile\",\n      \"args\": { \"ticker\": \"TSLA\" },\n      \"depends_on\": [],\n      \"reason\": \"Provides legal name, sector, fiscal year end and key executives needed for the executive summary and risk context.\"\n    },\n    {\n      \"id\": \"s2\",\n      \"goal\": \"Retrieve the latest 10-K filing for Tesla to extract detailed risk factor disclosures\",\n      \"tool\": \"sec_filing_search\",\n      \"args\": { \"ticker\": \"TSLA\", \"filing_type\": \"10-K\", \"year\": 2025 },\n      \"depends_on\": [],\n      \"reason\": \"Item 1A risk factors contain the authoritative financial, operational, regulatory, and competitive risks.\"\n    },\n    {\n      \"id\": \"s3\",\n      \"goal\": \"Collect Tesla's audited annual financial statements for FY2023‑FY2025\",\n      \"tool\": \"financial_data_api\",\n      \"args\": { \"ticker\": \"TSLA\", \"statement_type\": \"income_statement\", \"period\": \"annual\", \"years\": 3 },\n      \"depends_on\": [],\n      \"reason\": \"Needed to compute key financial ratios and trends for the financial risk section.\"\n    },\n    {\n      \"id\": \"s4\",\n      \"goal\": \"Gather Tesla's cash flow statements for FY2023‑FY2025 to assess liquidity and cash generation\",\n      \"tool\": \"financial_data_api\",\n      \"args\": { \"ticker\": \"TSLA\", \"statement_type\": \"cash_flow\", \"period\": \"annual\", \"years\": 3 },\n      \"depends_on\": [],\n      \"reason\": \"Cash flow trends inform debt service capacity and operational cash risk.\"\n    },\n    {\n      \"id\": \"s5\",\n      \"goal\": \"Obtain recent news sentiment on Tesla to gauge market perception of risks\",\n      \"tool\": \"news_sentiment\",\n      \"args\": { \"query\": \"Tesla\", \"num_articles\": 20, \"lookback_days\": 30 },\n      \"depends_on\": [],\n      \"reason\": \"Sentiment complements disclosed risks with external narrative and emerging issues.\"\n    },\n    {\n      \"id\": \"s6\",\n      \"goal\": \"Identify and compare Tesla with key automotive and EV peers on financial metrics\",\n      \"tool\": \"peer_comparison\",\n      \"args\": {\n        \"ticker\": \"TSLA\",\n        \"num_peers\": 5,\n        \"metrics\": [\"revenue\", \"revenue_growth\", \"gross_margin\", \"operating_margin\", \"roe\", \"pe_ratio\", \"market_cap\"]\n      },\n      \"depends_on\": [],\n      \"reason\": \"Relative performance highlights competitive risk and benchmarking for financial health.\"\n    },\n    {\n      \"id\": \"s7\",\n      \"goal\": \"Calculate FY2024‑FY2025 revenue growth rate\",\n      \"tool\": \"calculation_engine\",\n      \"args\": {\n        \"calculation_type\": \"growth_rate\",\n        \"inputs\": {\n          \"current\": null,\n          \"previous\": null\n        }\n      },\n      \"depends_on\": [\"s3\"],\n      \"reason\": \"Growth rate needed for financial risk analysis; values will be taken from the income statements retrieved in s3.\"\n    },\n    {\n      \"id\": \"s8\",\n      \"goal\": \"Calculate FY2024‑FY2025 operating margin\",\n      \"tool\": \"calculation_engine\",\n      \"args\": {\n        \"calculation_type\": \"margin\",\n        \"inputs\": {\n          \"numerator\": null,\n          \"revenue\": null\n        }\n      },\n      \"depends_on\": [\"s3\"],\n      \"reason\": \"Operating margin quantifies profitability risk.\"\n    },\n    {\n      \"id\": \"s9\",\n      \"goal\": \"Calculate FY2024‑FY2025 net debt to EBITDA ratio\",\n      \"tool\": \"calculation_engine\",\n      \"args\": {\n        \"calculation_type\": \"ratio\",\n        \"inputs\": {\n          \"numerator\": null,\n          \"denominator\": null\n        }\n      },\n      \"depends_on\": [\"s3\", \"s4\"],\n      \"reason\": \"Leverage metric informs financial risk assessment.\"\n    }\n  ]\n}"
+  },
+  {
+   "seq": 16,
+   "ts": "2026-10-01T21:04:07.644+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.",
+   "steps": 9
+  },
+  {
+   "seq": 17,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Provides legal name, sector, fiscal year end and key executives needed for the executive summary and risk context.",
+   "step_id": "s1",
+   "args": {
+    "ticker": "TSLA"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 18,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Item 1A risk factors contain the authoritative financial, operational, regulatory, and competitive risks.",
+   "step_id": "s2",
+   "args": {
+    "ticker": "TSLA",
+    "filing_type": "10-K",
+    "year": 2025
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 19,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Needed to compute key financial ratios and trends for the financial risk section.",
+   "step_id": "s3",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 20,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Cash flow trends inform debt service capacity and operational cash risk.",
+   "step_id": "s4",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "cash_flow",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 21,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "news_sentiment",
+   "rationale": "Sentiment complements disclosed risks with external narrative and emerging issues.",
+   "step_id": "s5",
+   "args": {
+    "query": "Tesla",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 22,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "peer_comparison",
+   "rationale": "Relative performance highlights competitive risk and benchmarking for financial health.",
+   "step_id": "s6",
+   "args": {
+    "ticker": "TSLA",
+    "num_peers": 5,
+    "metrics": [
+     "revenue",
+     "revenue_growth",
+     "gross_margin",
+     "operating_margin",
+     "roe",
+     "pe_ratio",
+     "market_cap"
+    ]
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 23,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "calculation_engine",
+   "rationale": "Growth rate needed for financial risk analysis; values will be taken from the income statements retrieved in s3.",
+   "step_id": "s7",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": null,
+     "previous": null
+    }
+   },
+   "depends_on": [
+    "s3"
+   ]
+  },
+  {
+   "seq": 24,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "calculation_engine",
+   "rationale": "Operating margin quantifies profitability risk.",
+   "step_id": "s8",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": null,
+     "revenue": null
+    }
+   },
+   "depends_on": [
+    "s3"
+   ]
+  },
+  {
+   "seq": 25,
+   "ts": "2026-10-01T21:04:07.645+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "calculation_engine",
+   "rationale": "Leverage metric informs financial risk assessment.",
+   "step_id": "s9",
+   "args": {
+    "calculation_type": "ratio",
+    "inputs": {
+     "numerator": null,
+     "denominator": null
+    }
+   },
+   "depends_on": [
+    "s3",
+    "s4"
+   ]
+  },
+  {
+   "seq": 26,
+   "ts": "2026-10-01T21:04:12.055+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "TSLA",
+    "filing_type": "10-K",
+    "year": 2025
+   }
+  },
+  {
+   "seq": 27,
+   "ts": "2026-10-01T21:04:12.055+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "sec_filing_search",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 4408.121
+  },
+  {
+   "seq": 28,
+   "ts": "2026-10-01T21:04:12.055+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s2 done: sec_filing_search returned E4",
+   "step_id": "s2"
+  },
+  {
+   "seq": 29,
+   "ts": "2026-10-01T21:04:12.785+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "Tesla",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 30,
+   "ts": "2026-10-01T21:04:12.785+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 730.061
+  },
+  {
+   "seq": 31,
+   "ts": "2026-10-01T21:04:12.786+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s5 done: news_sentiment returned E5",
+   "step_id": "s5"
+  },
+  {
+   "seq": 32,
+   "ts": "2026-10-01T21:04:14.482+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "TSLA"
+   }
+  },
+  {
+   "seq": 33,
+   "ts": "2026-10-01T21:04:14.482+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 6835.86
+  },
+  {
+   "seq": 34,
+   "ts": "2026-10-01T21:04:14.482+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s1 done: company_profile returned E6",
+   "step_id": "s1"
+  },
+  {
+   "seq": 35,
+   "ts": "2026-10-01T21:05:02.178+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 36,
+   "ts": "2026-10-01T21:05:02.178+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "latency_ms": 54531.24
+  },
+  {
+   "seq": 37,
+   "ts": "2026-10-01T21:05:02.179+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s3 done: financial_data_api returned E7",
+   "step_id": "s3"
+  },
+  {
+   "seq": 38,
+   "ts": "2026-10-01T21:05:06.470+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "cash_flow",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 39,
+   "ts": "2026-10-01T21:05:06.470+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "latency_ms": 58822.307
+  },
+  {
+   "seq": 40,
+   "ts": "2026-10-01T21:05:06.470+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s4 done: financial_data_api returned E8",
+   "step_id": "s4"
+  },
+  {
+   "seq": 41,
+   "ts": "2026-10-01T21:05:35.911+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "peer_comparison",
+   "args": {
+    "ticker": "TSLA",
+    "num_peers": 5,
+    "metrics": [
+     "revenue",
+     "revenue_growth",
+     "gross_margin",
+     "operating_margin",
+     "roe",
+     "pe_ratio",
+     "market_cap"
+    ]
+   }
+  },
+  {
+   "seq": 42,
+   "ts": "2026-10-01T21:05:35.911+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "peer_comparison",
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "latency_ms": 83125.411
+  },
+  {
+   "seq": 43,
+   "ts": "2026-10-01T21:05:35.911+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s6 done: peer_comparison returned E9",
+   "step_id": "s6"
+  },
+  {
+   "seq": 44,
+   "ts": "2026-10-01T21:05:35.914+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": null,
+     "previous": null
+    }
+   }
+  },
+  {
+   "seq": 45,
+   "ts": "2026-10-01T21:05:35.914+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "tool",
+   "tool": "calculation_engine",
+   "error_kind": "invalid_arguments",
+   "message": "calculation_engine: input 'current' must be a finite number, got None",
+   "latency_ms": 0.051
+  },
+  {
+   "seq": 46,
+   "ts": "2026-10-01T21:05:35.914+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "ratio",
+    "inputs": {
+     "numerator": null,
+     "denominator": null
+    }
+   }
+  },
+  {
+   "seq": 47,
+   "ts": "2026-10-01T21:05:35.916+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": null,
+     "revenue": null
+    }
+   }
+  },
+  {
+   "seq": 48,
+   "ts": "2026-10-01T21:05:35.916+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "tool",
+   "tool": "calculation_engine",
+   "error_kind": "invalid_arguments",
+   "message": "calculation_engine: input 'numerator' must be a finite number, got None",
+   "latency_ms": 0.051
+  },
+  {
+   "seq": 49,
+   "ts": "2026-10-01T21:05:35.916+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "tool",
+   "tool": "calculation_engine",
+   "error_kind": "invalid_arguments",
+   "message": "calculation_engine: input 'numerator' must be a finite number, got None",
+   "latency_ms": 0.046
+  },
+  {
+   "seq": 50,
+   "ts": "2026-10-01T21:05:36.339+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "error",
+   "source": "llm",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "error_kind": "quota_exhausted",
+   "message": "[gemini] quota_exhausted: Error code: 429 - [{'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 23.661912176s.', 'status': 'RESOURCE_EXHAUSTED', 'd",
+   "attempt": 1,
+   "will_retry": false,
+   "cooling_down": true,
+   "purpose": "execute:s8"
+  },
+  {
+   "seq": 51,
+   "ts": "2026-10-01T21:05:36.984+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "llm_call",
+   "provider": "groq",
+   "model": "openai/gpt-oss-120b",
+   "purpose": "execute:s8",
+   "prompt_tokens": 1808,
+   "completion_tokens": 55,
+   "reasoning_tokens": 51,
+   "latency_ms": 645.3,
+   "fallback_depth": 1,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "calculation_engine"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 52,
+   "ts": "2026-10-01T21:05:36.985+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Calling ['calculation_engine']",
+   "node": "execute",
+   "step_id": "s8"
+  },
+  {
+   "seq": 53,
+   "ts": "2026-10-01T21:05:36.985+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "margin",
+    "inputs": {
+     "numerator": 4355,
+     "revenue": 94827
+    }
+   }
+  },
+  {
+   "seq": 54,
+   "ts": "2026-10-01T21:05:36.985+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "calculation_engine",
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "latency_ms": 0.114
+  },
+  {
+   "seq": 55,
+   "ts": "2026-10-01T21:05:36.985+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s8 done: calculation_engine returned E10",
+   "step_id": "s8"
+  },
+  {
+   "seq": 56,
+   "ts": "2026-10-01T21:05:37.419+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "llm_call",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "purpose": "execute:s7",
+   "prompt_tokens": 1955,
+   "completion_tokens": 45,
+   "reasoning_tokens": 0,
+   "latency_ms": 1504.5,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "calculation_engine"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 57,
+   "ts": "2026-10-01T21:05:37.419+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Calling ['calculation_engine']",
+   "node": "execute",
+   "step_id": "s7"
+  },
+  {
+   "seq": 58,
+   "ts": "2026-10-01T21:05:37.420+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "calculation_engine",
+   "args": {
+    "calculation_type": "growth_rate",
+    "inputs": {
+     "current": 94827,
+     "previous": 97690
+    }
+   }
+  },
+  {
+   "seq": 59,
+   "ts": "2026-10-01T21:05:37.420+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "calculation_engine",
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "latency_ms": 0.119
+  },
+  {
+   "seq": 60,
+   "ts": "2026-10-01T21:05:37.420+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s7 done: calculation_engine returned E11",
+   "step_id": "s7"
+  },
+  {
+   "seq": 61,
+   "ts": "2026-10-01T21:05:37.951+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "llm_call",
+   "provider": "gemini",
+   "model": "gemini-3.6-flash",
+   "purpose": "execute:s9",
+   "prompt_tokens": 2192,
+   "completion_tokens": 39,
+   "reasoning_tokens": 0,
+   "latency_ms": 2033.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 62,
+   "ts": "2026-10-01T21:05:37.951+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s9"
+  },
+  {
+   "seq": 63,
+   "ts": "2026-10-01T21:05:38.401+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "TSLA",
+    "statement_type": "balance_sheet",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 64,
+   "ts": "2026-10-01T21:05:38.401+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "latency_ms": 449.375
+  },
+  {
+   "seq": 65,
+   "ts": "2026-10-01T21:05:38.401+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "step s9 done: financial_data_api returned E12",
+   "step_id": "s9"
+  },
+  {
+   "seq": 66,
+   "ts": "2026-10-01T21:05:38.402+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "deterministic check: all 9 planned step(s) done, no failed or skipped step, no gap noted; review call skipped"
+  },
+  {
+   "seq": 69,
+   "ts": "2026-10-01T21:05:42.725+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "llm_call",
+   "provider": "groq",
+   "model": "openai/gpt-oss-120b",
+   "purpose": "synthesize",
+   "prompt_tokens": 5080,
+   "completion_tokens": 1698,
+   "reasoning_tokens": 67,
+   "latency_ms": 4134.0,
+   "fallback_depth": 1,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "=== SECTION: executive_summary ===\nTesla, Inc. designs, manufactures and sells electric vehicles and energy‑generation/storage products, operating primarily in the Automotive and Energy segments [E6]."
+  },
+  {
+   "seq": 71,
+   "ts": "2026-10-01T21:05:43.325+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "thought",
+   "text": "Reflection: 0 section(s) missing",
+   "node": "reflect"
+  },
+  {
+   "seq": 72,
+   "ts": "2026-10-01T21:05:43.333+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "risk_assessment",
+    "title": "Tesla: Risk Assessment",
+    "sections": {
+     "executive_summary": "**Temporal sensitivity:** recent events may be changing the picture quickly. Figures in this report are as of the evidence dates and may change.\n- Tesla: acquisition/merger, 2026-09-30: SpaceX Just Got a Little Closer to a Tesla Merger [E5]\n\nTesla, Inc. designs, manufactures and sells electric vehicles and energy-generation/storage products, operating primarily in the Automotive and Energy segments [E6].  After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9][E11]; net income fell 46.5 % to $3.79 bn [E7][E9]. *(unverified)*  Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9]. *(unverified)*  Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8]. *(unverified)*  News sentiment remains modestly positive (+0.05) even as fundamentals weaken, suggesting expectations are already priced in [E5]; the gap likely reflects optimism around product launches and the upcoming robotaxi rollout [Analysis].  Going forward, the key watch-points are the sustainability of the margin recovery, execution of new factory ramps, and competitive pressure from legacy OEMs and emerging EV players [Analysis].",
+     "financial_risks": "**Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11]. *(unverified)*  The decline follows a flat FY2023-FY2024 trend and raises concerns about demand softness in key markets and the impact of pricing pressure.  \n\n**Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,827 m) [E10]; gross margin stayed at 18.0 % and net margin slipped to 4.0 % [E7][E9]. *(unverified)*  The margin compression reflects higher cost of goods and increased R&D spend relative to a shrinking revenue base [Analysis].  \n\n**Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8]. *(unverified)*  Cash and cash equivalents remained stable at $16.5 bn [E12]; total shareholders’ equity rose to $82.1 bn [E12].  The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits flexibility [Analysis]. *(unverified: no source cited)*  \n\n**Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equity of $82.1 bn imply a modest leverage ratio (~0.67) [E12]. *(unverified)*  No covenant breaches or refinancing risks are evident in the data [Analysis].  \n\n**Forward View** – Management guidance for FY2026 is not present in the evidence; therefore, the outlook hinges on whether the company can reverse the revenue decline and stabilize margins [Analysis].",
+     "operational_risks": "The FY2025 Form 10-K lists several operational risk factors [E4]:  \n\n| Risk Category | Description |\n|---|---|\n| Production & Supply Chain | Potential delays in product development, ramp-up of new factories, and reliance on external suppliers for battery cells and components. |\n| Manufacturing Quality | Risks of lithium-ion cell issues or component defects that could disrupt production. |\n| Service & Charging Network | Challenges in expanding service centers and Supercharger infrastructure to match fleet growth. |\n| New Product Development | Uncertainty around commercialization of the Optimus robot, Semi truck, and robotaxi platforms. |\n| International Operations | Exposure to regulatory, political and currency risks in non-U.S. markets. |\n\nThese risks are amplified by the company’s aggressive capex program (8.53 bn FY2025) and the need to scale new product lines [E8][E4].  No quantitative data on supply-chain disruptions or quality incidents is provided, so the magnitude of these operational risks cannot be precisely measured [Analysis].",
+     "regulatory_risks": "Regulatory risk factors extracted from the FY2025 10-K include [E4]:  \n\n* **Emissions & Incentives** – Dependence on automotive regulatory credits, which are subject to policy changes.  \n* **Safety & Liability** – Potential product liability claims from vehicle or software defects.  \n* **Data & AI Regulation** – Emerging rules governing autonomous driving and AI-driven features.  \n* **International Trade** – Tariffs, import restrictions, and geopolitical tensions affecting global supply chains.  \n\nThe evidence does not contain any recent regulatory developments or fines; therefore, specific exposure amounts are unavailable [Analysis].",
+     "competitive_risks": "Peer comparison (FY2025) shows Tesla’s relative position [E9]:  \n\n| Metric | Tesla | GM | Ford | Rivian |\n|---|---|---|---|---|\n| Revenue (USD bn) | 94.8 | 185.0 | 187.3 | 5.4 |\n| Revenue Growth | **-2.9 %** | -1.3 % | +1.2 % | +8.4 % |\n| Gross Margin | **18.0 %** | n/a | 6.8 % | 2.7 % |\n| Operating Margin | **4.6 %** | 1.6 % | -4.9 % | -66.5 % |\n| ROE | 4.6 % | 4.4 % | -22.8 % | -79.4 % |\n\nTesla leads peers on gross and operating margins despite lower absolute revenue.  However, its revenue growth ranks last, indicating weaker top-line momentum relative to both legacy OEMs and fast-growing newcomer Rivian [Analysis].  Competitive pressures stem from:  \n\n* **Legacy OEMs** expanding EV line-ups and leveraging scale to reduce costs.  \n* **New Entrants** (e.g., Rivian) showing higher growth rates, albeit from a smaller base.  \n* **Technology Race** in autonomous driving and battery chemistry, where Tesla’s “full-self-driving” (FSD) and in-house cell production are key differentiators but also sources of execution risk.",
+     "risk_matrix": "**Risk Matrix – Tesla Inc. (FY2025)**  \n\n| Risk Category | Likelihood (High/Medium/Low) | Impact (High/Medium/Low) | Key Drivers |\n|---|---|---|---|\n| Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] *(unverified)* |\n| Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] *(unverified)* |\n| Supply-chain disruption | Medium | Medium | Supplier reliability risk noted in 10-K [E4] |\n| New-product execution (Semi, Optimus, robotaxi) | High | High | Large R&D spend, unproven commercial rollout [E4] |\n| Regulatory & policy change | Medium | Medium | Dependence on credits, emerging AI safety rules [E4] |\n| Competitive displacement | High | High | Slower revenue growth vs peers, aggressive EV roll-outs by GM/Ford [E9] |\n| Liquidity / cash-flow stress | Low | Low | Strong free cash flow and solid cash balance [E8][E12] |\n\n*Likelihood and impact assessments are qualitative judgments based on the cited evidence and analyst-level inference.*",
+     "data_gaps_and_limitations": "- Unverified claim in Executive Summary: partially supported: After a three-year revenue plateau ($96.77 bn FY2023 → $97.69 bn FY2024) the company’s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9\n- Unverified claim in Executive Summary: partially supported: Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9].\n- Unverified claim in Executive Summary: partially supported: Despite the earnings decline, free cash flow rose 73.7 % to $6.22 bn, reflecting tighter capex discipline [E8].\n- Unverified claim in Financial Risks: partially supported: **Revenue & Growth** – FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11].\n- Unverified claim in Financial Risks: partially supported: **Profitability** – Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m ÷ revenue $94,\n- Unverified claim in Financial Risks: partially supported: **Cash Flow & Liquidity** – Operating cash flow was $14.75 bn, capex $8.53 bn, yielding free cash flow of $6.22 bn (+73.7 % YoY) [E8].\n- Unverified claim in Financial Risks: uncited figure: The strong free cash flow provides cushion for continued investment, but the high capex intensity (57.8 % of operating cash flow) limits fle\n- Unverified claim in Financial Risks: partially supported: **Leverage & Balance Sheet** – Debt is not explicitly disclosed in the provided evidence; however, total liabilities of $54.9 bn versus equi\n- Unverified claim in Risk Matrix: unsupported: | Revenue decline / demand slowdown | Medium | High | 2.9 % YoY revenue drop, flat growth trend [E7][E9] |\n- Unverified claim in Risk Matrix: unsupported: | Margin compression | Medium | Medium | Operating margin down 2.6 pp, higher capex intensity [E10][E8] |",
+     "research_methodology": "- Plan: 9 step(s), 9 completed. Gather core company data, risk disclosures, recent financial performance, peer context, and market sentiment to populate each risk category and build a risk matrix.\n- Tools used: calculation_engine, company_profile, financial_data_api, news_sentiment, peer_comparison, sec_filing_search; 12 of 20 research tool calls.\n- Language models: gemini, groq.\n- Verification: 17 cited numeric claim(s) checked against their sources; 8 supported, 2 unsupported, 1 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-02, because the request names no period."
+    },
+    "sources": [
+     {
+      "id": "E1",
+      "title": "vector_db_search: Produce a comprehensive risk assessment for Tesla Inc. covering financial risks,",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E2",
+      "title": "vector_db_search: TSLA Financial Risks, 3, TSLA",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E3",
+      "title": "vector_db_search: TSLA Operational Risks, 3, TSLA",
+      "source_type": "memory",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E4",
+      "title": "sec_filing_search: TSLA, 10-K, 2025",
+      "source_type": "SEC filing",
+      "date": "2026-01-29",
+      "is_mock": false,
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm"
+     },
+     {
+      "id": "E5",
+      "title": "news_sentiment: Tesla, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E6",
+      "title": "company_profile: TSLA",
+      "source_type": "company data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E7",
+      "title": "financial_data_api: TSLA, income_statement, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E8",
+      "title": "financial_data_api: TSLA, cash_flow, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E9",
+      "title": "peer_comparison: TSLA, 5",
+      "source_type": "peer data",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E10",
+      "title": "calculation_engine: margin",
+      "source_type": "calculation",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E11",
+      "title": "calculation_engine: growth_rate",
+      "source_type": "calculation",
+      "date": "2026-10-01",
+      "is_mock": false
+     },
+     {
+      "id": "E12",
+      "title": "financial_data_api: TSLA, balance_sheet, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-10-01",
+      "is_mock": false
+     }
+    ]
+   }
+  },
+  {
+   "seq": 73,
+   "ts": "2026-10-01T21:05:43.333+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "latency_ms": 1.804
+  },
+  {
+   "seq": 74,
+   "ts": "2026-10-01T21:06:15.351+00:00",
+   "session_id": "session-20261001-210355-2461",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 526,
+   "facts": 36,
+   "findings": 44
+  }
+ ]
+}

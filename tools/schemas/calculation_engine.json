@@ -1,6 +1,6 @@
 {
   "name": "calculation_engine",
-  "description": "Perform a financial calculation and show the intermediate steps. ALWAYS use this instead of doing arithmetic yourself. Types and inputs: growth_rate/percent_change (current, previous); cagr (begin_value, end_value, years); margin (numerator, revenue); ratio (numerator, denominator); dcf (cash_flows[], discount_rate, terminal_growth_rate, optional net_debt, shares_outstanding); descriptive_stats (values[]). Rates are fractions: 0.1 = 10%.",
+  "description": "Perform a financial calculation and show the intermediate steps. ALWAYS use this instead of doing arithmetic yourself. Types and inputs: growth_rate/percent_change (current, previous); cagr (begin_value, end_value, years); margin (numerator, revenue); ratio (numerator, denominator); dcf (cash_flows[], discount_rate, terminal_growth_rate, optional net_debt, shares_outstanding); descriptive_stats (values[]). Rates are fractions: 0.1 = 10%. Only call it when the numbers are in the evidence: pass the actual values in inputs, not names or references. If the needed figures are missing, do not call it.",
   "parameters": {
     "type": "object",
     "properties": {

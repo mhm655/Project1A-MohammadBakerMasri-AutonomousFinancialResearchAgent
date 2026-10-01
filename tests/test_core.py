@@ -67,7 +67,7 @@ class ScriptedLLM:
         if stage == "REPLAN":
             return self.replan
         if stage == "EXECUTE":
-            if "calculation" in prompt:
+            if "Preferred tool: calculation_engine" in prompt:
                 return {"tool_calls": [{"name": "calculation_engine", "arguments": {
                     "calculation_type": "growth_rate", "inputs": {"current": 245122, "previous": 211915}}}]}
             return {"tool_calls": [{"name": "financial_data_api",
@@ -204,7 +204,7 @@ def test_challenge_1_end_to_end_on_mock_data():
     result = make_agent(script).run(QUERY)
 
     assert result.stop_reason == "completed" and result.template == "company_profile"
-    assert script.stages == ["PLAN", "EXECUTE", "REPLAN", "SYNTHESIZE"]  # 4 LLM calls for the whole report
+    assert script.stages == ["PLAN", "EXECUTE", "SYNTHESIZE"]  # 3 LLM calls: the first review is deterministic (Day 13 T3)
     assert result.tool_calls == 5 and all(s.status == "done" for s in result.plan.steps)
     calc = result.plan.get("s5")
     assert result.evidence[calc.evidence_ids[0]].data["result"] == pytest.approx(0.156699, abs=1e-6)
@@ -224,7 +224,7 @@ def test_the_trace_records_decisions_actions_and_llm_calls(tmp_path):
     events = [json.loads(line) for line in open(result.trace_path, encoding="utf-8")]
     types = [e["type"] for e in events]
     assert types[0] == "session_start" and types[-1] == "session_end"
-    assert types.count("llm_call") == 4
+    assert types.count("llm_call") == 3  # plan, execute, synthesize; the review is skipped (Day 13 T3)
     assert sum(1 for e in events if e["type"] == "decision" and e.get("step_id")) == 5
     assert {e["tool"] for e in events if e["type"] == "action"} >= {"company_profile", "calculation_engine",
                                                                      "vector_db_search", "report_generator"}
@@ -321,7 +321,7 @@ def test_missing_sections_trigger_a_gap_review():
     result = make_agent(script).run(QUERY)
     # reflection found four missing sections and asked for more research; the review found nothing
     # new to research, so the draft is not re-written (no wasted LLM call)
-    assert script.stages == ["PLAN", "EXECUTE", "REPLAN", "SYNTHESIZE", "REPLAN"]
+    assert script.stages == ["PLAN", "EXECUTE", "SYNTHESIZE", "REPLAN"]
     assert result.report_checks["missing_sections"]  # still honestly reported as missing
 
 
@@ -712,12 +712,12 @@ def test_a_failed_gap_review_does_not_rewrite_the_same_draft():
             if "[ARA:REPLAN]" in request.messages[-1]["content"]:
                 self.replans += 1
                 self.stages.append("REPLAN")
-                return '{"action": "done"}' if self.replans == 1 else "not json at all"
+                return "not json at all"
             return super().__call__(request)
 
     script = Script(synthesis="=== SECTION: executive_summary ===\nMicrosoft is a software company.")
     result = make_agent(script).run(QUERY)
-    assert script.stages == ["PLAN", "EXECUTE", "REPLAN", "SYNTHESIZE", "REPLAN"]
+    assert script.stages == ["PLAN", "EXECUTE", "SYNTHESIZE", "REPLAN"]
     assert result.sections["executive_summary"].startswith("Microsoft is a software company.")
 
 

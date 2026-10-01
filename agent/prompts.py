@@ -40,7 +40,7 @@ Research request: {query}
 
 Report type: {template} (required sections: {sections})
 Companies identified: {entities}
-Relevant findings already in memory: {memory}
+{memory_companies}Relevant findings already in memory: {memory}
 
 Write a research plan as a JSON object:
 {{
@@ -69,6 +69,9 @@ Rules:
   earnings release report segment revenue, growth and operating income.
 - When several companies are compared, plan one peer_comparison with the others in "peers".
 - Plan calculation_engine steps for growth rates and margins the report will need (principle P2).
+- Company-specific tools (company_profile, financial_data_api, sec_filing_search, earnings_transcript,
+  peer_comparison) need a ticker. Never plan one without a ticker. When no company is named, use the
+  companies from memory listed above and name the ticker in each step's goal.
 - Do not plan report_generator, fact_checker, vector_db_search or vector_db_store steps: the system
   runs those itself.
 Return only the JSON object."""
@@ -78,7 +81,7 @@ You are carrying out one step of a research plan.
 
 Step goal: {goal}
 Preferred tool: {tool}
-{problem}
+{other_tools}{problem}
 Evidence from earlier steps:
 {evidence}
 
@@ -132,6 +135,11 @@ Rules:
   found and how they were resolved, and threads linking the sources. Where sources disagree, use the
   brief's resolved value. Work each thread into the report; when news sentiment and the fundamentals
   point in different directions, say so and explain the likely reasons.
+- Forward view: in at least two sections (for example the executive summary and the risk or financial
+  section) say what comes next: the outlook, upcoming catalysts, risks to the thesis and what to watch next
+  quarter. Ground each point in cited evidence: management guidance, analyst targets or estimates when the
+  evidence has them. When it has none, give a conditional view ("if X continues, Y") marked "Analysis:" and
+  say no guidance was found. Never state a forecast figure that is not in the evidence.
 - Do not add a title, a sources list or a methodology section; the system adds those."""
 
 SECTION_GUIDANCE: dict[str, str] = {
@@ -154,17 +162,24 @@ def system_prompt(tools_description: str, max_tool_calls: int, today: date | Non
 
 
 def plan_prompt(*, query: str, template: str, sections: list[str], entities: list[str], memory: str,
-                tool_names: list[str], max_steps: int) -> str:
+                tool_names: list[str], max_steps: int, memory_tickers: list[str] | None = None) -> str:
     return PLAN_PROMPT.format(
+        memory_companies=(f"Companies from memory (use these for company-specific tools): "
+                          f"{', '.join(memory_tickers)}\n") if memory_tickers else "",
         query=query, template=template, sections=", ".join(sections),
         entities=", ".join(entities) or "none identified; infer from the request",
         memory=memory or "none", tool_names=", ".join(tool_names), max_steps=max_steps,
     )
 
 
-def execute_step_prompt(*, goal: str, tool: str, evidence: str, problem: str = "") -> str:
+def execute_step_prompt(*, goal: str, tool: str, evidence: str, problem: str = "",
+                        other_tools: list[str] | None = None) -> str:
+    """``other_tools`` are research tools whose schemas are not attached; naming them lets the model say
+    a different tool is needed without paying for their schemas on every call."""
     return EXECUTE_STEP_PROMPT.format(
         goal=goal, tool=tool, evidence=evidence or "(none)",
+        other_tools=f"Other research tools (not attached; ask for one by name in a STEP_DONE reply): "
+                    f"{', '.join(other_tools)}\n" if other_tools else "",
         problem=f"The previous attempt failed: {problem}\n" if problem else "",
     )
 

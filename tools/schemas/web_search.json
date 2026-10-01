@@ -1,6 +1,6 @@
 {
   "name": "web_search",
-  "description": "Search the web for current news, analysis and commentary about a company or financial topic. Use it for recent events and context that filings and data APIs do not cover. Do not use it for financial figures that financial_data_api or sec_filing_search can provide.",
+  "description": "Search the web for current news, analysis and commentary about a company or financial topic. Use it for recent events and context that filings and data APIs do not cover. Do not use it for financial figures that financial_data_api or sec_filing_search can provide. Always give a concrete query naming the company and topic (for example 'NVIDIA export restrictions 2026'); never call it with an empty or generic query.",
   "parameters": {
     "type": "object",
     "properties": {

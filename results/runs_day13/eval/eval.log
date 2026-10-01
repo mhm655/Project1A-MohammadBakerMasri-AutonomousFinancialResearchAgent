@@ -1,0 +1,9 @@
+C1: pass 16/21  failing: FA-3, AD-1, AD-3, AD-4, CS-3
+C2: pass 13/21  failing: FA-3, CO-3, AD-1, AD-3, CS-1, CS-2, CS-3, BM-1
+C3: pass 17/23  failing: CO-4, AD-1, AD-4, CS-3, CS-4, BM-1
+C4: pass 11/22  failing: FA-3, CO-4, AD-1, AD-3, AD-4, CS-1, CS-3, CS-4, AB-1, AB-2, AB-3
+C5: pass 13/21  failing: FA-1, FA-5, AD-1, AD-3, AD-4, CS-1, CS-3, CS-4
+C6: pass 9/20  failing: FA-1, FA-2, FA-3, FA-5, CO-2, AD-1, AD-3, AD-4, CS-1, CS-3, AB-4
+C7: pass 10/20  failing: AD-1, AD-2, AD-3, AD-4, CS-1, CS-2, CS-3, CS-4, AB-1, AB-3
+C8: pass 14/21  failing: CO-2, CO-3, AD-1, CS-1, CS-3, CS-4, AB-1
+overall pass rate 61%

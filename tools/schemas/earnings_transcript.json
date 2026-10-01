@@ -1,6 +1,6 @@
 {
   "name": "earnings_transcript",
-  "description": "Retrieve the earnings-call transcript for a company's fiscal quarter, with speaker labels and prepared-remarks/Q&A sections. Use it for management commentary, guidance and analyst concerns. If no transcript is available the earnings press release is returned instead; check source_kind.",
+  "description": "Retrieve the earnings-call transcript for a company's fiscal quarter, with speaker labels and prepared-remarks/Q&A sections. Use it for management commentary, guidance and analyst concerns. If no transcript is available the earnings press release is returned instead; check source_kind. Requires a ticker: never call it without one. Use it only for a named company, once per company and quarter.",
   "parameters": {
     "type": "object",
     "properties": {

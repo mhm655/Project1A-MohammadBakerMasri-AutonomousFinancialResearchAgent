@@ -22,7 +22,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-MAX_CHARS = 1500  # about 350 tokens: small enough to retrieve precisely, large enough to stand alone
+MAX_CHARS = 500  # about 125 tokens; Day 13 probe: hit@3 35% -> 52% versus 1500 (results/runs_day13/memory_probe.md)
 MIN_CHARS = 20  # short findings such as "Revenue grew 17.8% [E2]." still carry information
 
 #: Confidence by the source reliability tier (architecture spec, section 12.3).

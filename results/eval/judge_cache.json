@@ -311,5 +311,246 @@
   "contradictions": [],
   "provider": "groq_qwen",
   "model": "qwen/qwen3.8-27b"
+ },
+ "7ed615882c05868830c37fa39961e5cf88a25148266b098eb9c532119cdfcf18": {
+  "insights": [
+   "Operating margin expansion despite higher cloud spend shows strong pricing power and cost discipline.",
+   "Microsoft's 46.8% operating margin far exceeds peers, indicating superior scale economies in cloud services.",
+   "Revenue growth of 17.8% outpaces most peers, but the lower gross margin suggests rising infrastructure costs.",
+   "Recent executive departures may disrupt continuity in LinkedIn integration and AI product strategy.",
+   "Security vulnerability patch could temporarily affect customer confidence, modestly weighing on sentiment scores."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "Sections follow a logical order from summary to overview, financials, executives, and developments. Minor repetition of margin commentary but conclusions are evidence-based."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "Summary captures revenue growth, margin expansion, and peer ranking, but omits recent executive changes and the security update noted in the body.",
+   "missed_findings": [
+    "Executive leadership changes including Ryan Roslansky's departure",
+    "Security update addressing CVE-2026-73570"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "Plan includes all required data sources (company profile, financials, news sentiment, peer comparison, calculations). Minor redundancy in calculation steps but no critical gaps."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "9a1ed675c6f02864fc858f2a712b9833459389f00bf6e6932879f8af8f14973d": {
+  "insights": [
+   "Tariff refunds inflate gross margin, hiding underlying margin pressure from higher component costs.",
+   "A 5-percentage-point FX drag will materially reduce sequential revenue growth, offsetting product gains.",
+   "Mac's record revenue is offset by supply constraints, signalling potential upside if constraints ease.",
+   "Services growth (12%) lags Products (18%), indicating continued reliance on hardware for earnings expansion.",
+   "Guidance margin (47-48%) is below Q3's 50.1%, suggesting margin compression despite revenue growth."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections are generally ordered, but the report repeats EPS commentary, lacks consensus numbers, and some conclusions (e.g., margin strength) are not fully supported by the evidence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue growth and guidance but omits key points such as the missing consensus estimates, the FX headwind, and the margin compression implied by guidance.",
+   "missed_findings": [
+    "Consensus estimate figures are absent, limiting the results-vs-expectations analysis.",
+    "Management highlighted a 5-percentage-point foreign-exchange drag on growth.",
+    "Guidance gross-margin range (47-48%) is lower than Q3 actual margin (50.1%)."
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan includes all necessary steps (company profile, financials, transcript, consensus estimates, news sentiment, calculations). The only shortfall is that consensus data were not retrieved, but the plan itself was appropriate."
+  },
+  "contradictions": [
+   {
+    "a": "Diluted EPS for Q3 FY2026 was reported at $2.02 [E8]",
+    "b": "third-party news commentary reports $1.91 compared to $1.57 in the year-ago quarter [E4]",
+    "why": "Two different EPS values are given for the same period without reconciliation."
+   },
+   {
+    "a": "Apple demonstrated significant financial growth, reporting a record June quarter total revenue of $109,417 million, up 16.36% year-over-year [E8, E9].",
+    "b": "Detailed consensus estimate figures were missing from the provided evidence dataset.",
+    "why": "The claim of a 'record' implies comparison to prior consensus, yet the consensus numbers are absent, creating an implicit inconsistency."
+   }
+  ],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a838e88d0bd187807b289f68dfd31af0d7af762e8aaa18f36db258f8b26ed35b": {
+  "insights": [
+   "High capex intensity (57.8% of operating cash flow) limits financial flexibility despite strong free cash flow growth.",
+   "Revenue decline combined with reliance on regulatory credits makes Tesla vulnerable to policy shifts.",
+   "Stable gross margin alongside falling operating margin indicates rising non-production costs, notably R&D spend.",
+   "Tesla’s superior margins mask competitive risk, as peers achieve faster revenue growth, threatening market share."
+  ],
+  "insight_count": 4,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "Sections follow a logical order (summary, financial, operational, regulatory, competitive, matrix). Minor repetition in margin discussion but overall coherent."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "Summary captures revenue and margin trends and mentions competitive pressure, but omits key operational and regulatory risk details such as supply-chain and credit dependence.",
+   "missed_findings": [
+    "Supply-chain and manufacturing quality risks",
+    "Dependence on automotive regulatory credits",
+    "New-product execution risk (Optimus, Semi, robotaxi)"
+   ]
+  },
+  "planning": {
+   "score": 5,
+   "rationale": "The plan includes all necessary steps—company profile, 10-K risk factors, audited financials, cash flow, news sentiment, peer comparison, and key calculations—without unnecessary redundancy."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0cd1ac20e748fdb6d8f2e20a549e793e2a1ce74edf78de415aedf52de2143bcb": {
+  "insights": [
+   "Azure’s higher operating margin stems from enterprise software integration, allowing a premium pricing mix versus AWS’s infrastructure-heavy spend.",
+   "AWS’s low margin reflects ongoing capital intensity for data-center expansion, limiting short-term profitability despite revenue scale.",
+   "Google Cloud’s flat margin suggests pricing pressure and rising R&D costs despite strong AI/analytics capabilities."
+  ],
+  "insight_count": 3,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "The report follows a reasonable structure, but several conclusions rely on unverified or missing segment data, and the market-share section admits lack of evidence, weakening logical coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures the main growth and margin points, but it omits the explicit acknowledgement that market-share data is unavailable and overstates confidence in unverified figures.",
+   "missed_findings": [
+    "The report notes that quantitative market-share comparison cannot be provided due to missing data."
+   ]
+  },
+  "planning": {
+   "score": 3,
+   "rationale": "The plan includes most required sources (transcripts, 10-Ks, news sentiment) but contains redundant steps and does not resolve failed calculations, indicating incomplete handling of data gaps."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "8c9aa6a15e180e576be5af79a0f3762c0b5b5485f93bc9aac4b8dbd5e7f12221": {
+  "insights": [
+   "The \"struggling\" narrative stems from valuation pressure, not operational weakness, as the stock trades at a 281x P/E despite strong growth.",
+   "Margin expansion to 31.6% may be driven by one-time cost reductions, raising risk of reversion if pricing power is not sustainable.",
+   "Peers' lower growth but far lower multiples imply the market expects Palantir to maintain >80% growth, far above peers' 17-18% rates.",
+   "Even with 56% revenue growth, the high multiple leaves little margin for error; any slowdown could trigger a sharp de-rating."
+  ],
+  "insight_count": 4,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections follow a logical order, but conclusions about valuation and margin sustainability are repeated and some claims lack direct evidence, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures the growth vs. narrative conflict but omits the risk that margin expansion may be non-recurring and the extreme valuation expectations.",
+   "missed_findings": [
+    "Potential non-recurring nature of margin expansion",
+    "Market's expectation of >80% growth implied by the 281x P/E multiple"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan covered all necessary data sources (financials, transcript, news, peers) with no major redundancies; all steps were completed successfully."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "422a2028fcbd5e1446abc529963457d8e5d3034c4904e45848114237f91a2419": {
+  "insights": [
+   "Margin expansion at Citigroup and Bank of America likely reflects higher net interest margins from rising rates combined with expense discipline.",
+   "Wells Fargo's shrinking loan book and higher credit costs explain its margin compression and revenue decline.",
+   "Negative sentiment for Citigroup despite solid fundamentals suggests market overreaction to sector-wide correction.",
+   "Sustained pricing power at JPMorgan may allow its higher net margin to persist even if loan growth slows."
+  ],
+  "insight_count": 4,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections are ordered sensibly, but several conclusions rely on unverified figures and the analysis repeats points without clear evidence linkage."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures the main margin trends and Wells Fargo weakness, but omits revenue growth rates and the recent negative sentiment for Citigroup.",
+   "missed_findings": [
+    "Specific FY2025 revenue growth percentages for each bank",
+    "Recent negative market sentiment for Citigroup"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan gathered required company profiles, income statements, peer metrics, and news sentiment. No major redundancies, though no transcript or filing detail was needed for this query."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "9fdb811f7eb6fed555232300b6757fe7969676ad6d5c26f512ebf5408f45355f": {
+  "insights": [
+   "AI infrastructure spending creates a feedback loop: higher GPU demand lifts NVIDIA margins while raising cost pressure for cloud providers.",
+   "Margin bifurcation reflects business model elasticity: software/semiconductor firms monetize AI with premium pricing, hardware firms face commodity pricing constraints.",
+   "Regulatory risk is cross-cutting because platform dominance ties revenue growth to antitrust outcomes, not just operational performance.",
+   "Talent scarcity in AI could erode the operating-margin advantage of high-margin firms if wage inflation outpaces productivity gains.",
+   "Supply-chain dependence on advanced semiconductors links hardware firms' growth to geopolitical trade dynamics, amplifying downside risk."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections are generally ordered, but the executive summary repeats margin figures without context and the risk discussion repeats inferred points, leading to some unsupported conclusions."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures the profit bifurcation and AI-driven capex theme, but omits key cross-cutting risks such as supply-chain exposure, talent competition, and regulatory pressure discussed later.",
+   "missed_findings": [
+    "Supply-chain and semiconductor dependency risk",
+    "Talent competition and wage inflation risk",
+    "Regulatory and antitrust exposure as a sector-wide risk"
+   ]
+  },
+  "planning": {
+   "score": 2,
+   "rationale": "The plan repeats the same data-gathering steps multiple times, showing redundancy, and does not include news or peer-comparison steps that would enrich thematic analysis."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "1254df6ecf854b5be157eacb78d9a378a8c49184dfaadee059b154ab619ee292": {
+  "insights": [
+   "NVIDIA's 76.3% ROE signals exceptional capital efficiency, far outpacing peers and enabling higher shareholder returns.",
+   "Margin superiority stems from AI-centric Compute & Networking products, which command premium pricing versus memory-focused peers.",
+   "Peer revenue growth gaps suggest NVIDIA's market-share could erode if AI spending slows and competitors scale faster.",
+   "Valuation scenarios hinge more on future AI demand and P/E multiple shifts than on current absolute earnings levels.",
+   "Despite a lower P/E than AMD, NVIDIA's high absolute valuation reflects market pricing of its growth and margin advantage."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections are generally ordered, but conclusions about outlook and valuation rely on unverified statements and repeat earlier points, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue, margin, and sentiment but omits key risk factors, valuation scenarios, and the lack of forward guidance discussed in the body.",
+   "missed_findings": [
+    "Risk assessment regarding competitive pressure and high valuation",
+    "Three valuation scenarios (base, upside, downside)",
+    "Absence of explicit management guidance for FY2027"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan covered required data sources and handled failed calculations sensibly, though some steps were redundant and the FY2025-2026 growth calculation was omitted."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
  }
 }

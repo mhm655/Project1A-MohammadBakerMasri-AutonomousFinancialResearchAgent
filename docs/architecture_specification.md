@@ -805,7 +805,7 @@ domain (`ToolSpec.domains`), so different agents can get different toolsets with
 **Open questions for Day 2–3:**
 
 - Whether the chosen free models reliably produce valid JSON plans (to be measured on Day 4).
-- Whether α in the hybrid re-ranker needs tuning per profile (Day 13).
+- ~~Whether α in the hybrid re-ranker needs tuning per profile (Day 13).~~ Answered on Day 13: no hybrid re-ranker was built; retrieval is Chroma cosine similarity alone, so there is no α to tune. The chunk-size sweep took its place: 500-character chunks raised hit@3 from 35% to 52% on a 48-probe set (`results/runs_day13/memory_probe.md`).
 
 ## 22. Build Schedule
 

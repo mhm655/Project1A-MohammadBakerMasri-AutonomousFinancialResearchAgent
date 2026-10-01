@@ -1,0 +1,1623 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C5",
+  "number": 5,
+  "title": "Contradictory Data Handling",
+  "expected_pages": [
+   8,
+   10
+  ]
+ },
+ "query": "Research Palantir Technologies. Note: Recent news reports suggest the company is struggling, but their financial statements show strong growth. Investigate and explain the apparent contradiction.",
+ "session_id": "session-20261001-193735-5980",
+ "data_mode": "mock",
+ "fail_rate": 0.0,
+ "fail_tools": [],
+ "injected_failures": {},
+ "profile": {
+  "template": "investigative",
+  "tickers": [
+   "PLTR"
+  ],
+  "names": [
+   "Palantir"
+  ],
+  "query_type": "investigative",
+  "complexity": "single_company",
+  "periods": [
+   "recent"
+  ],
+  "ambiguity": 0.0,
+  "ambiguity_level": "low",
+  "signals": [
+   "no ambiguity signals: entity, aspect and timeframe are all stated"
+  ],
+  "sector": null
+ },
+ "template": "investigative",
+ "stop_reason": "completed",
+ "duration_s": 0.14,
+ "tool_calls": 4,
+ "llm_usage": {
+  "calls": 6,
+  "failures": 0,
+  "prompt_tokens": 13748,
+  "completion_tokens": 216,
+  "reasoning_tokens": 0
+ },
+ "report_markdown": "# Palantir: Investigative\n\n> **Warning:** this report was generated from MOCK data and must not be used or cited.\n\n## Executive Summary\n\nScripted text for executive_summary. [E1]\n\n## The Contradiction\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Evidence Review\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Resolution\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Implications\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Data Gaps and Limitations\n\n- PLTR has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Latest 10-K for PLTR' (sec_filing_search PLTR, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Company facts for PLTR' (company_profile PLTR): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search. [E2] is less reliable than the primary source.\n- Step 'Income statement for PLTR' (financial_data_api PLTR income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search. [E4] is less reliable than the primary source.\n- Step 'Earnings call for PLTR' (earnings_transcript PLTR earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment. [E5] is less reliable than the primary source.\n- Section not completed: The Contradiction.\n- Section not completed: Evidence Review.\n- Section not completed: Resolution.\n- Section not completed: Implications.\n\n## Research Methodology\n\n- Plan: 4 step(s), 4 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 4 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E2] web_search instead of company_profile; [E4] web_search instead of financial_data_api; [E5] news_sentiment instead of earnings_transcript.\n- **Mock data was used; figures are approximations for development only.**\n\n## Sources\n\n- [E3] web_search: PLTR 10-K SEC filing, 10 (web, 2026-10-01)\n- [E2] web_search: PLTR company profile, 10 (web, 2026-10-01)\n- [E4] web_search: PLTR income statement financials, 10 (web, 2026-10-01)\n- [E5] news_sentiment: PLTR earnings, 20, 30 (news, 2026-10-01)\n",
+ "sections": {
+  "executive_summary": "Scripted text for executive_summary. [E1]"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "s1",
+    "goal": "Company facts for PLTR",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "PLTR"
+    },
+    "depends_on": [],
+    "reason": "Company facts for PLTR",
+    "status": "done",
+    "evidence_ids": [
+     "E2"
+    ],
+    "summary": "company_profile returned E2",
+    "attempts": 1
+   },
+   {
+    "id": "s2",
+    "goal": "Income statement for PLTR",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "PLTR income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for PLTR",
+    "status": "done",
+    "evidence_ids": [
+     "E4"
+    ],
+    "summary": "financial_data_api returned E4",
+    "attempts": 1
+   },
+   {
+    "id": "s3",
+    "goal": "Earnings call for PLTR",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "PLTR earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for PLTR",
+    "status": "done",
+    "evidence_ids": [
+     "E5"
+    ],
+    "summary": "earnings_transcript returned E5",
+    "attempts": 1
+   },
+   {
+    "id": "s4",
+    "goal": "Latest 10-K for PLTR",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "PLTR",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for PLTR",
+    "status": "done",
+    "evidence_ids": [
+     "E3"
+    ],
+    "summary": "sec_filing_search returned E3",
+    "attempts": 1
+   }
+  ],
+  "rationale": "scripted",
+  "rejected": []
+ },
+ "evidence": {
+  "E3": {
+   "evidence_id": "E3",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "PLTR 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "PLTR 10-K SEC filing: what investors need to know",
+      "url": "https://mock.reuters.com/pltr-10-k-sec-filing-1",
+      "snippet": "[mock] Reuters coverage of PLTR 10-K SEC filing, published 2025-03-09.",
+      "source": "Reuters",
+      "published": "2025-03-09"
+     },
+     {
+      "title": "Analysts weigh in on PLTR 10-K SEC filing",
+      "url": "https://mock.cnbc.com/pltr-10-k-sec-filing-2",
+      "snippet": "[mock] CNBC coverage of PLTR 10-K SEC filing, published 2025-03-07.",
+      "source": "CNBC",
+      "published": "2025-03-07"
+     },
+     {
+      "title": "PLTR 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/pltr-10-k-sec-filing-3",
+      "snippet": "[mock] MarketWatch coverage of PLTR 10-K SEC filing, published 2025-01-20.",
+      "source": "MarketWatch",
+      "published": "2025-01-20"
+     },
+     {
+      "title": "Five takeaways on PLTR 10-K SEC filing",
+      "url": "https://mock.seekingalpha.com/pltr-10-k-sec-filing-4",
+      "snippet": "[mock] Seeking Alpha coverage of PLTR 10-K SEC filing, published 2024-09-27.",
+      "source": "Seeking Alpha",
+      "published": "2024-09-27"
+     },
+     {
+      "title": "Why PLTR 10-K SEC filing matters for the market",
+      "url": "https://mock.ft.com/pltr-10-k-sec-filing-5",
+      "snippet": "[mock] Financial Times coverage of PLTR 10-K SEC filing, published 2024-09-17.",
+      "source": "Financial Times",
+      "published": "2024-09-17"
+     },
+     {
+      "title": "PLTR 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.reuters.com/pltr-10-k-sec-filing-6",
+      "snippet": "[mock] Reuters coverage of PLTR 10-K SEC filing, published 2025-05-05.",
+      "source": "Reuters",
+      "published": "2025-05-05"
+     },
+     {
+      "title": "PLTR 10-K SEC filing: what investors need to know",
+      "url": "https://mock.cnbc.com/pltr-10-k-sec-filing-7",
+      "snippet": "[mock] CNBC coverage of PLTR 10-K SEC filing, published 2025-05-01.",
+      "source": "CNBC",
+      "published": "2025-05-01"
+     },
+     {
+      "title": "Analysts weigh in on PLTR 10-K SEC filing",
+      "url": "https://mock.finance.yahoo.com/pltr-10-k-sec-filing-8",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR 10-K SEC filing, published 2024-10-16.",
+      "source": "Yahoo Finance",
+      "published": "2024-10-16"
+     },
+     {
+      "title": "PLTR 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/pltr-10-k-sec-filing-9",
+      "snippet": "[mock] MarketWatch coverage of PLTR 10-K SEC filing, published 2025-03-28.",
+      "source": "MarketWatch",
+      "published": "2025-03-28"
+     },
+     {
+      "title": "Five takeaways on PLTR 10-K SEC filing",
+      "url": "https://mock.finance.yahoo.com/pltr-10-k-sec-filing-10",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR 10-K SEC filing, published 2025-02-15.",
+      "source": "Yahoo Finance",
+      "published": "2025-02-15"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T19:37:35+00:00",
+   "latency_ms": 0.508,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E2": {
+   "evidence_id": "E2",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR company profile",
+    "num_results": 10
+   },
+   "data": {
+    "query": "PLTR company profile",
+    "date_range": null,
+    "results": [
+     {
+      "title": "PLTR company profile: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/pltr-company-profile-1",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR company profile, published 2025-03-09.",
+      "source": "Yahoo Finance",
+      "published": "2025-03-09"
+     },
+     {
+      "title": "Analysts weigh in on PLTR company profile",
+      "url": "https://mock.reuters.com/pltr-company-profile-2",
+      "snippet": "[mock] Reuters coverage of PLTR company profile, published 2025-02-08.",
+      "source": "Reuters",
+      "published": "2025-02-08"
+     },
+     {
+      "title": "PLTR company profile - latest developments and outlook",
+      "url": "https://mock.bloomberg.com/pltr-company-profile-3",
+      "snippet": "[mock] Bloomberg coverage of PLTR company profile, published 2025-06-01.",
+      "source": "Bloomberg",
+      "published": "2025-06-01"
+     },
+     {
+      "title": "Five takeaways on PLTR company profile",
+      "url": "https://mock.wsj.com/pltr-company-profile-4",
+      "snippet": "[mock] The Wall Street Journal coverage of PLTR company profile, published 2025-01-27.",
+      "source": "The Wall Street Journal",
+      "published": "2025-01-27"
+     },
+     {
+      "title": "Why PLTR company profile matters for the market",
+      "url": "https://mock.marketwatch.com/pltr-company-profile-5",
+      "snippet": "[mock] MarketWatch coverage of PLTR company profile, published 2024-12-10.",
+      "source": "MarketWatch",
+      "published": "2024-12-10"
+     },
+     {
+      "title": "PLTR company profile: risks and opportunities ahead",
+      "url": "https://mock.reuters.com/pltr-company-profile-6",
+      "snippet": "[mock] Reuters coverage of PLTR company profile, published 2025-05-31.",
+      "source": "Reuters",
+      "published": "2025-05-31"
+     },
+     {
+      "title": "PLTR company profile: what investors need to know",
+      "url": "https://mock.marketwatch.com/pltr-company-profile-7",
+      "snippet": "[mock] MarketWatch coverage of PLTR company profile, published 2024-11-19.",
+      "source": "MarketWatch",
+      "published": "2024-11-19"
+     },
+     {
+      "title": "Analysts weigh in on PLTR company profile",
+      "url": "https://mock.seekingalpha.com/pltr-company-profile-8",
+      "snippet": "[mock] Seeking Alpha coverage of PLTR company profile, published 2024-12-07.",
+      "source": "Seeking Alpha",
+      "published": "2024-12-07"
+     },
+     {
+      "title": "PLTR company profile - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/pltr-company-profile-9",
+      "snippet": "[mock] MarketWatch coverage of PLTR company profile, published 2024-10-17.",
+      "source": "MarketWatch",
+      "published": "2024-10-17"
+     },
+     {
+      "title": "Five takeaways on PLTR company profile",
+      "url": "https://mock.finance.yahoo.com/pltr-company-profile-10",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR company profile, published 2024-08-06.",
+      "source": "Yahoo Finance",
+      "published": "2024-08-06"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search.",
+     "Fallback data is web-reported company overview."
+    ],
+    "fallback_for": "company_profile"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T19:37:35+00:00",
+   "latency_ms": 0.529,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E4": {
+   "evidence_id": "E4",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "PLTR income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "PLTR income statement financials: what investors need to know",
+      "url": "https://mock.seekingalpha.com/pltr-income-statement-financials-1",
+      "snippet": "[mock] Seeking Alpha coverage of PLTR income statement financials, published 2024-10-13.",
+      "source": "Seeking Alpha",
+      "published": "2024-10-13"
+     },
+     {
+      "title": "Analysts weigh in on PLTR income statement financials",
+      "url": "https://mock.reuters.com/pltr-income-statement-financials-2",
+      "snippet": "[mock] Reuters coverage of PLTR income statement financials, published 2025-06-15.",
+      "source": "Reuters",
+      "published": "2025-06-15"
+     },
+     {
+      "title": "PLTR income statement financials - latest developments and outlook",
+      "url": "https://mock.bloomberg.com/pltr-income-statement-financials-3",
+      "snippet": "[mock] Bloomberg coverage of PLTR income statement financials, published 2025-02-13.",
+      "source": "Bloomberg",
+      "published": "2025-02-13"
+     },
+     {
+      "title": "Five takeaways on PLTR income statement financials",
+      "url": "https://mock.wsj.com/pltr-income-statement-financials-4",
+      "snippet": "[mock] The Wall Street Journal coverage of PLTR income statement financials, published 2025-02-07.",
+      "source": "The Wall Street Journal",
+      "published": "2025-02-07"
+     },
+     {
+      "title": "Why PLTR income statement financials matters for the market",
+      "url": "https://mock.reuters.com/pltr-income-statement-financials-5",
+      "snippet": "[mock] Reuters coverage of PLTR income statement financials, published 2025-02-16.",
+      "source": "Reuters",
+      "published": "2025-02-16"
+     },
+     {
+      "title": "PLTR income statement financials: risks and opportunities ahead",
+      "url": "https://mock.finance.yahoo.com/pltr-income-statement-financials-6",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR income statement financials, published 2024-12-17.",
+      "source": "Yahoo Finance",
+      "published": "2024-12-17"
+     },
+     {
+      "title": "PLTR income statement financials: what investors need to know",
+      "url": "https://mock.seekingalpha.com/pltr-income-statement-financials-7",
+      "snippet": "[mock] Seeking Alpha coverage of PLTR income statement financials, published 2024-07-20.",
+      "source": "Seeking Alpha",
+      "published": "2024-07-20"
+     },
+     {
+      "title": "Analysts weigh in on PLTR income statement financials",
+      "url": "https://mock.finance.yahoo.com/pltr-income-statement-financials-8",
+      "snippet": "[mock] Yahoo Finance coverage of PLTR income statement financials, published 2024-12-02.",
+      "source": "Yahoo Finance",
+      "published": "2024-12-02"
+     },
+     {
+      "title": "PLTR income statement financials - latest developments and outlook",
+      "url": "https://mock.wsj.com/pltr-income-statement-financials-9",
+      "snippet": "[mock] The Wall Street Journal coverage of PLTR income statement financials, published 2024-10-30.",
+      "source": "The Wall Street Journal",
+      "published": "2024-10-30"
+     },
+     {
+      "title": "Five takeaways on PLTR income statement financials",
+      "url": "https://mock.reuters.com/pltr-income-statement-financials-10",
+      "snippet": "[mock] Reuters coverage of PLTR income statement financials, published 2024-09-13.",
+      "source": "Reuters",
+      "published": "2024-09-13"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T19:37:35+00:00",
+   "latency_ms": 0.572,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E5": {
+   "evidence_id": "E5",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "PLTR earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "PLTR earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": 0.0866,
+     "label": "positive",
+     "positive": 0.6,
+     "negative": 0.4,
+     "neutral": 0.0
+    },
+    "articles": [
+     {
+      "title": "PLTR earnings shares slip amid margin concerns",
+      "url": "https://mock.wsj.com/pltr-earnings-shares-slip-amid-margin-concerns-1",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-22",
+      "summary": "[mock] PLTR earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3487,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "PLTR earnings unveils new products at annual event",
+      "url": "https://mock.marketwatch.com/pltr-earnings-unveils-new-products-at-annual-event-2",
+      "source": "MarketWatch",
+      "published": "2025-06-12",
+      "summary": "[mock] PLTR earnings unveils new products at annual event.",
+      "sentiment_score": 0.2869,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings holds steady in volatile market",
+      "url": "https://mock.cnbc.com/pltr-earnings-holds-steady-in-volatile-market-3",
+      "source": "CNBC",
+      "published": "2025-06-29",
+      "summary": "[mock] PLTR earnings holds steady in volatile market.",
+      "sentiment_score": 0.0547,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings beats expectations as demand stays strong",
+      "url": "https://mock.ft.com/pltr-earnings-beats-expectations-as-demand-stays-strong-4",
+      "source": "Financial Times",
+      "published": "2025-06-14",
+      "summary": "[mock] PLTR earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.4567,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings announces leadership changes",
+      "url": "https://mock.bloomberg.com/pltr-earnings-announces-leadership-changes-5",
+      "source": "Bloomberg",
+      "published": "2025-06-09",
+      "summary": "[mock] PLTR earnings announces leadership changes.",
+      "sentiment_score": 0.1737,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on PLTR earnings",
+      "url": "https://mock.cnbc.com/analysts-raise-price-targets-on-pltr-earnings-6",
+      "source": "CNBC",
+      "published": "2025-06-01",
+      "summary": "[mock] Analysts raise price targets on PLTR earnings.",
+      "sentiment_score": 0.5173,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of PLTR earnings",
+      "url": "https://mock.wsj.com/regulators-step-up-scrutiny-of-pltr-earnings-7",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-03",
+      "summary": "[mock] Regulators step up scrutiny of PLTR earnings.",
+      "sentiment_score": -0.4792,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "PLTR earnings faces supply-chain pressure",
+      "url": "https://mock.seekingalpha.com/pltr-earnings-faces-supply-chain-pressure-8",
+      "source": "Seeking Alpha",
+      "published": "2025-06-04",
+      "summary": "[mock] PLTR earnings faces supply-chain pressure.",
+      "sentiment_score": -0.3274,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of PLTR earnings",
+      "url": "https://mock.finance.yahoo.com/regulators-step-up-scrutiny-of-pltr-earnings-9",
+      "source": "Yahoo Finance",
+      "published": "2025-06-04",
+      "summary": "[mock] Regulators step up scrutiny of PLTR earnings.",
+      "sentiment_score": -0.3605,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "PLTR earnings beats expectations as demand stays strong",
+      "url": "https://mock.ft.com/pltr-earnings-beats-expectations-as-demand-stays-strong-10",
+      "source": "Financial Times",
+      "published": "2025-06-26",
+      "summary": "[mock] PLTR earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.5721,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings beats expectations as demand stays strong",
+      "url": "https://mock.bloomberg.com/pltr-earnings-beats-expectations-as-demand-stays-strong-11",
+      "source": "Bloomberg",
+      "published": "2025-06-05",
+      "summary": "[mock] PLTR earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.4816,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on PLTR earnings",
+      "url": "https://mock.marketwatch.com/analysts-raise-price-targets-on-pltr-earnings-12",
+      "source": "MarketWatch",
+      "published": "2025-06-29",
+      "summary": "[mock] Analysts raise price targets on PLTR earnings.",
+      "sentiment_score": 0.6152,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings holds steady in volatile market",
+      "url": "https://mock.finance.yahoo.com/pltr-earnings-holds-steady-in-volatile-market-13",
+      "source": "Yahoo Finance",
+      "published": "2025-06-27",
+      "summary": "[mock] PLTR earnings holds steady in volatile market.",
+      "sentiment_score": -0.1359,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "PLTR earnings announces leadership changes",
+      "url": "https://mock.ft.com/pltr-earnings-announces-leadership-changes-14",
+      "source": "Financial Times",
+      "published": "2025-06-02",
+      "summary": "[mock] PLTR earnings announces leadership changes.",
+      "sentiment_score": 0.1025,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings announces leadership changes",
+      "url": "https://mock.ft.com/pltr-earnings-announces-leadership-changes-15",
+      "source": "Financial Times",
+      "published": "2025-06-01",
+      "summary": "[mock] PLTR earnings announces leadership changes.",
+      "sentiment_score": 0.1335,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on PLTR earnings",
+      "url": "https://mock.reuters.com/analysts-raise-price-targets-on-pltr-earnings-16",
+      "source": "Reuters",
+      "published": "2025-06-26",
+      "summary": "[mock] Analysts raise price targets on PLTR earnings.",
+      "sentiment_score": 0.5015,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "PLTR earnings faces supply-chain pressure",
+      "url": "https://mock.marketwatch.com/pltr-earnings-faces-supply-chain-pressure-17",
+      "source": "MarketWatch",
+      "published": "2025-06-15",
+      "summary": "[mock] PLTR earnings faces supply-chain pressure.",
+      "sentiment_score": -0.2247,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of PLTR earnings",
+      "url": "https://mock.marketwatch.com/regulators-step-up-scrutiny-of-pltr-earnings-18",
+      "source": "MarketWatch",
+      "published": "2025-06-29",
+      "summary": "[mock] Regulators step up scrutiny of PLTR earnings.",
+      "sentiment_score": -0.4446,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of PLTR earnings",
+      "url": "https://mock.finance.yahoo.com/regulators-step-up-scrutiny-of-pltr-earnings-19",
+      "source": "Yahoo Finance",
+      "published": "2025-06-11",
+      "summary": "[mock] Regulators step up scrutiny of PLTR earnings.",
+      "sentiment_score": -0.4247,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "PLTR earnings beats expectations as demand stays strong",
+      "url": "https://mock.reuters.com/pltr-earnings-beats-expectations-as-demand-stays-strong-20",
+      "source": "Reuters",
+      "published": "2025-06-14",
+      "summary": "[mock] PLTR earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.5816,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T19:37:35+00:00",
+   "latency_ms": 1.282,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Research Palantir Technologies. Note: Recent news reports suggest the company is struggling, but their financial statements show strong growth. Investigate and explain the apparent contradiction.",
+    "top_k": 5,
+    "ticker": "PLTR"
+   },
+   "ok": true,
+   "latency_ms": 0.15,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "PLTR"
+   },
+   "ok": false,
+   "latency_ms": 0.082,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "company_profile: unknown ticker 'PLTR'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.118,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR company profile",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.594,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.06,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "PLTR"
+   },
+   "ok": false,
+   "latency_ms": 0.051,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for PLTR"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.57,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "PLTR",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.071,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'PLTR'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.074,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.102,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.643,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "PLTR earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.383,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "investigative",
+    "title": "Palantir: Investigative",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "data_gaps_and_limitations": "- PLTR has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Latest 10-K for PLTR' (sec_filing_search PLTR, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Company facts for PLTR' (company_profile PLTR): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search. [E2] is less reliable than the primary source.\n- Step 'Income statement for PLTR' (financial_data_api PLTR income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search. [E4] is less reliable than the primary source.\n- Step 'Earnings call for PLTR' (earnings_transcript PLTR earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment. [E5] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 4 step(s), 4 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 4 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E2] web_search instead of company_profile; [E4] web_search instead of financial_data_api; [E5] news_sentiment instead of earnings_transcript.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E3",
+      "title": "web_search: PLTR 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E2",
+      "title": "web_search: PLTR company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "web_search: PLTR income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "news_sentiment: PLTR earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 0.962,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [
+  [
+   "fallback_failed",
+   {
+    "tool": "company_profile",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "company_profile",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ]
+ ],
+ "failures": [
+  [
+   "sec_filing_search",
+   {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search."
+  ],
+  [
+   "company_profile",
+   {
+    "ticker": "PLTR"
+   },
+   "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "PLTR income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "PLTR earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment."
+  ]
+ ],
+ "disambiguation": {
+  "level": "low",
+  "proceed_reading": "Proceeding as requested.",
+  "assumptions": [],
+  "clarifying_questions": [],
+  "tickers": [
+   "PLTR"
+  ],
+  "timeframe": "recent",
+  "themes": [],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [
+  "Step 'Latest 10-K for PLTR' (sec_filing_search PLTR, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search. [E3] is less reliable than the primary source.",
+  "Step 'Company facts for PLTR' (company_profile PLTR): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search. [E2] is less reliable than the primary source.",
+  "Step 'Income statement for PLTR' (financial_data_api PLTR income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search. [E4] is less reliable than the primary source.",
+  "Step 'Earnings call for PLTR' (earnings_transcript PLTR earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment. [E5] is less reliable than the primary source."
+ ],
+ "verification": {
+  "checked": 0,
+  "supported": 0,
+  "partially_supported": 0,
+  "unsupported": 0,
+  "unverifiable": 0,
+  "uncited": 0,
+  "auto_cited": 0,
+  "flagged": []
+ },
+ "report_checks": {
+  "missing_sections": [
+   "the_contradiction",
+   "evidence_review",
+   "resolution",
+   "implications"
+  ],
+  "unknown_citations": [
+   "E1"
+  ],
+  "uncited_sources": []
+ },
+ "trace_path": "C:\\Users\\user\\AppData\\Local\\Temp\\ara_tokens_lwz5zrfy\\traces\\session-20261001-193735-5980.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-10-01T19:37:35.773+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "thought",
+   "text": "Report type 'investigative' (investigative, single_company); companies ['PLTR']; ambiguity 0.00 (low: no ambiguity signals: entity, aspect and timeframe are all stated).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-10-01T19:37:35.773+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Research Palantir Technologies. Note: Recent news reports suggest the company is struggling, but their financial statements show strong growth. Investigate and explain the apparent contradiction.",
+    "top_k": 5,
+    "ticker": "PLTR"
+   }
+  },
+  {
+   "seq": 4,
+   "ts": "2026-10-01T19:37:35.774+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 0.15
+  },
+  {
+   "seq": 5,
+   "ts": "2026-10-01T19:37:35.774+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "thought",
+   "text": "Memory recall found 0 prior finding(s).",
+   "node": "recall"
+  },
+  {
+   "seq": 6,
+   "ts": "2026-10-01T19:37:35.774+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1754,
+   "completion_tokens": 167,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for PLTR\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"PLTR\"}, \"depends_on\": [], \"reason\": \"Company facts for PLTR\"}, {\"id\": "
+  },
+  {
+   "seq": 7,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for PLTR\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"PLTR\"}, \"depends_on\": [], \"reason\": \"Company facts for PLTR\"}, {\"id\": \"s2\", \"goal\": \"Income statement for PLTR\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for PLTR\"}, {\"id\": \"s3\", \"goal\": \"Earnings call for PLTR\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for PLTR\"}, {\"id\": \"s4\", \"goal\": \"Latest 10-K for PLTR\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"PLTR\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for PLTR\"}]}"
+  },
+  {
+   "seq": 8,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "scripted",
+   "steps": 4
+  },
+  {
+   "seq": 9,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for PLTR",
+   "step_id": "s1",
+   "args": {
+    "ticker": "PLTR"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 10,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for PLTR",
+   "step_id": "s2",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 11,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for PLTR",
+   "step_id": "s3",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 12,
+   "ts": "2026-10-01T19:37:35.775+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for PLTR",
+   "step_id": "s4",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 13,
+   "ts": "2026-10-01T19:37:35.782+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "PLTR"
+   }
+  },
+  {
+   "seq": 14,
+   "ts": "2026-10-01T19:37:35.783+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "company_profile",
+   "error_kind": "execution_error",
+   "message": "company_profile: unknown ticker 'PLTR'",
+   "latency_ms": 0.082
+  },
+  {
+   "seq": 15,
+   "ts": "2026-10-01T19:37:35.783+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 16,
+   "ts": "2026-10-01T19:37:35.784+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'",
+   "latency_ms": 0.118
+  },
+  {
+   "seq": 17,
+   "ts": "2026-10-01T19:37:35.784+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=company_profile, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "seq": 18,
+   "ts": "2026-10-01T19:37:35.784+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR company profile",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 19,
+   "ts": "2026-10-01T19:37:35.785+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s3",
+   "prompt_tokens": 3106,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 20,
+   "ts": "2026-10-01T19:37:35.785+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s3"
+  },
+  {
+   "seq": 21,
+   "ts": "2026-10-01T19:37:35.785+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 22,
+   "ts": "2026-10-01T19:37:35.786+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'",
+   "latency_ms": 0.06
+  },
+  {
+   "seq": 23,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 24,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 0.57
+  },
+  {
+   "seq": 25,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 0.594
+  },
+  {
+   "seq": 26,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s2",
+   "prompt_tokens": 3107,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 27,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s2"
+  },
+  {
+   "seq": 28,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 29,
+   "ts": "2026-10-01T19:37:35.787+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "PLTR",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 30,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "PLTR"
+   }
+  },
+  {
+   "seq": 31,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for PLTR",
+   "latency_ms": 0.051
+  },
+  {
+   "seq": 32,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 33,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'",
+   "latency_ms": 0.074
+  },
+  {
+   "seq": 34,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_used: tool=company_profile, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 35,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "step s4 done: sec_filing_search returned E3",
+   "step_id": "s4"
+  },
+  {
+   "seq": 36,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'PLTR'",
+   "latency_ms": 0.071
+  },
+  {
+   "seq": 37,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "PLTR",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 38,
+   "ts": "2026-10-01T19:37:35.788+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'PLTR'",
+   "latency_ms": 0.102
+  },
+  {
+   "seq": 39,
+   "ts": "2026-10-01T19:37:35.789+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "seq": 40,
+   "ts": "2026-10-01T19:37:35.789+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "PLTR income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 41,
+   "ts": "2026-10-01T19:37:35.789+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'PLTR'"
+  },
+  {
+   "seq": 42,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "step s1 done: company_profile returned E2",
+   "step_id": "s1"
+  },
+  {
+   "seq": 43,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 0.643
+  },
+  {
+   "seq": 44,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 45,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "PLTR earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 46,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 1.383
+  },
+  {
+   "seq": 47,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 48,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "step s2 done: financial_data_api returned E4",
+   "step_id": "s2"
+  },
+  {
+   "seq": 49,
+   "ts": "2026-10-01T19:37:35.791+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "step s3 done: earnings_transcript returned E5",
+   "step_id": "s3"
+  },
+  {
+   "seq": 50,
+   "ts": "2026-10-01T19:37:35.792+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1401,
+   "completion_tokens": 4,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"action\": \"done\"}"
+  },
+  {
+   "seq": 51,
+   "ts": "2026-10-01T19:37:35.792+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 53,
+   "ts": "2026-10-01T19:37:35.798+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "synthesize",
+   "prompt_tokens": 2916,
+   "completion_tokens": 19,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "=== SECTION: executive_summary ===\nScripted text for executive_summary. [E1]"
+  },
+  {
+   "seq": 55,
+   "ts": "2026-10-01T19:37:35.800+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "thought",
+   "text": "Reflection: 4 section(s) missing ['the_contradiction', 'evidence_review', 'resolution', 'implications']",
+   "node": "reflect"
+  },
+  {
+   "seq": 56,
+   "ts": "2026-10-01T19:37:35.800+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1464,
+   "completion_tokens": 4,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"action\": \"done\"}"
+  },
+  {
+   "seq": 57,
+   "ts": "2026-10-01T19:37:35.800+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 58,
+   "ts": "2026-10-01T19:37:35.802+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "investigative",
+    "title": "Palantir: Investigative",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "data_gaps_and_limitations": "- PLTR has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Latest 10-K for PLTR' (sec_filing_search PLTR, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'PLTR'); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Company facts for PLTR' (company_profile PLTR): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'PLTR'); data from web_search. [E2] is less reliable than the primary source.\n- Step 'Income statement for PLTR' (financial_data_api PLTR income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'PLTR'); data from web_search. [E4] is less reliable than the primary source.\n- Step 'Earnings call for PLTR' (earnings_transcript PLTR earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for PLTR); data from news_sentiment. [E5] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 4 step(s), 4 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 4 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E2] web_search instead of company_profile; [E4] web_search instead of financial_data_api; [E5] news_sentiment instead of earnings_transcript.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E3",
+      "title": "web_search: PLTR 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E2",
+      "title": "web_search: PLTR company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "web_search: PLTR income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "news_sentiment: PLTR earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   }
+  },
+  {
+   "seq": 59,
+   "ts": "2026-10-01T19:37:35.802+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 0.962
+  },
+  {
+   "seq": 60,
+   "ts": "2026-10-01T19:37:35.803+00:00",
+   "session_id": "session-20261001-193735-5980",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 20,
+   "facts": 0,
+   "findings": 1
+  }
+ ]
+}

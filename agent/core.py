@@ -22,6 +22,7 @@ Failures never crash the run: they become written data gaps in the report (spec 
 
 from __future__ import annotations
 
+import dataclasses
 import re
 import threading
 import time
@@ -214,6 +215,53 @@ def _args_text(args: Any) -> str:
         if isinstance(args, dict) else ""
 
 
+#: Tools that take a company ticker. A step for one of them with no ticker cannot run (Day 11, C7).
+TICKER_TOOLS = frozenset({"company_profile", "financial_data_api", "sec_filing_search", "earnings_transcript",
+                          "peer_comparison"})
+
+
+#: Section-targeted recall keeps only hits at or above this similarity (1 - cosine distance); see
+#: results/runs_day13/memory_probe.md for how it was chosen.
+RECALL_MIN_SCORE = 0.30
+
+
+def recall_topics(template: str, n: int = 2) -> list[str]:
+    """Titles of the template's first ``n`` content sections, used as extra memory queries."""
+    skip = {"executive_summary", "methodology", "conclusion"}
+    return [section_title(k) for k in TEMPLATES.get(template, []) if k not in skip][:n]
+
+
+def enforce_tickers(steps: list[PlanStep], tickers: list[str]) -> tuple[list[PlanStep], list[str]]:
+    """Make every ticker-requiring step name its company, or drop it.
+
+    Day 11, C7 ("the companies you've already researched"): the planner and the review added
+    ``earnings_transcript`` steps with no ticker; the executor model could only answer "no ticker was
+    specified", so 12 of 21 steps were skipped. A step with open arguments (``args`` None) must name one
+    of ``tickers`` in its goal. One candidate ticker is added to the goal; with several candidates and no
+    choice made, or none at all, the step is dropped. Returns ``(kept steps, notes for the trace)``.
+    """
+    kept: list[PlanStep] = []
+    notes: list[str] = []
+    for step in steps:
+        if step.tool not in TICKER_TOOLS or step.args is not None or step.depends_on:
+            kept.append(step)
+            continue
+        named = [t for t in tickers if re.search(rf"(?<![A-Za-z]){re.escape(t)}(?![A-Za-z])", step.goal)]
+        if named:
+            kept.append(step)
+        elif len(tickers) == 1:
+            step.goal = f"{step.goal} for {tickers[0]}"
+            notes.append(f"{step.id} ({step.tool}): no ticker given; set to {tickers[0]}")
+            kept.append(step)
+        else:
+            why = "no company is known" if not tickers else f"it does not say which of {', '.join(tickers)}"
+            notes.append(f"{step.id} ({step.tool}): dropped, it needs a ticker and {why}")
+    dropped = {s.id for s in steps} - {s.id for s in kept}
+    for step in kept:
+        step.depends_on = [d for d in step.depends_on if d not in dropped]
+    return kept, notes
+
+
 def _failure_text(exc: ToolError) -> str:
     """A failed step's reason for the report: the Gap sentence when every fallback failed."""
     return exc.gap.to_text() if isinstance(exc, AllFallbacksFailed) else str(exc)
@@ -273,6 +321,7 @@ class ResearchState(TypedDict, total=False):
     query: str
     profile: QueryProfile
     memory_notes: str
+    memory_tickers: list[str]
     plan: Plan
     replans: int
     reflections: int
@@ -553,23 +602,41 @@ class ResearchAgent:
             targets = self.memory.known_companies()
             if targets:
                 self.tracer.thought(f"No company named; memory holds research on {', '.join(targets)}.", node="recall")
+        seen: set[str] = set()  # record ids already shown to the planner, across all searches
+        topics = recall_topics(profile.template)
         for ticker in targets or [None]:
-            args: dict[str, Any] = {"query": state["query"][:400], "top_k": 5 if len(targets) <= 2 else 3}
-            if ticker:
-                args["ticker"] = ticker
-            try:
-                result = self.registry.dispatch("vector_db_search", args)
-            except ToolError as exc:
-                self.tracer.log("note", text=f"Memory recall failed: {exc}")
-                continue
-            hits = result.data.get("results", [])
-            if hits:
-                self.evidence[result.evidence_id] = result
-                notes += [f"[{result.evidence_id}] {h['metadata'].get('date')}: {h['content'][:200]}" for h in hits]
+            top_k = 5 if len(targets) <= 2 else 3
+            # The query-wide search first, then section-targeted ones (local searches: no API cost). The
+            # targeted ones keep only hits above a relevance floor so they add findings, not noise.
+            queries = [(state["query"][:400], 0.0, top_k)] + [
+                (f"{ticker} {t}" if ticker else t, RECALL_MIN_SCORE, min(top_k, 3)) for t in topics]
+            for n, (query, floor, k) in enumerate(queries):
+                args: dict[str, Any] = {"query": query, "top_k": k}
+                if ticker:
+                    args["ticker"] = ticker
+                try:
+                    result = self.registry.dispatch("vector_db_search", args)
+                except ToolError as exc:
+                    self.tracer.log("note", text=f"Memory recall failed: {exc}")
+                    continue
+                found = result.data.get("results", [])
+                if not found and n == 0:
+                    break  # memory holds nothing for this company: the targeted searches would find nothing
+                hits = [h for h in found if h["id"] not in seen and h.get("score", 1.0) >= floor]
+                seen.update(h["id"] for h in hits)
+                if hits:
+                    if len(hits) != len(found):
+                        result = dataclasses.replace(result, data={**result.data, "results": hits})
+                    self.evidence[result.evidence_id] = result
+                    notes += [f"[{result.evidence_id}] {h['metadata'].get('date')}: {h['content'][:200]}"
+                              for h in hits]
+        # Tickers for company-specific tools when the query names no company (C7). "MULTI" is the label under
+        # which multi-company analyses are filed, not a ticker.
+        memory_tickers = [t for t in targets if t and t != "MULTI"] if not profile.tickers else []
         planning = self.memory.planning_notes(profile.template, profile.tickers) if self.memory else ""
         self.tracer.thought(f"Memory recall found {len(notes)} prior finding(s)"
                             f"{' and strategy notes from earlier runs' if planning else ''}.", node="recall")
-        return {"memory_notes": "\n".join([*notes, planning]).strip()}
+        return {"memory_notes": "\n".join([*notes, planning]).strip(), "memory_tickers": memory_tickers}
 
     def _node_plan(self, state: ResearchState) -> ResearchState:
         profile = state["profile"]
@@ -577,9 +644,10 @@ class ResearchAgent:
         tool_names = [s.name for s in self.registry.available() if s.name not in SYSTEM_TOOLS]
         # Leave about a fifth of the budget for repairs and follow-up steps.
         max_steps = max(1, self.cfg.max_tool_calls - self.cfg.max_tool_calls // 5)
+        memory_tickers = state.get("memory_tickers", [])
         prompt = prompts.plan_prompt(query=state["query"], template=profile.template, sections=sections,
                                      entities=profile.tickers, memory=state.get("memory_notes", ""),
-                                     tool_names=tool_names, max_steps=max_steps)
+                                     tool_names=tool_names, max_steps=max_steps, memory_tickers=memory_tickers)
         plan: Plan | None = None
         problem = ""
         for attempt in range(2):
@@ -595,6 +663,11 @@ class ResearchAgent:
             except LLMError as exc:
                 self.tracer.log("error", source="llm", error_kind="plan_failed", message=str(exc)[:300])
                 break
+        if plan is not None:
+            plan.steps, notes = enforce_tickers(plan.steps, profile.tickers or memory_tickers)
+            plan.rejected += notes
+            if not plan.steps:
+                plan = None  # nothing runnable was left: use the default plan, as for an unusable reply
         if plan is None:
             plan = default_plan(profile)
             if not plan.steps:
@@ -612,7 +685,7 @@ class ResearchAgent:
         ready = plan.ready()
         for step in ready:
             step.status = "running"
-        if len(ready) == 1 or self.max_workers <= 1:
+        if len(ready) <= 1 or self.max_workers <= 1:
             for step in ready:
                 self._run_step(step, plan)
         else:
@@ -650,9 +723,16 @@ class ResearchAgent:
             evidence_digest(self.evidence[eid], 1800)
             for dep in step.depends_on for eid in plan.get(dep).evidence_ids if eid in self.evidence
         )
-        tools = [t for t in self.registry.openai_tools() if t["function"]["name"] not in SYSTEM_TOOLS]
+        research_tools = [t for t in self.registry.openai_tools() if t["function"]["name"] not in SYSTEM_TOOLS]
+        # Only the planned tool's schema goes with the call (the full list was 56% of all tokens, Day 12);
+        # the other tool names are listed in the prompt so the model can still say another tool is needed.
+        # An unknown planned tool falls back to every schema. Dispatch validates whatever the model calls.
+        tools = [t for t in research_tools if t["function"]["name"] == step.tool] or research_tools
+        other_tools = ([t["function"]["name"] for t in research_tools if t["function"]["name"] != step.tool]
+                       if tools is not research_tools else [])
         while step.attempts < self.cfg.max_calls_per_step and self._time_left() and self._budget_left():
-            prompt = prompts.execute_step_prompt(goal=step.goal, tool=step.tool, evidence=dependencies, problem=problem)
+            prompt = prompts.execute_step_prompt(goal=step.goal, tool=step.tool, evidence=dependencies, problem=problem,
+                                                 other_tools=other_tools)
             try:
                 reply = self._llm(prompt, purpose=f"execute:{step.id}", tools=tools, tool_choice="auto", max_tokens=1024)
             except LLMError as exc:
@@ -719,6 +799,18 @@ class ResearchAgent:
         if replans >= self.cfg.max_replans or not self._budget_left() or not self._time_left():
             # Nothing new can be researched, so a gap-driven review must not re-write the same draft.
             return {"pending_gaps": [], "skip_resynthesis": bool(gaps)}
+        if not self.llm.any_provider_ready():
+            # Every provider is cooling down or out of quota: a review call would fail or wait, and any step
+            # it added could need the LLM to run (Day 12 stress finding).
+            self.tracer.decision("research_complete", "review skipped: no LLM provider is available right now "
+                                 "(all are rate-limited or out of quota); writing the report with what was gathered")
+            return {"plan": plan, "replans": replans + 1, "pending_gaps": [], "skip_resynthesis": bool(gaps)}
+        if not gaps and not plan.by_status("failed", "skipped"):
+            # Day 12: the review answered "done" in most runs. With every step done and no gap noted there is
+            # nothing for it to add, so skip the call.
+            self.tracer.decision("research_complete", f"deterministic check: all {len(plan.steps)} planned step(s) "
+                                 "done, no failed or skipped step, no gap noted; review call skipped")
+            return {"plan": plan, "replans": replans + 1, "pending_gaps": [], "skip_resynthesis": False}
         profile = state["profile"]
         completed = "\n".join(f"- {s.id} {s.goal}: {s.summary}" for s in plan.by_status("done"))
         failed = "\n".join(f"- {s.id} {s.goal}: {s.summary}" for s in plan.by_status("failed", "skipped"))
@@ -734,6 +826,10 @@ class ResearchAgent:
             # As below: no new steps, so re-running synthesis would only re-write the same draft.
             return {"replans": replans + 1, "pending_gaps": [], "skip_resynthesis": bool(gaps)}
         for note in decision.rejected:
+            self.tracer.log("note", text=f"Review validation: {note}")
+        decision.new_steps, notes = enforce_tickers(decision.new_steps,
+                                                    profile.tickers or state.get("memory_tickers", []))
+        for note in notes:
             self.tracer.log("note", text=f"Review validation: {note}")
         if decision.new_steps:
             plan.steps.extend(decision.new_steps)
@@ -758,7 +854,12 @@ class ResearchAgent:
             self.tracer.decision(f"conflict:{c.method}", c.rationale, entity=c.entity, metric=c.metric)
         overhead = count_tokens(self._writing_system) + count_tokens(
             prompts.synthesize_prompt(query=state["query"], evidence="", sections=sections_needed, brief=brief))
-        fitted = fit_evidence(self.evidence, max(300, self.cfg.max_prompt_tokens - overhead), evidence_digest)
+        # The provider that will answer sets the cap: Gemini takes a far bigger prompt than Groq's free tier.
+        provider = self.llm.next_provider_name()
+        budget = self.cfg.prompt_budget(provider)
+        self.tracer.metric("synthesis_prompt_budget", {"provider": provider, "budget_tokens": budget,
+                                                       "overhead_tokens": overhead})
+        fitted = fit_evidence(self.evidence, max(300, budget - overhead), evidence_digest)
         if fitted.dropped:
             self.tracer.log("note", text=f"Context budget: left {len(fitted.dropped)} evidence item(s) out of the "
                                          f"synthesis prompt: {', '.join(fitted.dropped)}")

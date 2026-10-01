@@ -85,7 +85,13 @@ max_tool_calls = 20         # spec A7.1
 max_calls_per_step = 3      # bounded ReAct inside each plan step
 max_replans = 3
 max_reflections = 2
-max_prompt_tokens = 6000   # fits free tiers such as Groq (about 7,000 input tokens per minute)
+max_prompt_tokens = 6000   # default cap; fits free tiers such as Groq (about 7,000 input tokens per minute)
+prompt_budget_share = 0.9  # token counts are estimates (one Qwen prompt hit 107%), so use 90% of the cap
+
+[agent.prompt_tokens_by_provider]   # cap per provider for the synthesis prompt; others use max_prompt_tokens
+gemini = 24000
+groq = 6000
+ollama = 6000
 
 [resilience]                # spec A4.3 / architecture section 14
 # One circuit breaker per data provider: it opens after 3 consecutive failures or when at least half

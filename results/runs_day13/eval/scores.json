@@ -1,0 +1,2738 @@
+{
+ "generated_at": "2026-10-01T21:23:08+00:00",
+ "judge": {
+  "enabled": true,
+  "errors": {}
+ },
+ "skipped": {},
+ "runs": [
+  {
+   "id": "C1",
+   "number": 1,
+   "title": "Single-Company Profile",
+   "query": "Create a comprehensive profile of Microsoft Corporation including business overview, financial summary, key executives, and recent developments.",
+   "template": "company_profile",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 34.78,
+   "tool_calls": 7,
+   "llm_calls": 2,
+   "tokens": 11384,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "21 of 21 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "8 of 8 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 0.9167,
+     "target": "100%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "11 of 12 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": [
+      "As of FY2026, the company employs approximately 223,000 people and maintains a market capitalization of $3.81 trillion [E5]."
+     ]
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "11 of 11 entities verified (0 tickers, 3 companies, 8 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 21 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 required company_profile sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "4 distinct source types cited: earnings_call, financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2024-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 2.47,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "5 insights over 2.0 pages (~500 words each)",
+     "examples": [
+      "Operating margin expansion despite higher cloud spend shows strong pricing power and cost discipline.",
+      "Microsoft's 46.8% operating margin far exceeds peers, indicating superior scale economies in cloud services.",
+      "Revenue growth of 17.8% outpaces most peers, but the lower gross margin suggests rising infrastructure costs."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 17,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "17 claims cite evidence from two or more different tools",
+     "examples": [
+      "Operating margins expanded from 45.6% in FY2025 to 46.8% in FY2026, supported by strong revenue growth of 17.8% in FY2026 [E6, E7, E8, E9].",
+      "Revenue grew 17.8% year-over-year in FY2026 to $331.84 billion [E6, E8].",
+      "Margin and Growth Summary [E6, E7, E8, E9, E10]:",
+      "**Revenue Growth:** +17.8% in FY2026 (up from $281.72 billion in FY2025) [E6, E8].",
+      "**Gross Margin:** 68.8% in FY2025; 67.9% in FY2026 [E6, E7]."
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 5,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "5 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 0,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 forward-looking sections: none",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections follow a logical order from summary to overview, financials, executives, and developments. Minor repetition of margin commentary but conclusions are evidence-based.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Summary captures revenue growth, margin expansion, and peer ranking, but omits recent executive changes and the security update noted in the body. Automated: 6 of 6 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Executive leadership changes including Ryan Roslansky's departure",
+      "Security update addressing CVE-2026-73570"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 1.0,
+     "target": ">= 80% of checks",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 7 checks passed (1012 words, 11/11 paragraphs cited)",
+     "examples": []
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 1.0,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 research evidence records cited in the body over 7 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": null,
+     "target": ">= 90%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no tool errors occurred",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "Plan includes all required data sources (company profile, financials, news sentiment, peer comparison, calculations). Minor redundancy in calculation steps b... Automated: expected-tool coverage 2/3; 7 plan steps, 0 failed, 0 skipped",
+     "examples": [
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.75,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 memory hits (3 recalls with results + 0 cache hits) / 4 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 34.8,
+     "target": "< 300 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "single-company run, limit 300 s",
+     "examples": []
+    },
+    {
+     "id": "BM-1",
+     "name": "Benchmark Fact Recall",
+     "category": "Benchmark",
+     "value": 0.8461538461538461,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "benchmark",
+     "unit": "ratio",
+     "detail": "11 of 13 gold facts recalled; 0 conflicting (missed: msft-risk-competition, msft-risk-cyber)",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C2",
+   "number": 2,
+   "title": "Earnings Analysis",
+   "query": "Analyze Apple Inc.'s most recent quarterly earnings. Compare actual results to consensus estimates and identify key takeaways from the earnings call.",
+   "template": "earnings_analysis",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 51.13,
+   "tool_calls": 6,
+   "llm_calls": 3,
+   "tokens": 12690,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "25 of 25 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 7 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 0.8333,
+     "target": "100%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 6 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": [
+      "Looking forward, management projects September quarter (Q4 FY2026) revenue growth of 9% to 11% year-over-year [E7], though investors should watch potential h..."
+     ]
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "2 of 2 entities verified (1 tickers, 1 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 25 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 required earnings_analysis sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "4 distinct source types cited: earnings calls, earnings_call, financial data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 2,
+     "target": ">= 3 years",
+     "passed": false,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2025-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 2.25,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "5 insights over 2.2 pages (~500 words each)",
+     "examples": [
+      "Tariff refunds inflate gross margin, hiding underlying margin pressure from higher component costs.",
+      "A 5-percentage-point FX drag will materially reduce sequential revenue growth, offsetting product gains.",
+      "Mac's record revenue is offset by supply constraints, signalling potential upside if constraints ease."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 11,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "11 claims cite evidence from two or more different tools",
+     "examples": [
+      "For Q3 FY2026 (period ended June 27, 2026), Apple demonstrated significant financial growth, reporting a record June quarter total revenue of $109,417 millio...",
+      "Diluted EPS reached $2.02, up 28.66% from $1.57 in Q3 FY2025 [E4, E8], supported by a favorable tariff refund impact of $0.11 per share [E4].",
+      "For Q3 FY2026 (period ended June 27, 2026), Apple reported headline revenue and earnings performance that expanded relative to the prior year [E8, E9].",
+      "Headline Q3 FY2026 revenue came in at $109,417 million, compared to $94,036 million in Q3 FY2025, representing a 16.36% year-over-year growth rate [E8, E9].",
+      "Diluted EPS for Q3 FY2026 was reported at $2.02 [E8], which included a $0.11 favorable impact from tariff refunds [E4]."
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 4,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "4 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 2,
+     "target": ">= 2 sections",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "2 forward-looking sections: executive_summary, guidance_and_outlook",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections are generally ordered, but the report repeats EPS commentary, lacks consensus numbers, and some conclusions (e.g., margin strength) are not fully supported by the evidence.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 2,
+     "target": "0 contradictions",
+     "passed": false,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 2 from the judge",
+     "examples": [
+      "Diluted EPS for Q3 FY2026 was reported at $2.02 [E8] VS third-party news commentary reports $1.91 compared to $1.57 in the year-ago quarter [E4]",
+      "Apple demonstrated significant financial growth, reporting a record June quarter total revenue of $109,417 million, up 16.36% year-over-year [E8, E9]. VS Det..."
+     ]
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures revenue growth and guidance but omits key points such as the missing consensus estimates, the FX headwind, and the margin compression implied by guidance. Automated: 9 of 9 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Consensus estimate figures are absent, limiting the results-vs-expectations analysis.",
+      "Management highlighted a 5-percentage-point foreign-exchange drag on growth.",
+      "Guidance gross-margin range (47-48%) is lower than Q3 actual margin (50.1%)."
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.8571,
+     "target": ">= 80% of checks",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 of 7 checks passed (1109 words, 8/8 paragraphs cited)",
+     "examples": [
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 1.0,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 research evidence records cited in the body over 6 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": null,
+     "target": ">= 90%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no tool errors occurred",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan includes all necessary steps (company profile, financials, transcript, consensus estimates, news sentiment, calculations). The only shortfall is tha... Automated: expected-tool coverage 4/4; 6 plan steps, 0 failed, 0 skipped",
+     "examples": []
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.4,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "2 memory hits (2 recalls with results + 0 cache hits) / 5 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 51.1,
+     "target": "< 300 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "single-company run, limit 300 s",
+     "examples": []
+    },
+    {
+     "id": "BM-1",
+     "name": "Benchmark Fact Recall",
+     "category": "Benchmark",
+     "value": 0.2857142857142857,
+     "target": ">= 70%",
+     "passed": false,
+     "method": "benchmark",
+     "unit": "ratio",
+     "detail": "4 of 14 gold facts recalled; 0 conflicting (missed: aapl-gm-q3fy26, aapl-rev-fy25, aapl-rev-growth-fy25, aapl-gm-fy25, aapl-opinc-fy25, aapl-ni-fy25, aapl-eps-fy25, aapl-ceo, aapl-cfo, aapl-risk-supply)",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C3",
+   "number": 3,
+   "title": "Risk Assessment",
+   "query": "Produce a comprehensive risk assessment for Tesla Inc. covering financial risks, operational risks, regulatory risks, and competitive risks.",
+   "template": "risk_assessment",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 139.61,
+   "tool_calls": 12,
+   "llm_calls": 5,
+   "tokens": 16432,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "18 of 18 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 of 9 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": []
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "2 of 2 entities verified (1 tickers, 1 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 18 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 of 6 required risk_assessment sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "4 distinct source types cited: SEC filings, financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2023-2025 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": 0.6667,
+     "target": ">= 80%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 of 9 risk categories in the 10-K are covered by the report",
+     "examples": [
+      "not covered: cybersecurity/privacy",
+      "not covered: intellectual property",
+      "not covered: key personnel"
+     ]
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 1.31,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "4 insights over 3.1 pages (~500 words each)",
+     "examples": [
+      "High capex intensity (57.8% of operating cash flow) limits financial flexibility despite strong free cash flow growth.",
+      "Revenue decline combined with reliance on regulatory credits makes Tesla vulnerable to policy shifts.",
+      "Stable gross margin alongside falling operating margin indicates rising non-production costs, notably R&D spend."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 7,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "7 claims cite evidence from two or more different tools",
+     "examples": [
+      "After a three-year revenue plateau ($96.77 bn FY2023 \u2192 $97.69 bn FY2024) the company\u2019s top line slipped 2.9 % to $94.83 bn in FY2025 [E7][E9][E11]; net incom...",
+      "Operating margin contracted sharply from 7.2 % in FY2024 to 4.6 % in FY2025, while gross margin held near 18 % [E7][E9].",
+      "**Revenue & Growth** \u2013 FY2025 revenue of $94.83 bn represents a 2.9 % decline year-over-year [E7][E9][E11].",
+      "**Profitability** \u2013 Operating margin fell 2.6 percentage points to 4.6 % in FY2025 (calculated from operating income $4,355 m \u00f7 revenue $94,827 m) [E10]; gro...",
+      "These risks are amplified by the company\u2019s aggressive capex program (8.53 bn FY2025) and the need to scale new product lines [E8][E4]."
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 16,
+     "target": ">= 10 original calculations",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "16 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 0,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 forward-looking sections: none",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections follow a logical order (summary, financial, operational, regulatory, competitive, matrix). Minor repetition in margin discussion but overall coherent.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Summary captures revenue and margin trends and mentions competitive pressure, but omits key operational and regulatory risk details such as supply-chain and credit dependence. Automated: 8 of 12 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Supply-chain and manufacturing quality risks",
+      "Dependence on automotive regulatory credits",
+      "New-product execution risk (Optimus, Semi, robotaxi)"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.7143,
+     "target": ">= 80% of checks",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 7 checks passed (1527 words, 9/15 paragraphs cited)",
+     "examples": [
+      "failed: at least 80% of paragraphs cite evidence",
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.75,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 research evidence records cited in the body over 12 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": 1.0,
+     "target": ">= 90%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 of 3 error episodes recovered (same call later succeeded, arguments were repaired, or a fallback tool's evidence exists)",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 5,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan includes all necessary steps\u2014company profile, 10-K risk factors, audited financials, cash flow, news sentiment, peer comparison, and key calculation... Automated: expected-tool coverage 3/5; 9 plan steps, 0 failed, 0 skipped",
+     "examples": [
+      "expected tool not used: earnings_transcript",
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.4286,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 memory hits (3 recalls with results + 0 cache hits) / 7 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 139.6,
+     "target": "< 300 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "single-company run, limit 300 s",
+     "examples": []
+    },
+    {
+     "id": "BM-1",
+     "name": "Benchmark Fact Recall",
+     "category": "Benchmark",
+     "value": 0.6923076923076923,
+     "target": ">= 70%",
+     "passed": false,
+     "method": "benchmark",
+     "unit": "ratio",
+     "detail": "9 of 13 gold facts recalled; 0 conflicting (missed: tsla-eps-fy25, tsla-ceo, tsla-cfo, tsla-risk-demand)",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C4",
+   "number": 4,
+   "title": "Industry Comparison",
+   "query": "Compare the cloud computing divisions of Amazon (AWS), Microsoft (Azure), and Google (GCP). Analyze revenue growth, market share, margins, and competitive advantages.",
+   "template": "comparative_analysis",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 220.16,
+   "tool_calls": 18,
+   "llm_calls": 8,
+   "tokens": 24089,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "21 of 21 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 of 9 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 0.8889,
+     "target": "100%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "8 of 9 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": [
+      "Over the past three fiscal years Microsoft\u2019s total revenue grew from $245.1 billion FY2024 to $331.8 billion FY2026, a **+17.8 %** year-over-year increase in..."
+     ]
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "4 of 4 entities verified (0 tickers, 4 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 21 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 7 required comparative_analysis sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "4 distinct source types cited: SEC filings, financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2024-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": 0.1818,
+     "target": ">= 80%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "2 of 11 risk categories in the 10-K are covered by the report",
+     "examples": [
+      "not covered: climate/environmental",
+      "not covered: cybersecurity/privacy",
+      "not covered: financing/liquidity",
+      "not covered: intellectual property",
+      "not covered: international/geopolitical"
+     ]
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 0.87,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "3 insights over 3.4 pages (~500 words each)",
+     "examples": [
+      "Azure\u2019s higher operating margin stems from enterprise software integration, allowing a premium pricing mix versus AWS\u2019s infrastructure-heavy spend.",
+      "AWS\u2019s low margin reflects ongoing capital intensity for data-center expansion, limiting short-term profitability despite revenue scale.",
+      "Google Cloud\u2019s flat margin suggests pricing pressure and rising R&D costs despite strong AI/analytics capabilities."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 10,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "10 claims cite evidence from two or more different tools",
+     "examples": [
+      "While all three firms report strong gross margins (Microsoft 67.9 %, Alphabet 59.7 %, Amazon \u2248 ?? % \u2013 not disclosed), the pace of Azure\u2019s growth appears tied...",
+      "The analysis draws on tier-1 financial statements from the **financial_data_api** for Microsoft (FY2024-FY2026) [E21] and Alphabet (FY2023-FY2025) [E22], and...",
+      "| FY2025 (12-31-2025) | \u2013 | 716.9 [ E17 ] | 402.8 [ E22 ] |",
+      "| Microsoft (Azure) | 46.8 % [E17] | 67.9 % [E21] |",
+      "| Alphabet (Google Cloud) | 32.0 % [E17] | 59.7 % [E22] |"
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 1,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "1 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 0,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 forward-looking sections: none",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The report follows a reasonable structure, but several conclusions rely on unverified or missing segment data, and the market-share section admits lack of evidence, weakening logical coherence.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures the main growth and margin points, but it omits the explicit acknowledgement that market-share data is unavailable and overstates confidence in unverified figures. Automated: 10 of 10 numbers in the executive summary also appear in the body",
+     "examples": [
+      "The report notes that quantitative market-share comparison cannot be provided due to missing data."
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.7143,
+     "target": ">= 80% of checks",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 7 checks passed (1721 words, 7/9 paragraphs cited)",
+     "examples": [
+      "failed: at least 80% of paragraphs cite evidence",
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.5,
+     "target": ">= 70%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 research evidence records cited in the body over 18 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": 0.6,
+     "target": ">= 90%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 of 5 error episodes recovered (same call later succeeded, arguments were repaired, or a fallback tool's evidence exists)",
+     "examples": [
+      "calculation_engine {\"calculation_type\": \"growth_rate\", \"inputs\": {\"current\": \"MSFT_FY2026_IntelligentCloud_Revenue\", \"previous\": \"MSFT_FY2025_IntelligentClou...",
+      "calculation_engine {\"calculation_type\": \"growth_rate\", \"inputs\": {\"current\": \"GOOGL_FY2026_GoogleCloud_Revenue\", \"previous\": \"GOOGL_FY2025_GoogleCloud_Revenu..."
+     ]
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan includes most required sources (transcripts, 10-Ks, news sentiment) but contains redundant steps and does not resolve failed calculations, indicatin... Automated: expected-tool coverage 5/6; 17 plan steps, 0 failed, 4 skipped",
+     "examples": [
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.75,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 memory hits (9 recalls with results + 0 cache hits) / 12 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 220.2,
+     "target": "< 600 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "multi-company run, limit 600 s",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C5",
+   "number": 5,
+   "title": "Contradictory Data Handling",
+   "query": "Research Palantir Technologies. Note: Recent news reports suggest the company is struggling, but their financial statements show strong growth. Investigate and explain the apparent contradiction.",
+   "template": "investigative",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 84.65,
+   "tool_calls": 9,
+   "llm_calls": 5,
+   "tokens": 20506,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 0.96,
+     "target": ">= 98%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "24 of 25 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": [
+      "The company's ability to raise guidance significantly, as seen in the Q2 FY2026 earnings call where full-year revenue guidance was increased by 11 points [E7..."
+     ]
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "9 of 9 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "16 of 16 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": []
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 of 3 entities verified (0 tickers, 3 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 1,
+     "target": "0",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "1 of 25 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": [
+      "The company's ability to raise guidance significantly, as seen in the Q2 FY2026 earnings call where full-year revenue guidance was increased by 11 points [E7..."
+     ]
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 required investigative sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 7,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "7 distinct source types cited: 10-K, analysis, earnings calls, earnings_call, financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2023-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 1.43,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "4 insights over 2.8 pages (~500 words each)",
+     "examples": [
+      "The \"struggling\" narrative stems from valuation pressure, not operational weakness, as the stock trades at a 281x P/E despite strong growth.",
+      "Margin expansion to 31.6% may be driven by one-time cost reductions, raising risk of reversion if pricing power is not sustainable.",
+      "Peers' lower growth but far lower multiples imply the market expects Palantir to maintain >80% growth, far above peers' 17-18% rates."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 8,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "8 claims cite evidence from two or more different tools",
+     "examples": [
+      "The company has demonstrated exceptional financial momentum, with revenue growing from $2.23 billion in FY2023 to $4.48 billion in FY2025, representing a 56....",
+      "Profitability has expanded significantly, with operating margins rising from 10.8% in FY2024 to 31.6% in FY2025 [E4, E9].",
+      "While recent media narratives suggest the company is \"struggling,\" this perception conflicts with audited financial data showing robust growth and margin exp...",
+      "Analysis: The primary takeaway is that the \"struggle\" narrative likely stems from valuation concerns rather than operational weakness, as the company continu...",
+      "The financial statements confirm strong growth and margin expansion, with operating margins improving by 20.8 percentage points from FY2024 to FY2025 [E4, E9]."
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 3,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "3 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 1,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "1 forward-looking sections: implications",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections follow a logical order, but conclusions about valuation and margin sustainability are repeated and some claims lack direct evidence, reducing coherence.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures the growth vs. narrative conflict but omits the risk that margin expansion may be non-recurring and the extreme valuation expectations. Automated: 5 of 5 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Potential non-recurring nature of margin expansion",
+      "Market's expectation of >80% growth implied by the 281x P/E multiple"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.7143,
+     "target": ">= 80% of checks",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 7 checks passed (1402 words, 7/7 paragraphs cited)",
+     "examples": [
+      "failed: at least one markdown table",
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.7778,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 research evidence records cited in the body over 9 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": 1.0,
+     "target": ">= 90%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "2 of 2 error episodes recovered (same call later succeeded, arguments were repaired, or a fallback tool's evidence exists)",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan covered all necessary data sources (financials, transcript, news, peers) with no major redundancies; all steps were completed successfully. Automated: expected-tool coverage 3/6; 7 plan steps, 0 failed, 0 skipped",
+     "examples": [
+      "expected tool not used: fact_checker",
+      "expected tool not used: sec_filing_search",
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.6,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "3 memory hits (3 recalls with results + 0 cache hits) / 5 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 84.7,
+     "target": "< 300 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "single-company run, limit 300 s",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C6",
+   "number": 6,
+   "title": "Ambiguous Query Handling",
+   "query": "What's happening with the banks?",
+   "template": "company_profile",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 28.25,
+   "tool_calls": 14,
+   "llm_calls": 2,
+   "tokens": 10206,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 0.875,
+     "target": ">= 98%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "14 of 16 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": [
+      "From FY2023 to FY2025 the three largest lenders (JPM, BAC and C) posted solid top-line growth of 6-8 % in FY2025, while Wells Fargo\u2019s revenue continued to de...",
+      "The sentiment score of \u20130.7184 indicates market concern, likely tied to broader sector correction rather than company-specific fundamentals."
+     ]
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 0.8333,
+     "target": "100%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "10 of 12 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": [
+      "E16: no citing sentence is supported",
+      "E18: no citing sentence is supported"
+     ]
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 0.875,
+     "target": "100%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 8 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": [
+      "From FY2023 to FY2025 the three largest lenders (JPM, BAC and C) posted solid top-line growth of 6-8 % in FY2025, while Wells Fargo\u2019s revenue continued to de..."
+     ]
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 of 6 entities verified (0 tickers, 6 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 2,
+     "target": "0",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "2 of 16 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": [
+      "From FY2023 to FY2025 the three largest lenders (JPM, BAC and C) posted solid top-line growth of 6-8 % in FY2025, while Wells Fargo\u2019s revenue continued to de...",
+      "The sentiment score of \u20130.7184 indicates market concern, likely tied to broader sector correction rather than company-specific fundamentals."
+     ]
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 required company_profile sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 4 source types",
+     "passed": false,
+     "method": "automated",
+     "unit": "types",
+     "detail": "3 distinct source types cited: financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2023-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 1.26,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "4 insights over 3.2 pages (~500 words each)",
+     "examples": [
+      "Margin expansion at Citigroup and Bank of America likely reflects higher net interest margins from rising rates combined with expense discipline.",
+      "Wells Fargo's shrinking loan book and higher credit costs explain its margin compression and revenue decline.",
+      "Negative sentiment for Citigroup despite solid fundamentals suggests market overreaction to sector-wide correction."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 9,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "9 claims cite evidence from two or more different tools",
+     "examples": [
+      "| C | Global diversified financial services holding company | Services, Markets, Banking, U.S. Personal Banking, Wealth[E10] |",
+      "| BAC | Diversified banking and financial services | Consumer Banking, Global Wealth & Investment Management, Global Banking, Global Markets[E9] |",
+      "| JPM | Integrated bank and financial holding company | Consumer & Community Banking, Commercial & Investment Bank, Asset & Wealth Management[E8] |",
+      "| GS | Investment banking and capital markets firm | Global Banking & Markets, Asset & Wealth Management, Platform Solutions[E11] |",
+      "| WFC | Diversified banking, mortgage and consumer finance | Consumer Banking & Lending, Commercial Banking, Corporate & Investment Banking, Wealth & Investm..."
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 7,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "7 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 1,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "1 forward-looking sections: recent_developments",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections are ordered sensibly, but several conclusions rely on unverified figures and the analysis repeats points without clear evidence linkage.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures the main margin trends and Wells Fargo weakness, but omits revenue growth rates and the recent negative sentiment for Citigroup. Automated: 3 of 6 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Specific FY2025 revenue growth percentages for each bank",
+      "Recent negative market sentiment for Citigroup"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.8571,
+     "target": ">= 80% of checks",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "6 of 7 checks passed (1584 words, 6/11 paragraphs cited)",
+     "examples": [
+      "failed: at least 80% of paragraphs cite evidence"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.8571,
+     "target": ">= 70%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "12 research evidence records cited in the body over 14 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": null,
+     "target": ">= 90%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no tool errors occurred",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan gathered required company profiles, income statements, peer metrics, and news sentiment. No major redundancies, though no transcript or filing detai... Automated: expected-tool coverage 2/3; 14 plan steps, 0 failed, 0 skipped",
+     "examples": [
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.0,
+     "target": ">= 0.3",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "0 memory hits (0 recalls with results + 0 cache hits) / 14 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 28.2,
+     "target": "< 600 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "multi-company run, limit 600 s",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C7",
+   "number": 7,
+   "title": "Sector Analysis With Memory",
+   "query": "Based on the companies you've already researched, what themes emerge across the technology sector? Identify cross-cutting risks and opportunities.",
+   "template": "thematic",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 121.52,
+   "tool_calls": 16,
+   "llm_calls": 4,
+   "tokens": 28447,
+   "fail_rate": 0.0,
+   "injected_failures": {},
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "30 of 30 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "12 of 12 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "26 of 26 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": []
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "13 of 13 entities verified (6 tickers, 7 companies, 0 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 30 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 required thematic sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 4,
+     "target": ">= 4 source types",
+     "passed": true,
+     "method": "automated",
+     "unit": "types",
+     "detail": "4 distinct source types cited: 10-K, analysis, earnings_call, financial data",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 3 years",
+     "passed": true,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2024-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 0.86,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "5 insights over 5.8 pages (~500 words each)",
+     "examples": [
+      "AI infrastructure spending creates a feedback loop: higher GPU demand lifts NVIDIA margins while raising cost pressure for cloud providers.",
+      "Margin bifurcation reflects business model elasticity: software/semiconductor firms monetize AI with premium pricing, hardware firms face commodity pricing c...",
+      "Regulatory risk is cross-cutting because platform dominance ties revenue growth to antitrust outcomes, not just operational performance."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 0,
+     "target": ">= 5",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 claims cite evidence from two or more different tools",
+     "examples": []
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 2,
+     "target": ">= 10 original calculations",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "2 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 1,
+     "target": ">= 2 sections",
+     "passed": false,
+     "method": "automated",
+     "unit": "count",
+     "detail": "1 forward-looking sections: cross_cutting_risks",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections are generally ordered, but the executive summary repeats margin figures without context and the risk discussion repeats inferred points, leading to some unsupported conclusions.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 2,
+     "target": "0 contradictions",
+     "passed": false,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "2 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": [
+      "operating margin 2026 (_): NVDA reported a net margin of 55.6% and operating margin of 60.4% in FY2026 (ended 2026-01-25) [E36]. VS MSFT reported a net margi...",
+      "operating margin 2025 (_): TSLA reported a net margin of 4.0% and operating margin of 4.6% in FY2025 (ended 2025-12-31) [E33]. VS AMZN reported a net margin ..."
+     ]
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures the profit bifurcation and AI-driven capex theme, but omits key cross-cutting risks such as supply-chain exposure, talent competition, and regulatory pressure discussed later. Automated: 4 of 4 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Supply-chain and semiconductor dependency risk",
+      "Talent competition and wage inflation risk",
+      "Regulatory and antitrust exposure as a sector-wide risk"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.7143,
+     "target": ">= 80% of checks",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 7 checks passed (2908 words, 9/19 paragraphs cited)",
+     "examples": [
+      "failed: at least 80% of paragraphs cite evidence",
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.4375,
+     "target": ">= 70%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 research evidence records cited in the body over 16 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": null,
+     "target": ">= 90%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no tool errors occurred",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 2,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan repeats the same data-gathering steps multiple times, showing redundancy, and does not include news or peer-comparison steps that would enrich thema... Automated: expected-tool coverage 0/2; 16 plan steps, 0 failed, 0 skipped",
+     "examples": [
+      "expected tool not used: vector_db_search",
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 1.375,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "22 memory hits (22 recalls with results + 0 cache hits) / 16 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 121.5,
+     "target": "< 600 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "multi-company run, limit 600 s",
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "C8",
+   "number": 8,
+   "title": "Full Research Report With Degradation",
+   "query": "Produce a complete investment research report on NVIDIA Corporation. Note: The financial data API and SEC filing search tools are currently experiencing intermittent failures (simulate 50% failure rate).",
+   "template": "full_report",
+   "data_mode": "live",
+   "stop_reason": "completed",
+   "duration_s": 79.2,
+   "tool_calls": 10,
+   "llm_calls": 8,
+   "tokens": 26902,
+   "fail_rate": 0.5,
+   "injected_failures": {
+    "financial_data_api": 3
+   },
+   "metrics": [
+    {
+     "id": "FA-1",
+     "name": "Numerical Accuracy Rate",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": ">= 98%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "37 of 37 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
+    },
+    {
+     "id": "FA-2",
+     "name": "Citation Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "4 of 4 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": []
+    },
+    {
+     "id": "FA-3",
+     "name": "Temporal Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 7 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": []
+    },
+    {
+     "id": "FA-4",
+     "name": "Entity Accuracy",
+     "category": "Factual Accuracy",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "8 of 8 entities verified (5 tickers, 1 companies, 2 executive names)",
+     "examples": []
+    },
+    {
+     "id": "FA-5",
+     "name": "Hallucination Rate",
+     "category": "Factual Accuracy",
+     "value": 0,
+     "target": "0",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "0 of 37 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
+    },
+    {
+     "id": "CO-1",
+     "name": "Section Coverage",
+     "category": "Completeness",
+     "value": 1.0,
+     "target": "100%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "7 of 7 required full_report sections present",
+     "examples": []
+    },
+    {
+     "id": "CO-2",
+     "name": "Data Source Diversity",
+     "category": "Completeness",
+     "value": 3,
+     "target": ">= 4 source types",
+     "passed": false,
+     "method": "automated",
+     "unit": "types",
+     "detail": "3 distinct source types cited: financial data, industry/peer data, news/web",
+     "examples": []
+    },
+    {
+     "id": "CO-3",
+     "name": "Temporal Coverage",
+     "category": "Completeness",
+     "value": 2,
+     "target": ">= 3 years",
+     "passed": false,
+     "method": "automated",
+     "unit": "years",
+     "detail": "years 2025-2026 appear in numeric claims/tables",
+     "examples": []
+    },
+    {
+     "id": "CO-4",
+     "name": "Risk Factor Coverage",
+     "category": "Completeness",
+     "value": null,
+     "target": ">= 80%",
+     "passed": null,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "no 10-K risk text retrieved",
+     "examples": []
+    },
+    {
+     "id": "AD-1",
+     "name": "Insight Density",
+     "category": "Analytical Depth",
+     "value": 1.19,
+     "target": ">= 3 per page",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "per_page",
+     "detail": "5 insights over 4.2 pages (~500 words each)",
+     "examples": [
+      "NVIDIA's 76.3% ROE signals exceptional capital efficiency, far outpacing peers and enabling higher shareholder returns.",
+      "Margin superiority stems from AI-centric Compute & Networking products, which command premium pricing versus memory-focused peers.",
+      "Peer revenue growth gaps suggest NVIDIA's market-share could erode if AI spending slows and competitors scale faster."
+     ]
+    },
+    {
+     "id": "AD-2",
+     "name": "Cross-Source Synthesis",
+     "category": "Analytical Depth",
+     "value": 8,
+     "target": ">= 5",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "8 claims cite evidence from two or more different tools",
+     "examples": [
+      "NVIDIA Corporation is a leading data center scale AI infrastructure company headquartered in Santa Clara, California, with a market capitalization of $5,574....",
+      "| Revenue (USD millions) | 215,938 [E8] |",
+      "| Revenue Growth (%) | 65.47% [E8] |",
+      "| Gross Margin (%) | 71.07% [E8] |",
+      "| Operating Margin (%) | 60.38% [E8] |"
+     ]
+    },
+    {
+     "id": "AD-3",
+     "name": "Quantitative Reasoning",
+     "category": "Analytical Depth",
+     "value": 27,
+     "target": ">= 10 original calculations",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "27 distinct derived quantities (percentages, multiples, calculated table cells)",
+     "examples": []
+    },
+    {
+     "id": "AD-4",
+     "name": "Forward-Looking Analysis",
+     "category": "Analytical Depth",
+     "value": 2,
+     "target": ">= 2 sections",
+     "passed": true,
+     "method": "automated",
+     "unit": "count",
+     "detail": "2 forward-looking sections: outlook, valuation_scenarios",
+     "examples": []
+    },
+    {
+     "id": "CS-1",
+     "name": "Logical Flow",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "Sections are generally ordered, but conclusions about outlook and valuation rely on unverified statements and repeat earlier points, reducing coherence.",
+     "examples": []
+    },
+    {
+     "id": "CS-2",
+     "name": "Internal Consistency",
+     "category": "Coherence and Structure",
+     "value": 0,
+     "target": "0 contradictions",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "count",
+     "detail": "0 automated (same metric/period/entity differing >2%) + 0 from the judge",
+     "examples": []
+    },
+    {
+     "id": "CS-3",
+     "name": "Executive Summary Quality",
+     "category": "Coherence and Structure",
+     "value": 3,
+     "target": ">= 4 / 5",
+     "passed": false,
+     "method": "llm_judge",
+     "unit": "score_1_5",
+     "detail": "The summary captures revenue, margin, and sentiment but omits key risk factors, valuation scenarios, and the lack of forward guidance discussed in the body. Automated: 4 of 5 numbers in the executive summary also appear in the body",
+     "examples": [
+      "Risk assessment regarding competitive pressure and high valuation",
+      "Three valuation scenarios (base, upside, downside)",
+      "Absence of explicit management guidance for FY2027"
+     ]
+    },
+    {
+     "id": "CS-4",
+     "name": "Professional Formatting",
+     "category": "Coherence and Structure",
+     "value": 0.7143,
+     "target": ">= 80% of checks",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 7 checks passed (2102 words, 9/18 paragraphs cited)",
+     "examples": [
+      "failed: at least 80% of paragraphs cite evidence",
+      "failed: length within expected pages"
+     ]
+    },
+    {
+     "id": "AB-1",
+     "name": "Tool Efficiency",
+     "category": "Agent Behaviour",
+     "value": 0.4,
+     "target": ">= 70%",
+     "passed": false,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "4 research evidence records cited in the body over 10 tool calls",
+     "examples": []
+    },
+    {
+     "id": "AB-2",
+     "name": "Error Recovery Rate",
+     "category": "Agent Behaviour",
+     "value": 1.0,
+     "target": ">= 90%",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "5 of 5 error episodes recovered (same call later succeeded, arguments were repaired, or a fallback tool's evidence exists)",
+     "examples": []
+    },
+    {
+     "id": "AB-3",
+     "name": "Planning Quality",
+     "category": "Agent Behaviour",
+     "value": 4,
+     "target": ">= 4 / 5",
+     "passed": true,
+     "method": "hybrid",
+     "unit": "score_1_5",
+     "detail": "The plan covered required data sources and handled failed calculations sensibly, though some steps were redundant and the FY2025-2026 growth calculation was ... Automated: expected-tool coverage 3/6; 9 plan steps, 0 failed, 2 skipped",
+     "examples": [
+      "expected tool not used: earnings_transcript",
+      "expected tool not used: sec_filing_search",
+      "expected tool not used: web_search"
+     ]
+    },
+    {
+     "id": "AB-4",
+     "name": "Memory Utilization",
+     "category": "Agent Behaviour",
+     "value": 0.5,
+     "target": ">= 0.3",
+     "passed": true,
+     "method": "automated",
+     "unit": "ratio",
+     "detail": "4 memory hits (3 recalls with results + 1 cache hits) / 8 external API calls",
+     "examples": []
+    },
+    {
+     "id": "AB-5",
+     "name": "Latency",
+     "category": "Agent Behaviour",
+     "value": 79.2,
+     "target": "< 300 s",
+     "passed": true,
+     "method": "automated",
+     "unit": "seconds",
+     "detail": "single-company run, limit 300 s",
+     "examples": []
+    }
+   ]
+  }
+ ],
+ "aggregate": {
+  "FA-1": {
+   "name": "Numerical Accuracy Rate",
+   "category": "Factual Accuracy",
+   "target": ">= 98%",
+   "unit": "ratio",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.979375
+  },
+  "FA-2": {
+   "name": "Citation Accuracy",
+   "category": "Factual Accuracy",
+   "target": "100%",
+   "unit": "ratio",
+   "passed": 7,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.9791625
+  },
+  "FA-3": {
+   "name": "Temporal Accuracy",
+   "category": "Factual Accuracy",
+   "target": "100%",
+   "unit": "ratio",
+   "passed": 4,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.9392375
+  },
+  "FA-4": {
+   "name": "Entity Accuracy",
+   "category": "Factual Accuracy",
+   "target": "100%",
+   "unit": "ratio",
+   "passed": 8,
+   "measured": 8,
+   "n": 8,
+   "mean": 1.0
+  },
+  "FA-5": {
+   "name": "Hallucination Rate",
+   "category": "Factual Accuracy",
+   "target": "0",
+   "unit": "count",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.375
+  },
+  "CO-1": {
+   "name": "Section Coverage",
+   "category": "Completeness",
+   "target": "100%",
+   "unit": "ratio",
+   "passed": 8,
+   "measured": 8,
+   "n": 8,
+   "mean": 1.0
+  },
+  "CO-2": {
+   "name": "Data Source Diversity",
+   "category": "Completeness",
+   "target": ">= 4 source types",
+   "unit": "types",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 4.125
+  },
+  "CO-3": {
+   "name": "Temporal Coverage",
+   "category": "Completeness",
+   "target": ">= 3 years",
+   "unit": "years",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 3.0
+  },
+  "CO-4": {
+   "name": "Risk Factor Coverage",
+   "category": "Completeness",
+   "target": ">= 80%",
+   "unit": "ratio",
+   "passed": 0,
+   "measured": 2,
+   "n": 8,
+   "mean": 0.42424999999999996
+  },
+  "AD-1": {
+   "name": "Insight Density",
+   "category": "Analytical Depth",
+   "target": ">= 3 per page",
+   "unit": "per_page",
+   "passed": 0,
+   "measured": 8,
+   "n": 8,
+   "mean": 1.455
+  },
+  "AD-2": {
+   "name": "Cross-Source Synthesis",
+   "category": "Analytical Depth",
+   "target": ">= 5",
+   "unit": "count",
+   "passed": 7,
+   "measured": 8,
+   "n": 8,
+   "mean": 8.75
+  },
+  "AD-3": {
+   "name": "Quantitative Reasoning",
+   "category": "Analytical Depth",
+   "target": ">= 10 original calculations",
+   "unit": "count",
+   "passed": 2,
+   "measured": 8,
+   "n": 8,
+   "mean": 8.125
+  },
+  "AD-4": {
+   "name": "Forward-Looking Analysis",
+   "category": "Analytical Depth",
+   "target": ">= 2 sections",
+   "unit": "count",
+   "passed": 2,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.875
+  },
+  "CS-1": {
+   "name": "Logical Flow",
+   "category": "Coherence and Structure",
+   "target": ">= 4 / 5",
+   "unit": "score_1_5",
+   "passed": 2,
+   "measured": 8,
+   "n": 8,
+   "mean": 3.25
+  },
+  "CS-2": {
+   "name": "Internal Consistency",
+   "category": "Coherence and Structure",
+   "target": "0 contradictions",
+   "unit": "count",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.5
+  },
+  "CS-3": {
+   "name": "Executive Summary Quality",
+   "category": "Coherence and Structure",
+   "target": ">= 4 / 5",
+   "unit": "score_1_5",
+   "passed": 0,
+   "measured": 8,
+   "n": 8,
+   "mean": 3.0
+  },
+  "CS-4": {
+   "name": "Professional Formatting",
+   "category": "Coherence and Structure",
+   "target": ">= 80% of checks",
+   "unit": "ratio",
+   "passed": 3,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.7857125
+  },
+  "AB-1": {
+   "name": "Tool Efficiency",
+   "category": "Agent Behaviour",
+   "target": ">= 70%",
+   "unit": "ratio",
+   "passed": 5,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.7153
+  },
+  "AB-2": {
+   "name": "Error Recovery Rate",
+   "category": "Agent Behaviour",
+   "target": ">= 90%",
+   "unit": "ratio",
+   "passed": 3,
+   "measured": 4,
+   "n": 8,
+   "mean": 0.9
+  },
+  "AB-3": {
+   "name": "Planning Quality",
+   "category": "Agent Behaviour",
+   "target": ">= 4 / 5",
+   "unit": "score_1_5",
+   "passed": 6,
+   "measured": 8,
+   "n": 8,
+   "mean": 3.75
+  },
+  "AB-4": {
+   "name": "Memory Utilization",
+   "category": "Agent Behaviour",
+   "target": ">= 0.3",
+   "unit": "ratio",
+   "passed": 7,
+   "measured": 8,
+   "n": 8,
+   "mean": 0.60045
+  },
+  "AB-5": {
+   "name": "Latency",
+   "category": "Agent Behaviour",
+   "target": "< 300 s",
+   "unit": "seconds",
+   "passed": 8,
+   "measured": 8,
+   "n": 8,
+   "mean": 94.9125
+  },
+  "BM-1": {
+   "name": "Benchmark Fact Recall",
+   "category": "Benchmark",
+   "target": ">= 70%",
+   "unit": "ratio",
+   "passed": 1,
+   "measured": 3,
+   "n": 3,
+   "mean": 0.608058608058608
+  }
+ },
+ "summary": {
+  "metrics_total": 23,
+  "pass_rate": 0.6094674556213018,
+  "by_category": {
+   "Factual Accuracy": {
+    "passed": 31,
+    "measured": 40
+   },
+   "Completeness": {
+    "passed": 20,
+    "measured": 26
+   },
+   "Analytical Depth": {
+    "passed": 11,
+    "measured": 32
+   },
+   "Coherence and Structure": {
+    "passed": 11,
+    "measured": 32
+   },
+   "Agent Behaviour": {
+    "passed": 29,
+    "measured": 36
+   },
+   "Benchmark": {
+    "passed": 1,
+    "measured": 3
+   }
+  }
+ }
+}

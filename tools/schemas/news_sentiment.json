@@ -1,6 +1,6 @@
 {
   "name": "news_sentiment",
-  "description": "Collect recent news articles about a company or topic and score their sentiment from -1 (negative) to +1 (positive). Use it to gauge market narrative and to compare sentiment with what the financial data shows. Returns per-article scores and an overall summary.",
+  "description": "Collect recent news articles about a company or topic and score their sentiment from -1 (negative) to +1 (positive). Use it to gauge market narrative and to compare sentiment with what the financial data shows. Returns per-article scores and an overall summary. Call it once per company, with the company name as the query, for any report that discusses market narrative or sentiment.",
   "parameters": {
     "type": "object",
     "properties": {

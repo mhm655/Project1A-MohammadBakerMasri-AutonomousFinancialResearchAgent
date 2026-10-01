@@ -1,0 +1,95 @@
+{
+ "records": 2032,
+ "probes": 48,
+ "results": [
+  {
+   "config": "current (1500 chars, as stored)",
+   "chunks": 2387,
+   "hit@3": 0.3541666666666667,
+   "hit@5": 0.4166666666666667
+  },
+  {
+   "config": "800 chars",
+   "chunks": 3679,
+   "hit@3": 0.3333333333333333,
+   "hit@5": 0.4166666666666667
+  },
+  {
+   "config": "500 chars",
+   "chunks": 5469,
+   "hit@3": 0.5208333333333334,
+   "hit@5": 0.5625
+  },
+  {
+   "config": "350 chars",
+   "chunks": 7545,
+   "hit@3": 0.6041666666666666,
+   "hit@5": 0.6041666666666666
+  },
+  {
+   "config": "500 chars, 100 overlap",
+   "chunks": 5431,
+   "hit@3": 0.6041666666666666,
+   "hit@5": 0.6458333333333334
+  },
+  {
+   "config": "800 chars, 150 overlap",
+   "chunks": 3792,
+   "hit@3": 0.4166666666666667,
+   "hit@5": 0.5
+  }
+ ],
+ "floors": [
+  {
+   "floor": 0.0,
+   "kept_share": 1.0,
+   "relevant_share": 0.6190476190476191,
+   "hits": 210
+  },
+  {
+   "floor": 0.2,
+   "kept_share": 1.0,
+   "relevant_share": 0.6190476190476191,
+   "hits": 210
+  },
+  {
+   "floor": 0.25,
+   "kept_share": 0.9904761904761905,
+   "relevant_share": 0.6153846153846154,
+   "hits": 208
+  },
+  {
+   "floor": 0.3,
+   "kept_share": 0.9666666666666667,
+   "relevant_share": 0.6206896551724138,
+   "hits": 203
+  },
+  {
+   "floor": 0.35,
+   "kept_share": 0.9047619047619048,
+   "relevant_share": 0.631578947368421,
+   "hits": 190
+  },
+  {
+   "floor": 0.4,
+   "kept_share": 0.8428571428571429,
+   "relevant_share": 0.6271186440677966,
+   "hits": 177
+  },
+  {
+   "floor": 0.5,
+   "kept_share": 0.6285714285714286,
+   "relevant_share": 0.6060606060606061,
+   "hits": 132
+  }
+ ],
+ "tickers": [
+  "AAPL",
+  "AMZN",
+  "GOOGL",
+  "MSFT",
+  "NVDA",
+  "PLTR",
+  "TSLA"
+ ]
+}

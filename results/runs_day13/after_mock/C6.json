@@ -1,0 +1,4388 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C6",
+  "number": 6,
+  "title": "Ambiguous Query Handling",
+  "expected_pages": [
+   5,
+   7
+  ]
+ },
+ "query": "What's happening with the banks?",
+ "session_id": "session-20261001-203223-aa89",
+ "data_mode": "mock",
+ "fail_rate": 0.0,
+ "fail_tools": [],
+ "injected_failures": {},
+ "profile": {
+  "template": "company_profile",
+  "tickers": [],
+  "names": [],
+  "query_type": "ambiguous",
+  "complexity": "sector",
+  "periods": [],
+  "ambiguity": 1.0,
+  "ambiguity_level": "high",
+  "signals": [
+   "+0.45: no company or ticker could be resolved",
+   "+0.20: the request names a group (banks) but no companies",
+   "+0.15: no explicit aspect or metric (revenue, risk, margin, ...)",
+   "+0.10: no timeframe stated",
+   "+0.10: very short query"
+  ],
+  "sector": "banks"
+ },
+ "template": "company_profile",
+ "stop_reason": "completed",
+ "duration_s": 0.15,
+ "tool_calls": 12,
+ "llm_usage": {
+  "calls": 8,
+  "failures": 0,
+  "prompt_tokens": 17116,
+  "completion_tokens": 633,
+  "reasoning_tokens": 0
+ },
+ "report_markdown": "# JPM, BAC, C, WFC, GS, MS: Company Profile\n\n> **Warning:** this report was generated from MOCK data and must not be used or cited.\n\n## Executive Summary\n\nScripted text for executive_summary. [E1]\n\n## Business Overview\n\nScripted text for business_overview. [E1]\n\n## Financial Summary\n\nScripted text for financial_summary. [E1]\n\n## Key Executives\n\nScripted text for key_executives. [E1]\n\n## Recent Developments\n\nScripted text for recent_developments. [E1]\n\n## Data Gaps and Limitations\n\n- JPM has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- BAC has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- C has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Company facts for JPM' (company_profile JPM): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search. [E7] is less reliable than the primary source.\n- Step 'Latest 10-K for JPM' (sec_filing_search JPM, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search. [E9] is less reliable than the primary source.\n- Step 'Earnings call for JPM' (earnings_transcript JPM earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment. [E8] is less reliable than the primary source.\n- Step 'Income statement for JPM' (financial_data_api JPM income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search. [E10] is less reliable than the primary source.\n- Step 'Company facts for BAC' (company_profile BAC): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search. [E12] is less reliable than the primary source.\n- Step 'Income statement for BAC' (financial_data_api BAC income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Company facts for C' (company_profile C): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Latest 10-K for BAC' (sec_filing_search BAC, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search. [E13] is less reliable than the primary source.\n- Step 'Earnings call for BAC' (earnings_transcript BAC earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment. [E15] is less reliable than the primary source.\n- Step 'Latest 10-K for C' (sec_filing_search C, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for C' (earnings_transcript C earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment. [E17] is less reliable than the primary source.\n- Step 'Income statement for C' (financial_data_api C income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search. [E18] is less reliable than the primary source.\n\n## Research Methodology\n\n- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E7] web_search instead of company_profile; [E9] web_search instead of sec_filing_search; [E8] news_sentiment instead of earnings_transcript; [E10] web_search instead of financial_data_api; [E12] web_search instead of company_profile; [E11] web_search instead of financial_data_api; [E14] web_search instead of company_profile; [E13] web_search instead of sec_filing_search; [E15] news_sentiment instead of earnings_transcript; [E16] web_search instead of sec_filing_search; [E17] news_sentiment instead of earnings_transcript; [E18] web_search instead of financial_data_api.\n\n**Scope and assumptions** (the request was ambiguous; the reading used is: Reading the request as US large-cap banks (JPM, BAC, C, WFC, GS, MS), for the latest reported period as of 2026-10-01, covering earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.)\n\n- Scope: US large-cap banks (JPM, BAC, C, WFC, GS, MS).\n- Excluded: non-US banks and regional banks (the query gives no region; the six largest US banks by assets are the most likely reading).\n- Themes: earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n\nQuestions that would have been asked:\n1. Which banks do you mean, and in which region?\n2. Which aspect matters most (for example earnings, risk, valuation, or recent news)?\n3. Which period should the research cover (the latest quarter, the last year, or a specific fiscal year)?\n- **Mock data was used; figures are approximations for development only.**\n\n## Sources\n\n- [E7] web_search: JPM company profile, 10 (web, 2026-10-01)\n- [E9] web_search: JPM 10-K SEC filing, 10 (web, 2026-10-01)\n- [E8] news_sentiment: JPM earnings, 20, 30 (news, 2026-10-01)\n- [E10] web_search: JPM income statement financials, 10 (web, 2026-10-01)\n- [E12] web_search: BAC company profile, 10 (web, 2026-10-01)\n- [E11] web_search: BAC income statement financials, 10 (web, 2026-10-01)\n- [E14] web_search: C company profile, 10 (web, 2026-10-01)\n- [E13] web_search: BAC 10-K SEC filing, 10 (web, 2026-10-01)\n- [E15] news_sentiment: BAC earnings, 20, 30 (news, 2026-10-01)\n- [E16] web_search: C 10-K SEC filing, 10 (web, 2026-10-01)\n- [E17] news_sentiment: C earnings, 20, 30 (news, 2026-10-01)\n- [E18] web_search: C income statement financials, 10 (web, 2026-10-01)\n",
+ "sections": {
+  "executive_summary": "Scripted text for executive_summary. [E1]",
+  "business_overview": "Scripted text for business_overview. [E1]",
+  "financial_summary": "Scripted text for financial_summary. [E1]",
+  "key_executives": "Scripted text for key_executives. [E1]",
+  "recent_developments": "Scripted text for recent_developments. [E1]"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "s1",
+    "goal": "Company facts for JPM",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "JPM"
+    },
+    "depends_on": [],
+    "reason": "Company facts for JPM",
+    "status": "done",
+    "evidence_ids": [
+     "E7"
+    ],
+    "summary": "company_profile returned E7",
+    "attempts": 1
+   },
+   {
+    "id": "s2",
+    "goal": "Income statement for JPM",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "JPM income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for JPM",
+    "status": "done",
+    "evidence_ids": [
+     "E10"
+    ],
+    "summary": "financial_data_api returned E10",
+    "attempts": 1
+   },
+   {
+    "id": "s3",
+    "goal": "Earnings call for JPM",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "JPM earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for JPM",
+    "status": "done",
+    "evidence_ids": [
+     "E8"
+    ],
+    "summary": "earnings_transcript returned E8",
+    "attempts": 1
+   },
+   {
+    "id": "s4",
+    "goal": "Latest 10-K for JPM",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "JPM",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for JPM",
+    "status": "done",
+    "evidence_ids": [
+     "E9"
+    ],
+    "summary": "sec_filing_search returned E9",
+    "attempts": 1
+   },
+   {
+    "id": "s5",
+    "goal": "Company facts for BAC",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "BAC"
+    },
+    "depends_on": [],
+    "reason": "Company facts for BAC",
+    "status": "done",
+    "evidence_ids": [
+     "E12"
+    ],
+    "summary": "company_profile returned E12",
+    "attempts": 1
+   },
+   {
+    "id": "s6",
+    "goal": "Income statement for BAC",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "BAC income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for BAC",
+    "status": "done",
+    "evidence_ids": [
+     "E11"
+    ],
+    "summary": "financial_data_api returned E11",
+    "attempts": 1
+   },
+   {
+    "id": "s7",
+    "goal": "Earnings call for BAC",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "BAC earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for BAC",
+    "status": "done",
+    "evidence_ids": [
+     "E15"
+    ],
+    "summary": "earnings_transcript returned E15",
+    "attempts": 1
+   },
+   {
+    "id": "s8",
+    "goal": "Latest 10-K for BAC",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "BAC",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for BAC",
+    "status": "done",
+    "evidence_ids": [
+     "E13"
+    ],
+    "summary": "sec_filing_search returned E13",
+    "attempts": 1
+   },
+   {
+    "id": "s9",
+    "goal": "Company facts for C",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "C"
+    },
+    "depends_on": [],
+    "reason": "Company facts for C",
+    "status": "done",
+    "evidence_ids": [
+     "E14"
+    ],
+    "summary": "company_profile returned E14",
+    "attempts": 1
+   },
+   {
+    "id": "s10",
+    "goal": "Income statement for C",
+    "tool": "financial_data_api",
+    "args": {
+     "query": "C income statement financials",
+     "num_results": 10
+    },
+    "depends_on": [],
+    "reason": "Income statement for C",
+    "status": "done",
+    "evidence_ids": [
+     "E18"
+    ],
+    "summary": "financial_data_api returned E18",
+    "attempts": 1
+   },
+   {
+    "id": "s11",
+    "goal": "Earnings call for C",
+    "tool": "earnings_transcript",
+    "args": {
+     "query": "C earnings",
+     "num_articles": 20,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "Earnings call for C",
+    "status": "done",
+    "evidence_ids": [
+     "E17"
+    ],
+    "summary": "earnings_transcript returned E17",
+    "attempts": 1
+   },
+   {
+    "id": "s12",
+    "goal": "Latest 10-K for C",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "C",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "Latest 10-K for C",
+    "status": "done",
+    "evidence_ids": [
+     "E16"
+    ],
+    "summary": "sec_filing_search returned E16",
+    "attempts": 1
+   }
+  ],
+  "rationale": "scripted",
+  "rejected": []
+ },
+ "evidence": {
+  "E7": {
+   "evidence_id": "E7",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM company profile",
+    "num_results": 10
+   },
+   "data": {
+    "query": "JPM company profile",
+    "date_range": null,
+    "results": [
+     {
+      "title": "JPM company profile: what investors need to know",
+      "url": "https://mock.bloomberg.com/jpm-company-profile-1",
+      "snippet": "[mock] Bloomberg coverage of JPM company profile, published 2024-10-29.",
+      "source": "Bloomberg",
+      "published": "2024-10-29"
+     },
+     {
+      "title": "Analysts weigh in on JPM company profile",
+      "url": "https://mock.seekingalpha.com/jpm-company-profile-2",
+      "snippet": "[mock] Seeking Alpha coverage of JPM company profile, published 2024-12-31.",
+      "source": "Seeking Alpha",
+      "published": "2024-12-31"
+     },
+     {
+      "title": "JPM company profile - latest developments and outlook",
+      "url": "https://mock.finance.yahoo.com/jpm-company-profile-3",
+      "snippet": "[mock] Yahoo Finance coverage of JPM company profile, published 2024-07-28.",
+      "source": "Yahoo Finance",
+      "published": "2024-07-28"
+     },
+     {
+      "title": "Five takeaways on JPM company profile",
+      "url": "https://mock.reuters.com/jpm-company-profile-4",
+      "snippet": "[mock] Reuters coverage of JPM company profile, published 2024-07-19.",
+      "source": "Reuters",
+      "published": "2024-07-19"
+     },
+     {
+      "title": "Why JPM company profile matters for the market",
+      "url": "https://mock.seekingalpha.com/jpm-company-profile-5",
+      "snippet": "[mock] Seeking Alpha coverage of JPM company profile, published 2024-12-23.",
+      "source": "Seeking Alpha",
+      "published": "2024-12-23"
+     },
+     {
+      "title": "JPM company profile: risks and opportunities ahead",
+      "url": "https://mock.ft.com/jpm-company-profile-6",
+      "snippet": "[mock] Financial Times coverage of JPM company profile, published 2025-06-22.",
+      "source": "Financial Times",
+      "published": "2025-06-22"
+     },
+     {
+      "title": "JPM company profile: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/jpm-company-profile-7",
+      "snippet": "[mock] Yahoo Finance coverage of JPM company profile, published 2024-12-01.",
+      "source": "Yahoo Finance",
+      "published": "2024-12-01"
+     },
+     {
+      "title": "Analysts weigh in on JPM company profile",
+      "url": "https://mock.marketwatch.com/jpm-company-profile-8",
+      "snippet": "[mock] MarketWatch coverage of JPM company profile, published 2024-07-12.",
+      "source": "MarketWatch",
+      "published": "2024-07-12"
+     },
+     {
+      "title": "JPM company profile - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/jpm-company-profile-9",
+      "snippet": "[mock] MarketWatch coverage of JPM company profile, published 2025-02-10.",
+      "source": "MarketWatch",
+      "published": "2025-02-10"
+     },
+     {
+      "title": "Five takeaways on JPM company profile",
+      "url": "https://mock.seekingalpha.com/jpm-company-profile-10",
+      "snippet": "[mock] Seeking Alpha coverage of JPM company profile, published 2024-10-12.",
+      "source": "Seeking Alpha",
+      "published": "2024-10-12"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search.",
+     "Fallback data is web-reported company overview."
+    ],
+    "fallback_for": "company_profile"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.497,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E9": {
+   "evidence_id": "E9",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "JPM 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "JPM 10-K SEC filing: what investors need to know",
+      "url": "https://mock.marketwatch.com/jpm-10-k-sec-filing-1",
+      "snippet": "[mock] MarketWatch coverage of JPM 10-K SEC filing, published 2025-05-20.",
+      "source": "MarketWatch",
+      "published": "2025-05-20"
+     },
+     {
+      "title": "Analysts weigh in on JPM 10-K SEC filing",
+      "url": "https://mock.finance.yahoo.com/jpm-10-k-sec-filing-2",
+      "snippet": "[mock] Yahoo Finance coverage of JPM 10-K SEC filing, published 2024-10-08.",
+      "source": "Yahoo Finance",
+      "published": "2024-10-08"
+     },
+     {
+      "title": "JPM 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.marketwatch.com/jpm-10-k-sec-filing-3",
+      "snippet": "[mock] MarketWatch coverage of JPM 10-K SEC filing, published 2025-04-26.",
+      "source": "MarketWatch",
+      "published": "2025-04-26"
+     },
+     {
+      "title": "Five takeaways on JPM 10-K SEC filing",
+      "url": "https://mock.wsj.com/jpm-10-k-sec-filing-4",
+      "snippet": "[mock] The Wall Street Journal coverage of JPM 10-K SEC filing, published 2024-12-19.",
+      "source": "The Wall Street Journal",
+      "published": "2024-12-19"
+     },
+     {
+      "title": "Why JPM 10-K SEC filing matters for the market",
+      "url": "https://mock.seekingalpha.com/jpm-10-k-sec-filing-5",
+      "snippet": "[mock] Seeking Alpha coverage of JPM 10-K SEC filing, published 2024-07-01.",
+      "source": "Seeking Alpha",
+      "published": "2024-07-01"
+     },
+     {
+      "title": "JPM 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.seekingalpha.com/jpm-10-k-sec-filing-6",
+      "snippet": "[mock] Seeking Alpha coverage of JPM 10-K SEC filing, published 2024-09-22.",
+      "source": "Seeking Alpha",
+      "published": "2024-09-22"
+     },
+     {
+      "title": "JPM 10-K SEC filing: what investors need to know",
+      "url": "https://mock.marketwatch.com/jpm-10-k-sec-filing-7",
+      "snippet": "[mock] MarketWatch coverage of JPM 10-K SEC filing, published 2025-02-23.",
+      "source": "MarketWatch",
+      "published": "2025-02-23"
+     },
+     {
+      "title": "Analysts weigh in on JPM 10-K SEC filing",
+      "url": "https://mock.cnbc.com/jpm-10-k-sec-filing-8",
+      "snippet": "[mock] CNBC coverage of JPM 10-K SEC filing, published 2024-08-01.",
+      "source": "CNBC",
+      "published": "2024-08-01"
+     },
+     {
+      "title": "JPM 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.ft.com/jpm-10-k-sec-filing-9",
+      "snippet": "[mock] Financial Times coverage of JPM 10-K SEC filing, published 2025-02-17.",
+      "source": "Financial Times",
+      "published": "2025-02-17"
+     },
+     {
+      "title": "Five takeaways on JPM 10-K SEC filing",
+      "url": "https://mock.seekingalpha.com/jpm-10-k-sec-filing-10",
+      "snippet": "[mock] Seeking Alpha coverage of JPM 10-K SEC filing, published 2025-06-17.",
+      "source": "Seeking Alpha",
+      "published": "2025-06-17"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.496,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E8": {
+   "evidence_id": "E8",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "JPM earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "JPM earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": 0.2432,
+     "label": "positive",
+     "positive": 0.75,
+     "negative": 0.25,
+     "neutral": 0.0
+    },
+    "articles": [
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.finance.yahoo.com/analysts-raise-price-targets-on-jpm-earnings-1",
+      "source": "Yahoo Finance",
+      "published": "2025-06-23",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.3873,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.ft.com/analysts-raise-price-targets-on-jpm-earnings-2",
+      "source": "Financial Times",
+      "published": "2025-06-22",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.5257,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings unveils new products at annual event",
+      "url": "https://mock.ft.com/jpm-earnings-unveils-new-products-at-annual-event-3",
+      "source": "Financial Times",
+      "published": "2025-06-17",
+      "summary": "[mock] JPM earnings unveils new products at annual event.",
+      "sentiment_score": 0.4163,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings beats expectations as demand stays strong",
+      "url": "https://mock.finance.yahoo.com/jpm-earnings-beats-expectations-as-demand-stays-strong-4",
+      "source": "Yahoo Finance",
+      "published": "2025-06-07",
+      "summary": "[mock] JPM earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.4649,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.reuters.com/analysts-raise-price-targets-on-jpm-earnings-5",
+      "source": "Reuters",
+      "published": "2025-06-07",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.575,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of JPM earnings",
+      "url": "https://mock.reuters.com/regulators-step-up-scrutiny-of-jpm-earnings-6",
+      "source": "Reuters",
+      "published": "2025-06-13",
+      "summary": "[mock] Regulators step up scrutiny of JPM earnings.",
+      "sentiment_score": -0.4484,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "JPM earnings shares slip amid margin concerns",
+      "url": "https://mock.ft.com/jpm-earnings-shares-slip-amid-margin-concerns-7",
+      "source": "Financial Times",
+      "published": "2025-06-24",
+      "summary": "[mock] JPM earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3269,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "JPM earnings beats expectations as demand stays strong",
+      "url": "https://mock.finance.yahoo.com/jpm-earnings-beats-expectations-as-demand-stays-strong-8",
+      "source": "Yahoo Finance",
+      "published": "2025-06-21",
+      "summary": "[mock] JPM earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.7483,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of JPM earnings",
+      "url": "https://mock.wsj.com/regulators-step-up-scrutiny-of-jpm-earnings-9",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-06",
+      "summary": "[mock] Regulators step up scrutiny of JPM earnings.",
+      "sentiment_score": -0.4777,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "JPM earnings unveils new products at annual event",
+      "url": "https://mock.marketwatch.com/jpm-earnings-unveils-new-products-at-annual-event-10",
+      "source": "MarketWatch",
+      "published": "2025-06-28",
+      "summary": "[mock] JPM earnings unveils new products at annual event.",
+      "sentiment_score": 0.4822,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings holds steady in volatile market",
+      "url": "https://mock.ft.com/jpm-earnings-holds-steady-in-volatile-market-11",
+      "source": "Financial Times",
+      "published": "2025-06-18",
+      "summary": "[mock] JPM earnings holds steady in volatile market.",
+      "sentiment_score": -0.0685,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "JPM earnings announces leadership changes",
+      "url": "https://mock.wsj.com/jpm-earnings-announces-leadership-changes-12",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-29",
+      "summary": "[mock] JPM earnings announces leadership changes.",
+      "sentiment_score": 0.1202,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.bloomberg.com/analysts-raise-price-targets-on-jpm-earnings-13",
+      "source": "Bloomberg",
+      "published": "2025-06-15",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.6364,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings announces leadership changes",
+      "url": "https://mock.wsj.com/jpm-earnings-announces-leadership-changes-14",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-16",
+      "summary": "[mock] JPM earnings announces leadership changes.",
+      "sentiment_score": 0.1846,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings holds steady in volatile market",
+      "url": "https://mock.bloomberg.com/jpm-earnings-holds-steady-in-volatile-market-15",
+      "source": "Bloomberg",
+      "published": "2025-06-30",
+      "summary": "[mock] JPM earnings holds steady in volatile market.",
+      "sentiment_score": 0.111,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings beats expectations as demand stays strong",
+      "url": "https://mock.marketwatch.com/jpm-earnings-beats-expectations-as-demand-stays-strong-16",
+      "source": "MarketWatch",
+      "published": "2025-06-24",
+      "summary": "[mock] JPM earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.6067,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of JPM earnings",
+      "url": "https://mock.wsj.com/regulators-step-up-scrutiny-of-jpm-earnings-17",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-27",
+      "summary": "[mock] Regulators step up scrutiny of JPM earnings.",
+      "sentiment_score": -0.3585,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.cnbc.com/analysts-raise-price-targets-on-jpm-earnings-18",
+      "source": "CNBC",
+      "published": "2025-06-27",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.6041,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "JPM earnings announces leadership changes",
+      "url": "https://mock.finance.yahoo.com/jpm-earnings-announces-leadership-changes-19",
+      "source": "Yahoo Finance",
+      "published": "2025-06-23",
+      "summary": "[mock] JPM earnings announces leadership changes.",
+      "sentiment_score": 0.1648,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on JPM earnings",
+      "url": "https://mock.ft.com/analysts-raise-price-targets-on-jpm-earnings-20",
+      "source": "Financial Times",
+      "published": "2025-06-04",
+      "summary": "[mock] Analysts raise price targets on JPM earnings.",
+      "sentiment_score": 0.5172,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 1.165,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E10": {
+   "evidence_id": "E10",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "JPM income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "JPM income statement financials: what investors need to know",
+      "url": "https://mock.bloomberg.com/jpm-income-statement-financials-1",
+      "snippet": "[mock] Bloomberg coverage of JPM income statement financials, published 2025-06-25.",
+      "source": "Bloomberg",
+      "published": "2025-06-25"
+     },
+     {
+      "title": "Analysts weigh in on JPM income statement financials",
+      "url": "https://mock.ft.com/jpm-income-statement-financials-2",
+      "snippet": "[mock] Financial Times coverage of JPM income statement financials, published 2024-08-05.",
+      "source": "Financial Times",
+      "published": "2024-08-05"
+     },
+     {
+      "title": "JPM income statement financials - latest developments and outlook",
+      "url": "https://mock.cnbc.com/jpm-income-statement-financials-3",
+      "snippet": "[mock] CNBC coverage of JPM income statement financials, published 2025-01-11.",
+      "source": "CNBC",
+      "published": "2025-01-11"
+     },
+     {
+      "title": "Five takeaways on JPM income statement financials",
+      "url": "https://mock.seekingalpha.com/jpm-income-statement-financials-4",
+      "snippet": "[mock] Seeking Alpha coverage of JPM income statement financials, published 2025-03-22.",
+      "source": "Seeking Alpha",
+      "published": "2025-03-22"
+     },
+     {
+      "title": "Why JPM income statement financials matters for the market",
+      "url": "https://mock.cnbc.com/jpm-income-statement-financials-5",
+      "snippet": "[mock] CNBC coverage of JPM income statement financials, published 2024-09-18.",
+      "source": "CNBC",
+      "published": "2024-09-18"
+     },
+     {
+      "title": "JPM income statement financials: risks and opportunities ahead",
+      "url": "https://mock.cnbc.com/jpm-income-statement-financials-6",
+      "snippet": "[mock] CNBC coverage of JPM income statement financials, published 2024-11-07.",
+      "source": "CNBC",
+      "published": "2024-11-07"
+     },
+     {
+      "title": "JPM income statement financials: what investors need to know",
+      "url": "https://mock.cnbc.com/jpm-income-statement-financials-7",
+      "snippet": "[mock] CNBC coverage of JPM income statement financials, published 2025-03-12.",
+      "source": "CNBC",
+      "published": "2025-03-12"
+     },
+     {
+      "title": "Analysts weigh in on JPM income statement financials",
+      "url": "https://mock.ft.com/jpm-income-statement-financials-8",
+      "snippet": "[mock] Financial Times coverage of JPM income statement financials, published 2024-10-15.",
+      "source": "Financial Times",
+      "published": "2024-10-15"
+     },
+     {
+      "title": "JPM income statement financials - latest developments and outlook",
+      "url": "https://mock.bloomberg.com/jpm-income-statement-financials-9",
+      "snippet": "[mock] Bloomberg coverage of JPM income statement financials, published 2025-02-17.",
+      "source": "Bloomberg",
+      "published": "2025-02-17"
+     },
+     {
+      "title": "Five takeaways on JPM income statement financials",
+      "url": "https://mock.cnbc.com/jpm-income-statement-financials-10",
+      "snippet": "[mock] CNBC coverage of JPM income statement financials, published 2024-08-03.",
+      "source": "CNBC",
+      "published": "2024-08-03"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.501,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E12": {
+   "evidence_id": "E12",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC company profile",
+    "num_results": 10
+   },
+   "data": {
+    "query": "BAC company profile",
+    "date_range": null,
+    "results": [
+     {
+      "title": "BAC company profile: what investors need to know",
+      "url": "https://mock.ft.com/bac-company-profile-1",
+      "snippet": "[mock] Financial Times coverage of BAC company profile, published 2024-10-09.",
+      "source": "Financial Times",
+      "published": "2024-10-09"
+     },
+     {
+      "title": "Analysts weigh in on BAC company profile",
+      "url": "https://mock.seekingalpha.com/bac-company-profile-2",
+      "snippet": "[mock] Seeking Alpha coverage of BAC company profile, published 2025-04-19.",
+      "source": "Seeking Alpha",
+      "published": "2025-04-19"
+     },
+     {
+      "title": "BAC company profile - latest developments and outlook",
+      "url": "https://mock.ft.com/bac-company-profile-3",
+      "snippet": "[mock] Financial Times coverage of BAC company profile, published 2024-12-05.",
+      "source": "Financial Times",
+      "published": "2024-12-05"
+     },
+     {
+      "title": "Five takeaways on BAC company profile",
+      "url": "https://mock.wsj.com/bac-company-profile-4",
+      "snippet": "[mock] The Wall Street Journal coverage of BAC company profile, published 2024-12-31.",
+      "source": "The Wall Street Journal",
+      "published": "2024-12-31"
+     },
+     {
+      "title": "Why BAC company profile matters for the market",
+      "url": "https://mock.finance.yahoo.com/bac-company-profile-5",
+      "snippet": "[mock] Yahoo Finance coverage of BAC company profile, published 2025-05-02.",
+      "source": "Yahoo Finance",
+      "published": "2025-05-02"
+     },
+     {
+      "title": "BAC company profile: risks and opportunities ahead",
+      "url": "https://mock.marketwatch.com/bac-company-profile-6",
+      "snippet": "[mock] MarketWatch coverage of BAC company profile, published 2025-06-24.",
+      "source": "MarketWatch",
+      "published": "2025-06-24"
+     },
+     {
+      "title": "BAC company profile: what investors need to know",
+      "url": "https://mock.bloomberg.com/bac-company-profile-7",
+      "snippet": "[mock] Bloomberg coverage of BAC company profile, published 2025-04-10.",
+      "source": "Bloomberg",
+      "published": "2025-04-10"
+     },
+     {
+      "title": "Analysts weigh in on BAC company profile",
+      "url": "https://mock.reuters.com/bac-company-profile-8",
+      "snippet": "[mock] Reuters coverage of BAC company profile, published 2024-08-07.",
+      "source": "Reuters",
+      "published": "2024-08-07"
+     },
+     {
+      "title": "BAC company profile - latest developments and outlook",
+      "url": "https://mock.finance.yahoo.com/bac-company-profile-9",
+      "snippet": "[mock] Yahoo Finance coverage of BAC company profile, published 2025-04-03.",
+      "source": "Yahoo Finance",
+      "published": "2025-04-03"
+     },
+     {
+      "title": "Five takeaways on BAC company profile",
+      "url": "https://mock.finance.yahoo.com/bac-company-profile-10",
+      "snippet": "[mock] Yahoo Finance coverage of BAC company profile, published 2024-07-03.",
+      "source": "Yahoo Finance",
+      "published": "2024-07-03"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search.",
+     "Fallback data is web-reported company overview."
+    ],
+    "fallback_for": "company_profile"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.503,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E11": {
+   "evidence_id": "E11",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "BAC income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "BAC income statement financials: what investors need to know",
+      "url": "https://mock.ft.com/bac-income-statement-financials-1",
+      "snippet": "[mock] Financial Times coverage of BAC income statement financials, published 2025-03-21.",
+      "source": "Financial Times",
+      "published": "2025-03-21"
+     },
+     {
+      "title": "Analysts weigh in on BAC income statement financials",
+      "url": "https://mock.cnbc.com/bac-income-statement-financials-2",
+      "snippet": "[mock] CNBC coverage of BAC income statement financials, published 2024-11-30.",
+      "source": "CNBC",
+      "published": "2024-11-30"
+     },
+     {
+      "title": "BAC income statement financials - latest developments and outlook",
+      "url": "https://mock.finance.yahoo.com/bac-income-statement-financials-3",
+      "snippet": "[mock] Yahoo Finance coverage of BAC income statement financials, published 2025-05-17.",
+      "source": "Yahoo Finance",
+      "published": "2025-05-17"
+     },
+     {
+      "title": "Five takeaways on BAC income statement financials",
+      "url": "https://mock.marketwatch.com/bac-income-statement-financials-4",
+      "snippet": "[mock] MarketWatch coverage of BAC income statement financials, published 2024-11-28.",
+      "source": "MarketWatch",
+      "published": "2024-11-28"
+     },
+     {
+      "title": "Why BAC income statement financials matters for the market",
+      "url": "https://mock.cnbc.com/bac-income-statement-financials-5",
+      "snippet": "[mock] CNBC coverage of BAC income statement financials, published 2024-10-17.",
+      "source": "CNBC",
+      "published": "2024-10-17"
+     },
+     {
+      "title": "BAC income statement financials: risks and opportunities ahead",
+      "url": "https://mock.wsj.com/bac-income-statement-financials-6",
+      "snippet": "[mock] The Wall Street Journal coverage of BAC income statement financials, published 2024-10-09.",
+      "source": "The Wall Street Journal",
+      "published": "2024-10-09"
+     },
+     {
+      "title": "BAC income statement financials: what investors need to know",
+      "url": "https://mock.wsj.com/bac-income-statement-financials-7",
+      "snippet": "[mock] The Wall Street Journal coverage of BAC income statement financials, published 2024-09-09.",
+      "source": "The Wall Street Journal",
+      "published": "2024-09-09"
+     },
+     {
+      "title": "Analysts weigh in on BAC income statement financials",
+      "url": "https://mock.wsj.com/bac-income-statement-financials-8",
+      "snippet": "[mock] The Wall Street Journal coverage of BAC income statement financials, published 2024-09-30.",
+      "source": "The Wall Street Journal",
+      "published": "2024-09-30"
+     },
+     {
+      "title": "BAC income statement financials - latest developments and outlook",
+      "url": "https://mock.reuters.com/bac-income-statement-financials-9",
+      "snippet": "[mock] Reuters coverage of BAC income statement financials, published 2024-11-17.",
+      "source": "Reuters",
+      "published": "2024-11-17"
+     },
+     {
+      "title": "Five takeaways on BAC income statement financials",
+      "url": "https://mock.ft.com/bac-income-statement-financials-10",
+      "snippet": "[mock] Financial Times coverage of BAC income statement financials, published 2024-07-15.",
+      "source": "Financial Times",
+      "published": "2024-07-15"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.483,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E14": {
+   "evidence_id": "E14",
+   "tool": "web_search",
+   "args": {
+    "query": "C company profile",
+    "num_results": 10
+   },
+   "data": {
+    "query": "C company profile",
+    "date_range": null,
+    "results": [
+     {
+      "title": "C company profile: what investors need to know",
+      "url": "https://mock.reuters.com/c-company-profile-1",
+      "snippet": "[mock] Reuters coverage of C company profile, published 2024-12-30.",
+      "source": "Reuters",
+      "published": "2024-12-30"
+     },
+     {
+      "title": "Analysts weigh in on C company profile",
+      "url": "https://mock.seekingalpha.com/c-company-profile-2",
+      "snippet": "[mock] Seeking Alpha coverage of C company profile, published 2024-08-26.",
+      "source": "Seeking Alpha",
+      "published": "2024-08-26"
+     },
+     {
+      "title": "C company profile - latest developments and outlook",
+      "url": "https://mock.bloomberg.com/c-company-profile-3",
+      "snippet": "[mock] Bloomberg coverage of C company profile, published 2025-03-30.",
+      "source": "Bloomberg",
+      "published": "2025-03-30"
+     },
+     {
+      "title": "Five takeaways on C company profile",
+      "url": "https://mock.finance.yahoo.com/c-company-profile-4",
+      "snippet": "[mock] Yahoo Finance coverage of C company profile, published 2024-10-11.",
+      "source": "Yahoo Finance",
+      "published": "2024-10-11"
+     },
+     {
+      "title": "Why C company profile matters for the market",
+      "url": "https://mock.wsj.com/c-company-profile-5",
+      "snippet": "[mock] The Wall Street Journal coverage of C company profile, published 2024-10-29.",
+      "source": "The Wall Street Journal",
+      "published": "2024-10-29"
+     },
+     {
+      "title": "C company profile: risks and opportunities ahead",
+      "url": "https://mock.finance.yahoo.com/c-company-profile-6",
+      "snippet": "[mock] Yahoo Finance coverage of C company profile, published 2024-07-03.",
+      "source": "Yahoo Finance",
+      "published": "2024-07-03"
+     },
+     {
+      "title": "C company profile: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/c-company-profile-7",
+      "snippet": "[mock] Yahoo Finance coverage of C company profile, published 2024-09-14.",
+      "source": "Yahoo Finance",
+      "published": "2024-09-14"
+     },
+     {
+      "title": "Analysts weigh in on C company profile",
+      "url": "https://mock.finance.yahoo.com/c-company-profile-8",
+      "snippet": "[mock] Yahoo Finance coverage of C company profile, published 2025-06-27.",
+      "source": "Yahoo Finance",
+      "published": "2025-06-27"
+     },
+     {
+      "title": "C company profile - latest developments and outlook",
+      "url": "https://mock.ft.com/c-company-profile-9",
+      "snippet": "[mock] Financial Times coverage of C company profile, published 2024-10-01.",
+      "source": "Financial Times",
+      "published": "2024-10-01"
+     },
+     {
+      "title": "Five takeaways on C company profile",
+      "url": "https://mock.ft.com/c-company-profile-10",
+      "snippet": "[mock] Financial Times coverage of C company profile, published 2024-08-30.",
+      "source": "Financial Times",
+      "published": "2024-08-30"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search.",
+     "Fallback data is web-reported company overview."
+    ],
+    "fallback_for": "company_profile"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.476,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E13": {
+   "evidence_id": "E13",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "BAC 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "BAC 10-K SEC filing: what investors need to know",
+      "url": "https://mock.cnbc.com/bac-10-k-sec-filing-1",
+      "snippet": "[mock] CNBC coverage of BAC 10-K SEC filing, published 2024-08-04.",
+      "source": "CNBC",
+      "published": "2024-08-04"
+     },
+     {
+      "title": "Analysts weigh in on BAC 10-K SEC filing",
+      "url": "https://mock.ft.com/bac-10-k-sec-filing-2",
+      "snippet": "[mock] Financial Times coverage of BAC 10-K SEC filing, published 2024-07-29.",
+      "source": "Financial Times",
+      "published": "2024-07-29"
+     },
+     {
+      "title": "BAC 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.seekingalpha.com/bac-10-k-sec-filing-3",
+      "snippet": "[mock] Seeking Alpha coverage of BAC 10-K SEC filing, published 2024-09-21.",
+      "source": "Seeking Alpha",
+      "published": "2024-09-21"
+     },
+     {
+      "title": "Five takeaways on BAC 10-K SEC filing",
+      "url": "https://mock.bloomberg.com/bac-10-k-sec-filing-4",
+      "snippet": "[mock] Bloomberg coverage of BAC 10-K SEC filing, published 2025-04-06.",
+      "source": "Bloomberg",
+      "published": "2025-04-06"
+     },
+     {
+      "title": "Why BAC 10-K SEC filing matters for the market",
+      "url": "https://mock.reuters.com/bac-10-k-sec-filing-5",
+      "snippet": "[mock] Reuters coverage of BAC 10-K SEC filing, published 2025-03-27.",
+      "source": "Reuters",
+      "published": "2025-03-27"
+     },
+     {
+      "title": "BAC 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.ft.com/bac-10-k-sec-filing-6",
+      "snippet": "[mock] Financial Times coverage of BAC 10-K SEC filing, published 2025-06-04.",
+      "source": "Financial Times",
+      "published": "2025-06-04"
+     },
+     {
+      "title": "BAC 10-K SEC filing: what investors need to know",
+      "url": "https://mock.seekingalpha.com/bac-10-k-sec-filing-7",
+      "snippet": "[mock] Seeking Alpha coverage of BAC 10-K SEC filing, published 2025-01-21.",
+      "source": "Seeking Alpha",
+      "published": "2025-01-21"
+     },
+     {
+      "title": "Analysts weigh in on BAC 10-K SEC filing",
+      "url": "https://mock.seekingalpha.com/bac-10-k-sec-filing-8",
+      "snippet": "[mock] Seeking Alpha coverage of BAC 10-K SEC filing, published 2024-12-29.",
+      "source": "Seeking Alpha",
+      "published": "2024-12-29"
+     },
+     {
+      "title": "BAC 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.ft.com/bac-10-k-sec-filing-9",
+      "snippet": "[mock] Financial Times coverage of BAC 10-K SEC filing, published 2024-09-18.",
+      "source": "Financial Times",
+      "published": "2024-09-18"
+     },
+     {
+      "title": "Five takeaways on BAC 10-K SEC filing",
+      "url": "https://mock.cnbc.com/bac-10-k-sec-filing-10",
+      "snippet": "[mock] CNBC coverage of BAC 10-K SEC filing, published 2024-11-07.",
+      "source": "CNBC",
+      "published": "2024-11-07"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.503,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E15": {
+   "evidence_id": "E15",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "BAC earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "BAC earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": -0.0815,
+     "label": "negative",
+     "positive": 0.35,
+     "negative": 0.55,
+     "neutral": 0.1
+    },
+    "articles": [
+     {
+      "title": "BAC earnings unveils new products at annual event",
+      "url": "https://mock.bloomberg.com/bac-earnings-unveils-new-products-at-annual-event-1",
+      "source": "Bloomberg",
+      "published": "2025-06-14",
+      "summary": "[mock] BAC earnings unveils new products at annual event.",
+      "sentiment_score": 0.3829,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "BAC earnings shares slip amid margin concerns",
+      "url": "https://mock.ft.com/bac-earnings-shares-slip-amid-margin-concerns-2",
+      "source": "Financial Times",
+      "published": "2025-06-21",
+      "summary": "[mock] BAC earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.4521,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings faces supply-chain pressure",
+      "url": "https://mock.cnbc.com/bac-earnings-faces-supply-chain-pressure-3",
+      "source": "CNBC",
+      "published": "2025-06-26",
+      "summary": "[mock] BAC earnings faces supply-chain pressure.",
+      "sentiment_score": -0.217,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.reuters.com/regulators-step-up-scrutiny-of-bac-earnings-4",
+      "source": "Reuters",
+      "published": "2025-06-12",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.3934,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings holds steady in volatile market",
+      "url": "https://mock.reuters.com/bac-earnings-holds-steady-in-volatile-market-5",
+      "source": "Reuters",
+      "published": "2025-06-06",
+      "summary": "[mock] BAC earnings holds steady in volatile market.",
+      "sentiment_score": -0.0363,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "BAC earnings holds steady in volatile market",
+      "url": "https://mock.seekingalpha.com/bac-earnings-holds-steady-in-volatile-market-6",
+      "source": "Seeking Alpha",
+      "published": "2025-06-24",
+      "summary": "[mock] BAC earnings holds steady in volatile market.",
+      "sentiment_score": -0.0218,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "BAC earnings holds steady in volatile market",
+      "url": "https://mock.bloomberg.com/bac-earnings-holds-steady-in-volatile-market-7",
+      "source": "Bloomberg",
+      "published": "2025-06-15",
+      "summary": "[mock] BAC earnings holds steady in volatile market.",
+      "sentiment_score": -0.0989,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings beats expectations as demand stays strong",
+      "url": "https://mock.cnbc.com/bac-earnings-beats-expectations-as-demand-stays-strong-8",
+      "source": "CNBC",
+      "published": "2025-06-22",
+      "summary": "[mock] BAC earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.5204,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "BAC earnings announces leadership changes",
+      "url": "https://mock.cnbc.com/bac-earnings-announces-leadership-changes-9",
+      "source": "CNBC",
+      "published": "2025-06-24",
+      "summary": "[mock] BAC earnings announces leadership changes.",
+      "sentiment_score": 0.1936,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.cnbc.com/regulators-step-up-scrutiny-of-bac-earnings-10",
+      "source": "CNBC",
+      "published": "2025-06-12",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.6097,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.seekingalpha.com/regulators-step-up-scrutiny-of-bac-earnings-11",
+      "source": "Seeking Alpha",
+      "published": "2025-06-04",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.6134,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Analysts raise price targets on BAC earnings",
+      "url": "https://mock.wsj.com/analysts-raise-price-targets-on-bac-earnings-12",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-22",
+      "summary": "[mock] Analysts raise price targets on BAC earnings.",
+      "sentiment_score": 0.6202,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.reuters.com/regulators-step-up-scrutiny-of-bac-earnings-13",
+      "source": "Reuters",
+      "published": "2025-06-09",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.6409,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings unveils new products at annual event",
+      "url": "https://mock.seekingalpha.com/bac-earnings-unveils-new-products-at-annual-event-14",
+      "source": "Seeking Alpha",
+      "published": "2025-06-17",
+      "summary": "[mock] BAC earnings unveils new products at annual event.",
+      "sentiment_score": 0.392,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "BAC earnings unveils new products at annual event",
+      "url": "https://mock.reuters.com/bac-earnings-unveils-new-products-at-annual-event-15",
+      "source": "Reuters",
+      "published": "2025-06-03",
+      "summary": "[mock] BAC earnings unveils new products at annual event.",
+      "sentiment_score": 0.3029,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on BAC earnings",
+      "url": "https://mock.finance.yahoo.com/analysts-raise-price-targets-on-bac-earnings-16",
+      "source": "Yahoo Finance",
+      "published": "2025-06-03",
+      "summary": "[mock] Analysts raise price targets on BAC earnings.",
+      "sentiment_score": 0.4051,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.ft.com/regulators-step-up-scrutiny-of-bac-earnings-17",
+      "source": "Financial Times",
+      "published": "2025-06-11",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.4566,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings holds steady in volatile market",
+      "url": "https://mock.seekingalpha.com/bac-earnings-holds-steady-in-volatile-market-18",
+      "source": "Seeking Alpha",
+      "published": "2025-06-24",
+      "summary": "[mock] BAC earnings holds steady in volatile market.",
+      "sentiment_score": -0.1009,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of BAC earnings",
+      "url": "https://mock.cnbc.com/regulators-step-up-scrutiny-of-bac-earnings-19",
+      "source": "CNBC",
+      "published": "2025-06-27",
+      "summary": "[mock] Regulators step up scrutiny of BAC earnings.",
+      "sentiment_score": -0.5431,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "BAC earnings faces supply-chain pressure",
+      "url": "https://mock.reuters.com/bac-earnings-faces-supply-chain-pressure-20",
+      "source": "Reuters",
+      "published": "2025-06-12",
+      "summary": "[mock] BAC earnings faces supply-chain pressure.",
+      "sentiment_score": -0.2637,
+      "sentiment_label": "negative"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 1.21,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E16": {
+   "evidence_id": "E16",
+   "tool": "web_search",
+   "args": {
+    "query": "C 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "C 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "C 10-K SEC filing: what investors need to know",
+      "url": "https://mock.bloomberg.com/c-10-k-sec-filing-1",
+      "snippet": "[mock] Bloomberg coverage of C 10-K SEC filing, published 2025-03-04.",
+      "source": "Bloomberg",
+      "published": "2025-03-04"
+     },
+     {
+      "title": "Analysts weigh in on C 10-K SEC filing",
+      "url": "https://mock.bloomberg.com/c-10-k-sec-filing-2",
+      "snippet": "[mock] Bloomberg coverage of C 10-K SEC filing, published 2024-10-15.",
+      "source": "Bloomberg",
+      "published": "2024-10-15"
+     },
+     {
+      "title": "C 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.wsj.com/c-10-k-sec-filing-3",
+      "snippet": "[mock] The Wall Street Journal coverage of C 10-K SEC filing, published 2024-09-26.",
+      "source": "The Wall Street Journal",
+      "published": "2024-09-26"
+     },
+     {
+      "title": "Five takeaways on C 10-K SEC filing",
+      "url": "https://mock.cnbc.com/c-10-k-sec-filing-4",
+      "snippet": "[mock] CNBC coverage of C 10-K SEC filing, published 2025-05-14.",
+      "source": "CNBC",
+      "published": "2025-05-14"
+     },
+     {
+      "title": "Why C 10-K SEC filing matters for the market",
+      "url": "https://mock.finance.yahoo.com/c-10-k-sec-filing-5",
+      "snippet": "[mock] Yahoo Finance coverage of C 10-K SEC filing, published 2024-07-29.",
+      "source": "Yahoo Finance",
+      "published": "2024-07-29"
+     },
+     {
+      "title": "C 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.wsj.com/c-10-k-sec-filing-6",
+      "snippet": "[mock] The Wall Street Journal coverage of C 10-K SEC filing, published 2024-11-10.",
+      "source": "The Wall Street Journal",
+      "published": "2024-11-10"
+     },
+     {
+      "title": "C 10-K SEC filing: what investors need to know",
+      "url": "https://mock.bloomberg.com/c-10-k-sec-filing-7",
+      "snippet": "[mock] Bloomberg coverage of C 10-K SEC filing, published 2025-06-24.",
+      "source": "Bloomberg",
+      "published": "2025-06-24"
+     },
+     {
+      "title": "Analysts weigh in on C 10-K SEC filing",
+      "url": "https://mock.bloomberg.com/c-10-k-sec-filing-8",
+      "snippet": "[mock] Bloomberg coverage of C 10-K SEC filing, published 2025-05-01.",
+      "source": "Bloomberg",
+      "published": "2025-05-01"
+     },
+     {
+      "title": "C 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.cnbc.com/c-10-k-sec-filing-9",
+      "snippet": "[mock] CNBC coverage of C 10-K SEC filing, published 2024-12-18.",
+      "source": "CNBC",
+      "published": "2024-12-18"
+     },
+     {
+      "title": "Five takeaways on C 10-K SEC filing",
+      "url": "https://mock.cnbc.com/c-10-k-sec-filing-10",
+      "snippet": "[mock] CNBC coverage of C 10-K SEC filing, published 2024-11-05.",
+      "source": "CNBC",
+      "published": "2024-11-05"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.502,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E17": {
+   "evidence_id": "E17",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "C earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "C earnings",
+    "lookback_days": 30,
+    "article_count": 20,
+    "overall": {
+     "score": -0.0488,
+     "label": "neutral",
+     "positive": 0.4,
+     "negative": 0.5,
+     "neutral": 0.1
+    },
+    "articles": [
+     {
+      "title": "C earnings beats expectations as demand stays strong",
+      "url": "https://mock.cnbc.com/c-earnings-beats-expectations-as-demand-stays-strong-1",
+      "source": "CNBC",
+      "published": "2025-06-02",
+      "summary": "[mock] C earnings beats expectations as demand stays strong.",
+      "sentiment_score": 0.6534,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on C earnings",
+      "url": "https://mock.reuters.com/analysts-raise-price-targets-on-c-earnings-2",
+      "source": "Reuters",
+      "published": "2025-06-25",
+      "summary": "[mock] Analysts raise price targets on C earnings.",
+      "sentiment_score": 0.5422,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Regulators step up scrutiny of C earnings",
+      "url": "https://mock.bloomberg.com/regulators-step-up-scrutiny-of-c-earnings-3",
+      "source": "Bloomberg",
+      "published": "2025-06-01",
+      "summary": "[mock] Regulators step up scrutiny of C earnings.",
+      "sentiment_score": -0.4788,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.marketwatch.com/c-earnings-unveils-new-products-at-annual-event-4",
+      "source": "MarketWatch",
+      "published": "2025-06-10",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.2858,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "C earnings shares slip amid margin concerns",
+      "url": "https://mock.wsj.com/c-earnings-shares-slip-amid-margin-concerns-5",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-08",
+      "summary": "[mock] C earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.545,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings holds steady in volatile market",
+      "url": "https://mock.finance.yahoo.com/c-earnings-holds-steady-in-volatile-market-6",
+      "source": "Yahoo Finance",
+      "published": "2025-06-15",
+      "summary": "[mock] C earnings holds steady in volatile market.",
+      "sentiment_score": 0.013,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "C earnings shares slip amid margin concerns",
+      "url": "https://mock.finance.yahoo.com/c-earnings-shares-slip-amid-margin-concerns-7",
+      "source": "Yahoo Finance",
+      "published": "2025-06-21",
+      "summary": "[mock] C earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.4316,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.reuters.com/c-earnings-unveils-new-products-at-annual-event-8",
+      "source": "Reuters",
+      "published": "2025-06-25",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.4196,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.cnbc.com/c-earnings-unveils-new-products-at-annual-event-9",
+      "source": "CNBC",
+      "published": "2025-06-10",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.3007,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "C earnings faces supply-chain pressure",
+      "url": "https://mock.marketwatch.com/c-earnings-faces-supply-chain-pressure-10",
+      "source": "MarketWatch",
+      "published": "2025-06-30",
+      "summary": "[mock] C earnings faces supply-chain pressure.",
+      "sentiment_score": -0.3899,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.ft.com/c-earnings-unveils-new-products-at-annual-event-11",
+      "source": "Financial Times",
+      "published": "2025-06-19",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.2568,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "C earnings announces leadership changes",
+      "url": "https://mock.cnbc.com/c-earnings-announces-leadership-changes-12",
+      "source": "CNBC",
+      "published": "2025-06-06",
+      "summary": "[mock] C earnings announces leadership changes.",
+      "sentiment_score": -0.0417,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "C earnings shares slip amid margin concerns",
+      "url": "https://mock.seekingalpha.com/c-earnings-shares-slip-amid-margin-concerns-13",
+      "source": "Seeking Alpha",
+      "published": "2025-06-09",
+      "summary": "[mock] C earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.392,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings shares slip amid margin concerns",
+      "url": "https://mock.marketwatch.com/c-earnings-shares-slip-amid-margin-concerns-14",
+      "source": "MarketWatch",
+      "published": "2025-06-29",
+      "summary": "[mock] C earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.3179,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings faces supply-chain pressure",
+      "url": "https://mock.marketwatch.com/c-earnings-faces-supply-chain-pressure-15",
+      "source": "MarketWatch",
+      "published": "2025-06-19",
+      "summary": "[mock] C earnings faces supply-chain pressure.",
+      "sentiment_score": -0.4393,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings shares slip amid margin concerns",
+      "url": "https://mock.bloomberg.com/c-earnings-shares-slip-amid-margin-concerns-16",
+      "source": "Bloomberg",
+      "published": "2025-06-17",
+      "summary": "[mock] C earnings shares slip amid margin concerns.",
+      "sentiment_score": -0.5244,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of C earnings",
+      "url": "https://mock.reuters.com/regulators-step-up-scrutiny-of-c-earnings-17",
+      "source": "Reuters",
+      "published": "2025-06-07",
+      "summary": "[mock] Regulators step up scrutiny of C earnings.",
+      "sentiment_score": -0.4172,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings holds steady in volatile market",
+      "url": "https://mock.wsj.com/c-earnings-holds-steady-in-volatile-market-18",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-13",
+      "summary": "[mock] C earnings holds steady in volatile market.",
+      "sentiment_score": -0.1354,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.ft.com/c-earnings-unveils-new-products-at-annual-event-19",
+      "source": "Financial Times",
+      "published": "2025-06-11",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.2947,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "C earnings unveils new products at annual event",
+      "url": "https://mock.wsj.com/c-earnings-unveils-new-products-at-annual-event-20",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-23",
+      "summary": "[mock] C earnings unveils new products at annual event.",
+      "sentiment_score": 0.3707,
+      "sentiment_label": "positive"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores.",
+     "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment.",
+     "Fallback data is news coverage of the earnings."
+    ],
+    "fallback_for": "earnings_transcript"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 1.242,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E18": {
+   "evidence_id": "E18",
+   "tool": "web_search",
+   "args": {
+    "query": "C income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "C income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "C income statement financials: what investors need to know",
+      "url": "https://mock.bloomberg.com/c-income-statement-financials-1",
+      "snippet": "[mock] Bloomberg coverage of C income statement financials, published 2025-02-15.",
+      "source": "Bloomberg",
+      "published": "2025-02-15"
+     },
+     {
+      "title": "Analysts weigh in on C income statement financials",
+      "url": "https://mock.cnbc.com/c-income-statement-financials-2",
+      "snippet": "[mock] CNBC coverage of C income statement financials, published 2024-12-23.",
+      "source": "CNBC",
+      "published": "2024-12-23"
+     },
+     {
+      "title": "C income statement financials - latest developments and outlook",
+      "url": "https://mock.cnbc.com/c-income-statement-financials-3",
+      "snippet": "[mock] CNBC coverage of C income statement financials, published 2025-05-09.",
+      "source": "CNBC",
+      "published": "2025-05-09"
+     },
+     {
+      "title": "Five takeaways on C income statement financials",
+      "url": "https://mock.finance.yahoo.com/c-income-statement-financials-4",
+      "snippet": "[mock] Yahoo Finance coverage of C income statement financials, published 2024-09-27.",
+      "source": "Yahoo Finance",
+      "published": "2024-09-27"
+     },
+     {
+      "title": "Why C income statement financials matters for the market",
+      "url": "https://mock.marketwatch.com/c-income-statement-financials-5",
+      "snippet": "[mock] MarketWatch coverage of C income statement financials, published 2024-07-20.",
+      "source": "MarketWatch",
+      "published": "2024-07-20"
+     },
+     {
+      "title": "C income statement financials: risks and opportunities ahead",
+      "url": "https://mock.bloomberg.com/c-income-statement-financials-6",
+      "snippet": "[mock] Bloomberg coverage of C income statement financials, published 2025-03-17.",
+      "source": "Bloomberg",
+      "published": "2025-03-17"
+     },
+     {
+      "title": "C income statement financials: what investors need to know",
+      "url": "https://mock.bloomberg.com/c-income-statement-financials-7",
+      "snippet": "[mock] Bloomberg coverage of C income statement financials, published 2024-10-06.",
+      "source": "Bloomberg",
+      "published": "2024-10-06"
+     },
+     {
+      "title": "Analysts weigh in on C income statement financials",
+      "url": "https://mock.cnbc.com/c-income-statement-financials-8",
+      "snippet": "[mock] CNBC coverage of C income statement financials, published 2024-12-09.",
+      "source": "CNBC",
+      "published": "2024-12-09"
+     },
+     {
+      "title": "C income statement financials - latest developments and outlook",
+      "url": "https://mock.ft.com/c-income-statement-financials-9",
+      "snippet": "[mock] Financial Times coverage of C income statement financials, published 2024-08-02.",
+      "source": "Financial Times",
+      "published": "2024-08-02"
+     },
+     {
+      "title": "Five takeaways on C income statement financials",
+      "url": "https://mock.finance.yahoo.com/c-income-statement-financials-10",
+      "snippet": "[mock] Yahoo Finance coverage of C income statement financials, published 2025-03-14.",
+      "source": "Yahoo Finance",
+      "published": "2025-03-14"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-10-01T20:32:23+00:00",
+   "latency_ms": 0.493,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "JPM"
+   },
+   "ok": true,
+   "latency_ms": 0.169,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "BAC"
+   },
+   "ok": true,
+   "latency_ms": 0.12,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "C"
+   },
+   "ok": true,
+   "latency_ms": 0.111,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "WFC"
+   },
+   "ok": true,
+   "latency_ms": 0.11,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "GS"
+   },
+   "ok": true,
+   "latency_ms": 0.109,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "MS"
+   },
+   "ok": true,
+   "latency_ms": 0.113,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "JPM"
+   },
+   "ok": false,
+   "latency_ms": 0.05,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "company_profile: unknown ticker 'JPM'"
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "JPM"
+   },
+   "ok": false,
+   "latency_ms": 0.05,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for JPM"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.062,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "JPM company profile",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.562,
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "JPM",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.073,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'JPM'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.066,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.053,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "JPM earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.258,
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "JPM 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.554,
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.068,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "BAC"
+   },
+   "ok": false,
+   "latency_ms": 0.044,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "company_profile: unknown ticker 'BAC'"
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "BAC",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.069,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'BAC'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "JPM income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.559,
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.064,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "BAC income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.541,
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.07,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "BAC company profile",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.562,
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.051,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "BAC"
+   },
+   "ok": false,
+   "latency_ms": 0.047,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for BAC"
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "C"
+   },
+   "ok": false,
+   "latency_ms": 0.04,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "company_profile: unknown ticker 'C'"
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "C",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.07,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "financial_data_api: no financial data for ticker 'C'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "BAC 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.56,
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.061,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.059,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "C company profile",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.534,
+   "evidence_id": "E14",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "BAC earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.302,
+   "evidence_id": "E15",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.064,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.05,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "C 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.56,
+   "evidence_id": "E16",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "C"
+   },
+   "ok": false,
+   "latency_ms": 0.046,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "earnings_transcript: no earnings material for C"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "8-K"
+   },
+   "ok": false,
+   "latency_ms": 0.062,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "C earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 1.336,
+   "evidence_id": "E17",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "C income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.552,
+   "evidence_id": "E18",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "company_profile",
+    "title": "JPM, BAC, C, WFC, GS, MS: Company Profile",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "business_overview": "Scripted text for business_overview. [E1]",
+     "financial_summary": "Scripted text for financial_summary. [E1]",
+     "key_executives": "Scripted text for key_executives. [E1]",
+     "recent_developments": "Scripted text for recent_developments. [E1]",
+     "data_gaps_and_limitations": "- JPM has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- BAC has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- C has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Company facts for JPM' (company_profile JPM): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search. [E7] is less reliable than the primary source.\n- Step 'Latest 10-K for JPM' (sec_filing_search JPM, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search. [E9] is less reliable than the primary source.\n- Step 'Earnings call for JPM' (earnings_transcript JPM earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment. [E8] is less reliable than the primary source.\n- Step 'Income statement for JPM' (financial_data_api JPM income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search. [E10] is less reliable than the primary source.\n- Step 'Company facts for BAC' (company_profile BAC): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search. [E12] is less reliable than the primary source.\n- Step 'Income statement for BAC' (financial_data_api BAC income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Company facts for C' (company_profile C): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Latest 10-K for BAC' (sec_filing_search BAC, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search. [E13] is less reliable than the primary source.\n- Step 'Earnings call for BAC' (earnings_transcript BAC earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment. [E15] is less reliable than the primary source.\n- Step 'Latest 10-K for C' (sec_filing_search C, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for C' (earnings_transcript C earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment. [E17] is less reliable than the primary source.\n- Step 'Income statement for C' (financial_data_api C income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search. [E18] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E7] web_search instead of company_profile; [E9] web_search instead of sec_filing_search; [E8] news_sentiment instead of earnings_transcript; [E10] web_search instead of financial_data_api; [E12] web_search instead of company_profile; [E11] web_search instead of financial_data_api; [E14] web_search instead of company_profile; [E13] web_search instead of sec_filing_search; [E15] news_sentiment instead of earnings_transcript; [E16] web_search instead of sec_filing_search; [E17] news_sentiment instead of earnings_transcript; [E18] web_search instead of financial_data_api.\n\n**Scope and assumptions** (the request was ambiguous; the reading used is: Reading the request as US large-cap banks (JPM, BAC, C, WFC, GS, MS), for the latest reported period as of 2026-10-01, covering earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.)\n\n- Scope: US large-cap banks (JPM, BAC, C, WFC, GS, MS).\n- Excluded: non-US banks and regional banks (the query gives no region; the six largest US banks by assets are the most likely reading).\n- Themes: earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n\nQuestions that would have been asked:\n1. Which banks do you mean, and in which region?\n2. Which aspect matters most (for example earnings, risk, valuation, or recent news)?\n3. Which period should the research cover (the latest quarter, the last year, or a specific fiscal year)?\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E7",
+      "title": "web_search: JPM company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E9",
+      "title": "web_search: JPM 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E8",
+      "title": "news_sentiment: JPM earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E10",
+      "title": "web_search: JPM income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E12",
+      "title": "web_search: BAC company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E11",
+      "title": "web_search: BAC income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E14",
+      "title": "web_search: C company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E13",
+      "title": "web_search: BAC 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E15",
+      "title": "news_sentiment: BAC earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E16",
+      "title": "web_search: C 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E17",
+      "title": "news_sentiment: C earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E18",
+      "title": "web_search: C income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 1.186,
+   "evidence_id": "E19",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [
+  [
+   "fallback_failed",
+   {
+    "tool": "company_profile",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "company_profile",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "company_profile",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "company_profile",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "company_profile",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "company_profile",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "sec_filing_search",
+    "error_class": "not_found",
+    "message": "sec_filing_search: no EDGAR filer found for ticker 'C'"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "earnings_transcript",
+    "fallback": "news_sentiment",
+    "error_class": "permanent"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "not_found"
+   }
+  ]
+ ],
+ "failures": [
+  [
+   "company_profile",
+   {
+    "ticker": "JPM"
+   },
+   "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search."
+  ],
+  [
+   "sec_filing_search",
+   {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "JPM earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "JPM income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search."
+  ],
+  [
+   "company_profile",
+   {
+    "ticker": "BAC"
+   },
+   "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "BAC income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search."
+  ],
+  [
+   "company_profile",
+   {
+    "ticker": "C"
+   },
+   "Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search."
+  ],
+  [
+   "sec_filing_search",
+   {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "BAC earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment."
+  ],
+  [
+   "sec_filing_search",
+   {
+    "ticker": "C",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search."
+  ],
+  [
+   "earnings_transcript",
+   {
+    "query": "C earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   },
+   "Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment."
+  ],
+  [
+   "financial_data_api",
+   {
+    "query": "C income statement financials",
+    "num_results": 10
+   },
+   "Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search."
+  ]
+ ],
+ "disambiguation": {
+  "level": "high",
+  "proceed_reading": "Reading the request as US large-cap banks (JPM, BAC, C, WFC, GS, MS), for the latest reported period as of 2026-10-01, covering earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.",
+  "assumptions": [
+   "Scope: US large-cap banks (JPM, BAC, C, WFC, GS, MS).",
+   "Excluded: non-US banks and regional banks (the query gives no region; the six largest US banks by assets are the most likely reading).",
+   "Themes: earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.",
+   "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+  ],
+  "clarifying_questions": [
+   "Which banks do you mean, and in which region?",
+   "Which aspect matters most (for example earnings, risk, valuation, or recent news)?",
+   "Which period should the research cover (the latest quarter, the last year, or a specific fiscal year)?"
+  ],
+  "tickers": [
+   "JPM",
+   "BAC",
+   "C",
+   "WFC",
+   "GS",
+   "MS"
+  ],
+  "timeframe": "latest reported period as of 2026-10-01",
+  "themes": [
+   "earnings and net interest margin",
+   "credit quality and provisions",
+   "capital and stress-test results",
+   "the regulatory agenda"
+  ],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [
+  "Step 'Company facts for JPM' (company_profile JPM): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search. [E7] is less reliable than the primary source.",
+  "Step 'Latest 10-K for JPM' (sec_filing_search JPM, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search. [E9] is less reliable than the primary source.",
+  "Step 'Earnings call for JPM' (earnings_transcript JPM earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment. [E8] is less reliable than the primary source.",
+  "Step 'Income statement for JPM' (financial_data_api JPM income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search. [E10] is less reliable than the primary source.",
+  "Step 'Company facts for BAC' (company_profile BAC): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search. [E12] is less reliable than the primary source.",
+  "Step 'Income statement for BAC' (financial_data_api BAC income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search. [E11] is less reliable than the primary source.",
+  "Step 'Company facts for C' (company_profile C): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search. [E14] is less reliable than the primary source.",
+  "Step 'Latest 10-K for BAC' (sec_filing_search BAC, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search. [E13] is less reliable than the primary source.",
+  "Step 'Earnings call for BAC' (earnings_transcript BAC earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment. [E15] is less reliable than the primary source.",
+  "Step 'Latest 10-K for C' (sec_filing_search C, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search. [E16] is less reliable than the primary source.",
+  "Step 'Earnings call for C' (earnings_transcript C earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment. [E17] is less reliable than the primary source.",
+  "Step 'Income statement for C' (financial_data_api C income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search. [E18] is less reliable than the primary source."
+ ],
+ "verification": {
+  "checked": 0,
+  "supported": 0,
+  "partially_supported": 0,
+  "unsupported": 0,
+  "unverifiable": 0,
+  "uncited": 0,
+  "auto_cited": 0,
+  "flagged": []
+ },
+ "report_checks": {
+  "missing_sections": [],
+  "unknown_citations": [
+   "E1"
+  ],
+  "uncited_sources": []
+ },
+ "trace_path": "C:\\Users\\user\\AppData\\Local\\Temp\\ara_tokens_rf_3loe5\\traces\\session-20261001-203223-aa89.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-10-01T20:32:23.942+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Report type 'company_profile' (ambiguous, sector); companies not identified; ambiguity 1.00 (high: +0.45: no company or ticker could be resolved; +0.20: the request names a group (banks) but no companies; +0.15: no explicit aspect or metric (revenue, risk, margin, ...); +0.10: no timeframe stated; +0.10: very short query).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-10-01T20:32:23.945+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "disambiguate",
+   "rationale": "Reading the request as US large-cap banks (JPM, BAC, C, WFC, GS, MS), for the latest reported period as of 2026-10-01, covering earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.",
+   "assumptions": [
+    "Scope: US large-cap banks (JPM, BAC, C, WFC, GS, MS).",
+    "Excluded: non-US banks and regional banks (the query gives no region; the six largest US banks by assets are the most likely reading).",
+    "Themes: earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.",
+    "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+   ],
+   "questions": [
+    "Which banks do you mean, and in which region?",
+    "Which aspect matters most (for example earnings, risk, valuation, or recent news)?",
+    "Which period should the research cover (the latest quarter, the last year, or a specific fiscal year)?"
+   ]
+  },
+  {
+   "seq": 4,
+   "ts": "2026-10-01T20:32:23.945+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "JPM"
+   }
+  },
+  {
+   "seq": 5,
+   "ts": "2026-10-01T20:32:23.945+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 0.169
+  },
+  {
+   "seq": 6,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "BAC"
+   }
+  },
+  {
+   "seq": 7,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 0.12
+  },
+  {
+   "seq": 8,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "C"
+   }
+  },
+  {
+   "seq": 9,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 0.111
+  },
+  {
+   "seq": 10,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "WFC"
+   }
+  },
+  {
+   "seq": 11,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 0.11
+  },
+  {
+   "seq": 12,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "GS"
+   }
+  },
+  {
+   "seq": 13,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 0.109
+  },
+  {
+   "seq": 14,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "What's happening with the banks?",
+    "top_k": 3,
+    "ticker": "MS"
+   }
+  },
+  {
+   "seq": 15,
+   "ts": "2026-10-01T20:32:23.946+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 0.113
+  },
+  {
+   "seq": 16,
+   "ts": "2026-10-01T20:32:23.947+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Memory recall found 0 prior finding(s).",
+   "node": "recall"
+  },
+  {
+   "seq": 17,
+   "ts": "2026-10-01T20:32:23.947+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1930,
+   "completion_tokens": 472,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for JPM\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"JPM\"}, \"depends_on\": [], \"reason\": \"Company facts for JPM\"}, {\"id\": \"s2"
+  },
+  {
+   "seq": 18,
+   "ts": "2026-10-01T20:32:23.947+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{\"rationale\": \"scripted\", \"steps\": [{\"id\": \"s1\", \"goal\": \"Company facts for JPM\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"JPM\"}, \"depends_on\": [], \"reason\": \"Company facts for JPM\"}, {\"id\": \"s2\", \"goal\": \"Income statement for JPM\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for JPM\"}, {\"id\": \"s3\", \"goal\": \"Earnings call for JPM\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for JPM\"}, {\"id\": \"s4\", \"goal\": \"Latest 10-K for JPM\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"JPM\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for JPM\"}, {\"id\": \"s5\", \"goal\": \"Company facts for BAC\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"BAC\"}, \"depends_on\": [], \"reason\": \"Company facts for BAC\"}, {\"id\": \"s6\", \"goal\": \"Income statement for BAC\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for BAC\"}, {\"id\": \"s7\", \"goal\": \"Earnings call for BAC\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for BAC\"}, {\"id\": \"s8\", \"goal\": \"Latest 10-K for BAC\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"BAC\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for BAC\"}, {\"id\": \"s9\", \"goal\": \"Company facts for C\", \"tool\": \"company_profile\", \"args\": {\"ticker\": \"C\"}, \"depends_on\": [], \"reason\": \"Company facts for C\"}, {\"id\": \"s10\", \"goal\": \"Income statement for C\", \"tool\": \"financial_data_api\", \"args\": null, \"depends_on\": [], \"reason\": \"Income statement for C\"}, {\"id\": \"s11\", \"goal\": \"Earnings call for C\", \"tool\": \"earnings_transcript\", \"args\": null, \"depends_on\": [], \"reason\": \"Earnings call for C\"}, {\"id\": \"s12\", \"goal\": \"Latest 10-K for C\", \"tool\": \"sec_filing_search\", \"args\": {\"ticker\": \"C\", \"filing_type\": \"10-K\"}, \"depends_on\": [], \"reason\": \"Latest 10-K for C\"}]}"
+  },
+  {
+   "seq": 19,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "scripted",
+   "steps": 12
+  },
+  {
+   "seq": 20,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for JPM",
+   "step_id": "s1",
+   "args": {
+    "ticker": "JPM"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 21,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for JPM",
+   "step_id": "s2",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 22,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for JPM",
+   "step_id": "s3",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 23,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for JPM",
+   "step_id": "s4",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 24,
+   "ts": "2026-10-01T20:32:23.948+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for BAC",
+   "step_id": "s5",
+   "args": {
+    "ticker": "BAC"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 25,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for BAC",
+   "step_id": "s6",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 26,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for BAC",
+   "step_id": "s7",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 27,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for BAC",
+   "step_id": "s8",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 28,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company facts for C",
+   "step_id": "s9",
+   "args": {
+    "ticker": "C"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 29,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Income statement for C",
+   "step_id": "s10",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 30,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "earnings_transcript",
+   "rationale": "Earnings call for C",
+   "step_id": "s11",
+   "args": null,
+   "depends_on": []
+  },
+  {
+   "seq": 31,
+   "ts": "2026-10-01T20:32:23.949+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest 10-K for C",
+   "step_id": "s12",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 32,
+   "ts": "2026-10-01T20:32:23.950+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s2",
+   "prompt_tokens": 1695,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 33,
+   "ts": "2026-10-01T20:32:23.950+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s2"
+  },
+  {
+   "seq": 34,
+   "ts": "2026-10-01T20:32:23.950+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s3",
+   "prompt_tokens": 1684,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 35,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s3"
+  },
+  {
+   "seq": 36,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "JPM"
+   }
+  },
+  {
+   "seq": 37,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "company_profile",
+   "error_kind": "execution_error",
+   "message": "company_profile: unknown ticker 'JPM'",
+   "latency_ms": 0.05
+  },
+  {
+   "seq": 38,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 39,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'",
+   "latency_ms": 0.062
+  },
+  {
+   "seq": 40,
+   "ts": "2026-10-01T20:32:23.951+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=company_profile, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "seq": 41,
+   "ts": "2026-10-01T20:32:23.952+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM company profile",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 42,
+   "ts": "2026-10-01T20:32:23.953+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "JPM"
+   }
+  },
+  {
+   "seq": 43,
+   "ts": "2026-10-01T20:32:23.953+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for JPM",
+   "latency_ms": 0.05
+  },
+  {
+   "seq": 44,
+   "ts": "2026-10-01T20:32:23.953+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 45,
+   "ts": "2026-10-01T20:32:23.953+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'",
+   "latency_ms": 0.066
+  },
+  {
+   "seq": 46,
+   "ts": "2026-10-01T20:32:23.953+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "seq": 47,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "JPM earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 48,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 49,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "JPM",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 50,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "latency_ms": 0.562
+  },
+  {
+   "seq": 51,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=company_profile, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 52,
+   "ts": "2026-10-01T20:32:23.955+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'",
+   "latency_ms": 0.053
+  },
+  {
+   "seq": 53,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 54,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E9",
+   "cache_hit": false,
+   "latency_ms": 0.554
+  },
+  {
+   "seq": 55,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 56,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'JPM'",
+   "latency_ms": 0.073
+  },
+  {
+   "seq": 57,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E8",
+   "cache_hit": false,
+   "latency_ms": 1.258
+  },
+  {
+   "seq": 58,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 59,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s4 done: sec_filing_search returned E9",
+   "step_id": "s4"
+  },
+  {
+   "seq": 60,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "JPM",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 61,
+   "ts": "2026-10-01T20:32:23.956+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s1 done: company_profile returned E7",
+   "step_id": "s1"
+  },
+  {
+   "seq": 62,
+   "ts": "2026-10-01T20:32:23.957+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s6",
+   "prompt_tokens": 1695,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 63,
+   "ts": "2026-10-01T20:32:23.957+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s6"
+  },
+  {
+   "seq": 64,
+   "ts": "2026-10-01T20:32:23.957+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'JPM'",
+   "latency_ms": 0.068
+  },
+  {
+   "seq": 65,
+   "ts": "2026-10-01T20:32:23.957+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'JPM'"
+  },
+  {
+   "seq": 66,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "JPM income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 67,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E10",
+   "cache_hit": false,
+   "latency_ms": 0.559
+  },
+  {
+   "seq": 68,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s3 done: earnings_transcript returned E8",
+   "step_id": "s3"
+  },
+  {
+   "seq": 69,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "BAC"
+   }
+  },
+  {
+   "seq": 70,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "BAC",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 71,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'BAC'",
+   "latency_ms": 0.069
+  },
+  {
+   "seq": 72,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 73,
+   "ts": "2026-10-01T20:32:23.958+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'",
+   "latency_ms": 0.064
+  },
+  {
+   "seq": 74,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "seq": 75,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 76,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E11",
+   "cache_hit": false,
+   "latency_ms": 0.541
+  },
+  {
+   "seq": 77,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 78,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s7",
+   "prompt_tokens": 1684,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 79,
+   "ts": "2026-10-01T20:32:23.959+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "company_profile",
+   "error_kind": "execution_error",
+   "message": "company_profile: unknown ticker 'BAC'",
+   "latency_ms": 0.044
+  },
+  {
+   "seq": 80,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 81,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'",
+   "latency_ms": 0.07
+  },
+  {
+   "seq": 82,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=company_profile, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "seq": 83,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC company profile",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 84,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E12",
+   "cache_hit": false,
+   "latency_ms": 0.562
+  },
+  {
+   "seq": 85,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=company_profile, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 86,
+   "ts": "2026-10-01T20:32:23.960+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 87,
+   "ts": "2026-10-01T20:32:23.961+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s2 done: financial_data_api returned E10",
+   "step_id": "s2"
+  },
+  {
+   "seq": 88,
+   "ts": "2026-10-01T20:32:23.961+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s7"
+  },
+  {
+   "seq": 89,
+   "ts": "2026-10-01T20:32:23.961+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s5 done: company_profile returned E12",
+   "step_id": "s5"
+  },
+  {
+   "seq": 90,
+   "ts": "2026-10-01T20:32:23.961+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s6 done: financial_data_api returned E11",
+   "step_id": "s6"
+  },
+  {
+   "seq": 91,
+   "ts": "2026-10-01T20:32:23.962+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s10",
+   "prompt_tokens": 1695,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "financial_data_api"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 92,
+   "ts": "2026-10-01T20:32:23.962+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['financial_data_api']",
+   "node": "execute",
+   "step_id": "s10"
+  },
+  {
+   "seq": 93,
+   "ts": "2026-10-01T20:32:23.962+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "C"
+   }
+  },
+  {
+   "seq": 94,
+   "ts": "2026-10-01T20:32:23.962+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 95,
+   "ts": "2026-10-01T20:32:23.962+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'",
+   "latency_ms": 0.051
+  },
+  {
+   "seq": 96,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "BAC 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 97,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E13",
+   "cache_hit": false,
+   "latency_ms": 0.56
+  },
+  {
+   "seq": 98,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "BAC"
+   }
+  },
+  {
+   "seq": 99,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for BAC",
+   "latency_ms": 0.047
+  },
+  {
+   "seq": 100,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "BAC",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 101,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'BAC'",
+   "latency_ms": 0.061
+  },
+  {
+   "seq": 102,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "statement_type": "income_statement",
+    "ticker": "C",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 103,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "company_profile",
+   "error_kind": "execution_error",
+   "message": "company_profile: unknown ticker 'C'",
+   "latency_ms": 0.04
+  },
+  {
+   "seq": 104,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 105,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'C'",
+   "latency_ms": 0.059
+  },
+  {
+   "seq": 106,
+   "ts": "2026-10-01T20:32:23.963+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=company_profile, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "seq": 107,
+   "ts": "2026-10-01T20:32:23.964+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "C company profile",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 108,
+   "ts": "2026-10-01T20:32:23.964+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E14",
+   "cache_hit": false,
+   "latency_ms": 0.534
+  },
+  {
+   "seq": 109,
+   "ts": "2026-10-01T20:32:23.964+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=company_profile, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 110,
+   "ts": "2026-10-01T20:32:23.964+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 111,
+   "ts": "2026-10-01T20:32:23.964+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'BAC'"
+  },
+  {
+   "seq": 112,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "financial_data_api: no financial data for ticker 'C'",
+   "latency_ms": 0.07
+  },
+  {
+   "seq": 113,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s9 done: company_profile returned E14",
+   "step_id": "s9"
+  },
+  {
+   "seq": 114,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s8 done: sec_filing_search returned E13",
+   "step_id": "s8"
+  },
+  {
+   "seq": 115,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "BAC earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 116,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E15",
+   "cache_hit": false,
+   "latency_ms": 1.302
+  },
+  {
+   "seq": 117,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 118,
+   "ts": "2026-10-01T20:32:23.966+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 119,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'C'",
+   "latency_ms": 0.05
+  },
+  {
+   "seq": 120,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "C 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 121,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E16",
+   "cache_hit": false,
+   "latency_ms": 0.56
+  },
+  {
+   "seq": 122,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 123,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "execute:s11",
+   "prompt_tokens": 1683,
+   "completion_tokens": 11,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "earnings_transcript"
+   ],
+   "preview": ""
+  },
+  {
+   "seq": 124,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Calling ['earnings_transcript']",
+   "node": "execute",
+   "step_id": "s11"
+  },
+  {
+   "seq": 125,
+   "ts": "2026-10-01T20:32:23.967+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 126,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'C'",
+   "latency_ms": 0.064
+  },
+  {
+   "seq": 127,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s7 done: earnings_transcript returned E15",
+   "step_id": "s7"
+  },
+  {
+   "seq": 128,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "earnings_transcript",
+   "args": {
+    "ticker": "C"
+   }
+  },
+  {
+   "seq": 129,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "earnings_transcript",
+   "error_kind": "execution_error",
+   "message": "earnings_transcript: no earnings material for C",
+   "latency_ms": 0.046
+  },
+  {
+   "seq": 130,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "C",
+    "filing_type": "8-K"
+   }
+  },
+  {
+   "seq": 131,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: no EDGAR filer found for ticker 'C'",
+   "latency_ms": 0.062
+  },
+  {
+   "seq": 132,
+   "ts": "2026-10-01T20:32:23.968+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=earnings_transcript, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "seq": 133,
+   "ts": "2026-10-01T20:32:23.969+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "C earnings",
+    "num_articles": 20,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 134,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=not_found, message=sec_filing_search: no EDGAR filer found for ticker 'C'"
+  },
+  {
+   "seq": 135,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s12 done: sec_filing_search returned E16",
+   "step_id": "s12"
+  },
+  {
+   "seq": 136,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E17",
+   "cache_hit": false,
+   "latency_ms": 1.336
+  },
+  {
+   "seq": 137,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=earnings_transcript, fallback=news_sentiment, error_class=permanent"
+  },
+  {
+   "seq": 138,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "C income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 139,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E18",
+   "cache_hit": false,
+   "latency_ms": 0.552
+  },
+  {
+   "seq": 140,
+   "ts": "2026-10-01T20:32:23.970+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=not_found"
+  },
+  {
+   "seq": 141,
+   "ts": "2026-10-01T20:32:23.971+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s11 done: earnings_transcript returned E17",
+   "step_id": "s11"
+  },
+  {
+   "seq": 142,
+   "ts": "2026-10-01T20:32:23.971+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "step s10 done: financial_data_api returned E18",
+   "step_id": "s10"
+  },
+  {
+   "seq": 143,
+   "ts": "2026-10-01T20:32:23.971+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "deterministic check: all 12 planned step(s) done, no failed or skipped step, no gap noted; review call skipped"
+  },
+  {
+   "seq": 146,
+   "ts": "2026-10-01T20:32:23.992+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "synthesize",
+   "prompt_tokens": 5050,
+   "completion_tokens": 95,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "=== SECTION: executive_summary ===\nScripted text for executive_summary. [E1]\n=== SECTION: business_overview ===\nScripted text for business_overview. [E1]\n=== SECTION: financial_summary ===\nScripted te"
+  },
+  {
+   "seq": 148,
+   "ts": "2026-10-01T20:32:24.003+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "thought",
+   "text": "Reflection: 0 section(s) missing",
+   "node": "reflect"
+  },
+  {
+   "seq": 149,
+   "ts": "2026-10-01T20:32:24.005+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "company_profile",
+    "title": "JPM, BAC, C, WFC, GS, MS: Company Profile",
+    "sections": {
+     "executive_summary": "Scripted text for executive_summary. [E1]",
+     "business_overview": "Scripted text for business_overview. [E1]",
+     "financial_summary": "Scripted text for financial_summary. [E1]",
+     "key_executives": "Scripted text for key_executives. [E1]",
+     "recent_developments": "Scripted text for recent_developments. [E1]",
+     "data_gaps_and_limitations": "- JPM has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- BAC has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- C has no SEC filings (no EDGAR filer was found), so the filing-based sections (Tier 1 sources) are skipped; figures come from web and news sources only, and nothing is estimated to fill the gap.\n- Step 'Company facts for JPM' (company_profile JPM): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'JPM'); data from web_search. [E7] is less reliable than the primary source.\n- Step 'Latest 10-K for JPM' (sec_filing_search JPM, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'JPM'); data from web_search. [E9] is less reliable than the primary source.\n- Step 'Earnings call for JPM' (earnings_transcript JPM earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for JPM); data from news_sentiment. [E8] is less reliable than the primary source.\n- Step 'Income statement for JPM' (financial_data_api JPM income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'JPM'); data from web_search. [E10] is less reliable than the primary source.\n- Step 'Company facts for BAC' (company_profile BAC): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'BAC'); data from web_search. [E12] is less reliable than the primary source.\n- Step 'Income statement for BAC' (financial_data_api BAC income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'BAC'); data from web_search. [E11] is less reliable than the primary source.\n- Step 'Company facts for C' (company_profile C): Fallback: company_profile failed (not_found: company_profile: unknown ticker 'C'); data from web_search. [E14] is less reliable than the primary source.\n- Step 'Latest 10-K for BAC' (sec_filing_search BAC, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'BAC'); data from web_search. [E13] is less reliable than the primary source.\n- Step 'Earnings call for BAC' (earnings_transcript BAC earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for BAC); data from news_sentiment. [E15] is less reliable than the primary source.\n- Step 'Latest 10-K for C' (sec_filing_search C, 10-K): Fallback: sec_filing_search failed (not_found: sec_filing_search: no EDGAR filer found for ticker 'C'); data from web_search. [E16] is less reliable than the primary source.\n- Step 'Earnings call for C' (earnings_transcript C earnings, 20, 30): Fallback: earnings_transcript failed (permanent: earnings_transcript: no earnings material for C); data from news_sentiment. [E17] is less reliable than the primary source.\n- Step 'Income statement for C' (financial_data_api C income statement financials, 10): Fallback: financial_data_api failed (not_found: financial_data_api: no financial data for ticker 'C'); data from web_search. [E18] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 12 step(s), 12 completed. scripted\n- Tools used: company_profile, earnings_transcript, financial_data_api, sec_filing_search; 12 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E7] web_search instead of company_profile; [E9] web_search instead of sec_filing_search; [E8] news_sentiment instead of earnings_transcript; [E10] web_search instead of financial_data_api; [E12] web_search instead of company_profile; [E11] web_search instead of financial_data_api; [E14] web_search instead of company_profile; [E13] web_search instead of sec_filing_search; [E15] news_sentiment instead of earnings_transcript; [E16] web_search instead of sec_filing_search; [E17] news_sentiment instead of earnings_transcript; [E18] web_search instead of financial_data_api.\n\n**Scope and assumptions** (the request was ambiguous; the reading used is: Reading the request as US large-cap banks (JPM, BAC, C, WFC, GS, MS), for the latest reported period as of 2026-10-01, covering earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.)\n\n- Scope: US large-cap banks (JPM, BAC, C, WFC, GS, MS).\n- Excluded: non-US banks and regional banks (the query gives no region; the six largest US banks by assets are the most likely reading).\n- Themes: earnings and net interest margin, credit quality and provisions, capital and stress-test results, the regulatory agenda.\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n\nQuestions that would have been asked:\n1. Which banks do you mean, and in which region?\n2. Which aspect matters most (for example earnings, risk, valuation, or recent news)?\n3. Which period should the research cover (the latest quarter, the last year, or a specific fiscal year)?\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E7",
+      "title": "web_search: JPM company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E9",
+      "title": "web_search: JPM 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E8",
+      "title": "news_sentiment: JPM earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E10",
+      "title": "web_search: JPM income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E12",
+      "title": "web_search: BAC company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E11",
+      "title": "web_search: BAC income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E14",
+      "title": "web_search: C company profile, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E13",
+      "title": "web_search: BAC 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E15",
+      "title": "news_sentiment: BAC earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E16",
+      "title": "web_search: C 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E17",
+      "title": "news_sentiment: C earnings, 20, 30",
+      "source_type": "news",
+      "date": "2026-10-01",
+      "is_mock": true
+     },
+     {
+      "id": "E18",
+      "title": "web_search: C income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-10-01",
+      "is_mock": true
+     }
+    ]
+   }
+  },
+  {
+   "seq": 150,
+   "ts": "2026-10-01T20:32:24.006+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E19",
+   "cache_hit": false,
+   "latency_ms": 1.186
+  },
+  {
+   "seq": 151,
+   "ts": "2026-10-01T20:32:24.007+00:00",
+   "session_id": "session-20261001-203223-aa89",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 0,
+   "facts": 0,
+   "findings": 5
+  }
+ ]
+}

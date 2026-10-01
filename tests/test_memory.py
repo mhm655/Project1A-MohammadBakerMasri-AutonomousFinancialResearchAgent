@@ -132,8 +132,8 @@ BASE = {"ticker": "MSFT", "source_type": "10-K", "date": "2026-06-30"}
 
 def test_long_text_is_split_at_paragraphs_and_sentences():
     text = "\n".join(f"Paragraph {i}. " + "word " * 120 for i in range(6))
-    chunks = split_paragraphs(text)
-    assert all(len(c) <= MAX_CHARS for c in chunks) and len(chunks) >= 3
+    chunks = split_paragraphs(text, 1500)  # the algorithm test uses the pre-Day-13 chunk size its text was written for
+    assert all(len(c) <= 1500 for c in chunks) and len(chunks) >= 3
     assert all(c.startswith("Paragraph") for c in chunks)  # no chunk starts mid-paragraph
 
 
@@ -312,7 +312,7 @@ def test_split_paragraphs_never_truncates_a_sentence_longer_than_a_chunk():
 
 def test_split_paragraphs_keeps_a_short_tail_of_a_long_text():
     text = "Revenue rose sharply. " * 68 + "\nYes, indeed."  # the tail does not fit in the first chunk
-    chunks = split_paragraphs(text)
+    chunks = split_paragraphs(text, 1500)
     assert chunks[-1] == "Yes, indeed."
 
 

@@ -1,0 +1,9 @@
+C1: completed in 34.78s | tools 7 | LLM 2 calls, 11384 tokens | results\runs_day13\live\C1.json
+C2: completed in 51.13s | tools 6 | LLM 3 calls, 12690 tokens | results\runs_day13\live\C2.json
+C3: completed in 139.61s | tools 12 | LLM 5 calls, 16432 tokens | results\runs_day13\live\C3.json
+C4: completed in 220.16s | tools 18 | LLM 8 calls, 24089 tokens | results\runs_day13\live\C4.json
+C5: completed in 84.65s | tools 9 | LLM 5 calls, 20506 tokens | results\runs_day13\live\C5.json
+C6: completed in 28.25s | tools 14 | LLM 2 calls, 10206 tokens | results\runs_day13\live\C6.json
+C7: completed in 121.52s | tools 16 | LLM 4 calls, 28447 tokens | results\runs_day13\live\C7.json
+C8: completed in 79.2s | tools 10 | LLM 8 calls, 26902 tokens | results\runs_day13\live\C8.json
+ALLDONE
