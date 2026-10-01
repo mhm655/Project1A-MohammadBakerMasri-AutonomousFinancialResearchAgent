@@ -399,6 +399,44 @@ def test_verifier_repairs_a_missing_citation_only_when_one_source_matches():
     assert "added by the verifier" in result.report_markdown
 
 
+def test_a_report_cut_off_by_the_output_limit_is_continued():
+    # Day 12 reruns: Groq's Qwen stops at 1,000 output tokens and four sections of C8 were lost.
+    from agent.llm import LLMResponse, TokenUsage
+
+    script = ScriptedLLM()
+    full = None
+
+    def responder(request):
+        nonlocal full
+        prompt = request.messages[-1]["content"]
+        if "[ARA:CONTINUE]" in prompt:
+            rest = full[full.index("=== SECTION: financial_summary ==="):]
+            return LLMResponse(rest, [], "mock", "m", TokenUsage(), 1.0, finish_reason="stop")
+        reply = script(request)
+        if "[ARA:SYNTHESIZE]" in prompt:
+            full = reply
+            cut = full.index("=== SECTION: financial_summary ===") + 60  # stops inside financial_summary
+            return LLMResponse(full[:cut], [], "mock", "m", TokenUsage(), 1.0, finish_reason="length")
+        return reply
+
+    result = make_agent(responder).run(QUERY)
+    assert set(result.sections) >= {"executive_summary", "business_overview", "financial_summary",
+                                    "key_executives", "recent_developments"}
+    assert "Gross margin was 69.76%" in result.sections["financial_summary"]  # rewritten in full
+
+
+def test_verifier_flags_executives_that_no_source_names():
+    # Day 11 evaluation found a live report naming "Charlie Schwab" as Wells Fargo's CEO.
+    text = ("=== SECTION: key_executives ===\n"
+            "Satya Nadella, Chairman and CEO, leads the company.\n"
+            "Charlie Schwab, CFO, oversees finance.\n")
+    result = make_agent(ScriptedLLM(synthesis=text)).run(QUERY)
+    body = result.sections["key_executives"]
+    assert "*(unverified: Charlie Schwab not found in sources)*" in body
+    assert "Satya Nadella not found" not in body
+    assert result.verification["unsupported_names"] == 1
+
+
 @pytest.mark.parametrize("query, template", [
     ("Analyze Apple Inc.'s most recent quarterly earnings. Compare actual results to consensus estimates.",
      "earnings_analysis"),

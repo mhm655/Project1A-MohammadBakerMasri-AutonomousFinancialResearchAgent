@@ -56,13 +56,14 @@ from agent.parser import (
     step_done_note,
 )
 from agent.query_analyzer import KNOWN_COMPANIES, TEMPLATE_RULES, QueryProfile, analyze_query  # noqa: F401
+from agent.references import resolve_references
 from agent.tracing import TraceLogger
 from config.settings import AgentSettings, ResilienceSettings, RetrySettings, Settings, SynthesisSettings
 from memory.context_manager import count_tokens, fit_evidence
 from synthesis.engine import Ledger, build_ledger
 from synthesis.narrative import build_threads, conflicts_markdown, render_brief
 from tools import ToolError, ToolExecutionError, ToolRegistry, ToolResult, ToolValidationError, build_default_registry
-from tools.fact_checker import extract_quantities, fact_checker
+from tools.fact_checker import extract_quantities, fact_checker, unsupported_names
 from tools.report_gen import TEMPLATES, cited_ids, section_title
 
 
@@ -160,6 +161,8 @@ _GUIDANCE = re.compile(r"\b(?:expect|guidance|outlook|anticipate|forecast|next q
 _RISK = re.compile(r"\b(?:headwind|pressure|tariff|competition|competitive|constrain|shortage|decline|slow|"
                    r"uncertain|regulat|recall|risk)", re.IGNORECASE)
 MAX_STATEMENT_CHARS = 320
+#: Follow-up calls allowed when the report text stops at the model's output limit.
+MAX_CONTINUATIONS = 2
 
 
 def salient_statements(segments: list[dict[str, Any]], budget: int) -> list[str]:
@@ -619,14 +622,22 @@ class ResearchAgent:
 
     def _run_step(self, step: PlanStep, plan: Plan) -> None:
         """Run one plan step: a direct call if the arguments are known, else a bounded ReAct loop."""
-        problem = ""
+        problem, resolved_note = "", ""
+        if step.args is not None and step.tool == "calculation_engine":
+            # Planned before the data existed, calculation inputs are often names ("s2.revenue_FY2025");
+            # look them up deterministically instead of spending LLM calls on a repair (Day 11 finding).
+            resolved, resolved_note = resolve_references(step.args, self._financial_data_for(step, plan))
+            if resolved is not None:
+                step.args = resolved
+                self.tracer.decision("resolve_inputs", resolved_note, step_id=step.id)
         if step.args is not None:
             if not (self._time_left() and self._take_call()):
                 return self._finish(step, "skipped", "not run: the time or tool budget ran out")
             step.attempts += 1
             try:
                 result = self._dispatch(step.tool, step.args)
-                return self._finish(step, "done", f"{step.tool} returned {result.evidence_id}", result)
+                return self._finish(step, "done", f"{step.tool} returned {result.evidence_id}"
+                                    + (f"; {resolved_note}" if resolved_note else ""), result)
             except ToolValidationError as exc:
                 problem = str(exc)  # wrong arguments: the LLM can repair these
             except ToolError as exc:
@@ -671,6 +682,15 @@ class ResearchAgent:
             self._stop("tool-call budget exhausted")
         reason = problem or "the call and step budgets ran out"
         return self._finish(step, "failed", f"failed after {step.attempts} attempt(s): {reason[:300]}")
+
+    def _financial_data_for(self, step: PlanStep, plan: Plan) -> list[dict[str, Any]]:
+        """Structured financial data a calculation step can draw on: its dependencies' results,
+        or every financial_data_api result so far when the step declared no dependencies."""
+        ids = [eid for dep in step.depends_on if dep in {s.id for s in plan.steps}
+               for eid in plan.get(dep).evidence_ids]
+        with self._lock:
+            records = [self.evidence[e] for e in ids if e in self.evidence] or list(self.evidence.values())
+        return [r.data for r in records if r.tool == "financial_data_api"]
 
     def _finish(self, step: PlanStep, status: str, summary: str, result: ToolResult | None = None) -> None:
         step.status, step.summary = status, summary
@@ -749,7 +769,29 @@ class ResearchAgent:
         except LLMError as exc:
             self.gaps.append(f"The report text could not be written: {str(exc)[:200]}")
             return {"sections": {}}
-        return {"sections": parse_sections(reply.content, sections_needed)}
+        sections = parse_sections(reply.content, sections_needed)
+        # A fallback model with a small output cap (Groq's Qwen: 1,000 tokens) stops mid-report; Day 12
+        # reruns lost 2-4 sections that way. Ask it to carry on: the cut section is rewritten in full.
+        for attempt in range(MAX_CONTINUATIONS):
+            missing = [s for s in sections_needed if s not in sections]
+            if reply.finish_reason != "length" or not missing or not self._time_left_to_write():
+                break
+            written = [s for s in sections_needed if s in sections]
+            todo = written[-1:] + missing  # the last section was probably cut off: write it again
+            self.tracer.thought(f"Synthesis was cut off by the output limit; continuing with {todo}",
+                                node="synthesize", attempt=attempt + 1)
+            try:
+                reply = self._llm(prompts.continue_prompt(prompt, written=written, todo=todo),
+                                  purpose="synthesize:continue", writing=True, reasoning_effort="low",
+                                  max_tokens=6000)
+            except LLMError as exc:
+                self.gaps.append(f"The report was cut off and could not be completed: {str(exc)[:200]}")
+                break
+            sections.update(parse_sections(reply.content, todo))
+        return {"sections": sections}
+
+    def _time_left_to_write(self) -> bool:
+        return self._clock() < self._deadline - 15  # a continuation call needs a few seconds
 
     def _node_verify(self, state: ResearchState) -> ResearchState:
         """Fact-check every sentence that contains a number (spec A4.3 verification pipeline)."""
@@ -758,6 +800,7 @@ class ResearchAgent:
                  "uncited": 0, "auto_cited": 0}
         flagged: list[str] = []
         digests = {eid: verification_text(r) for eid, r in self.evidence.items()}
+        all_sources = list(digests.values())
         for key, body in sections.items():
             # Claims come in document order; each edit is made at the claim's own position. A plain
             # str.replace(claim, ..., 1) hits the first occurrence, so a repeated sentence would be
@@ -767,6 +810,16 @@ class ResearchAgent:
                 at = body.find(claim, cursor)
                 if at != -1:
                     cursor = at + len(claim)
+                # A model can invent a plausible executive ("Charlie Schwab, CEO" of Wells Fargo), so a
+                # named officer must appear in some source, just as a figure must.
+                invented = unsupported_names(claim, all_sources)
+                if invented:
+                    tally["unsupported_names"] = tally.get("unsupported_names", 0) + len(invented)
+                    flagged.append(f"{section_title(key)}: name not in any source ({', '.join(invented)}): "
+                                   f"{claim[:120]}")
+                    marked = _mark(claim, f"unverified: {', '.join(invented)} not found in sources")
+                    body, cursor = _replace_at(body, at, claim, marked, cursor)
+                    claim = marked
                 quantities = extract_quantities(claim)
                 if not quantities:
                     continue

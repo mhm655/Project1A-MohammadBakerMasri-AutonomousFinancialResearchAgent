@@ -184,6 +184,15 @@ def synthesize_prompt(*, query: str, evidence: str, sections: list[str], brief: 
                                     brief=f"\n{brief}\n" if brief else "")
 
 
+def continue_prompt(synthesis_prompt: str, *, written: list[str], todo: list[str]) -> str:
+    """Ask for the rest of a report whose first answer hit the model's output limit."""
+    done = ", ".join(written[:-1]) or "none"
+    return (f"{synthesis_prompt}\n\n[ARA:CONTINUE]\nYour previous answer was cut off by the output limit. "
+            f"These sections are complete and must not be repeated: {done}.\n"
+            f"Write ONLY these sections now, in this order and in the same `=== SECTION: <section_key> ===` "
+            f"format (the first one was cut off, so write it again in full): {', '.join(todo)}.")
+
+
 def compact_json(data: Any, limit: int) -> str:
     """JSON text for a prompt, truncated to ``limit`` characters."""
     text = json.dumps(data, default=str, separators=(",", ":"))
