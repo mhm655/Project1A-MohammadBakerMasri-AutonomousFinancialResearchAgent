@@ -1,9 +1,10 @@
 {
- "generated_at": "2026-10-01T00:10:19+00:00",
+ "generated_at": "2026-10-01T18:23:20+00:00",
  "judge": {
   "enabled": true,
   "errors": {}
  },
+ "skipped": {},
  "runs": [
   {
    "id": "C1",
@@ -24,15 +25,13 @@
      "id": "FA-1",
      "name": "Numerical Accuracy Rate",
      "category": "Factual Accuracy",
-     "value": 0.9444,
+     "value": 1.0,
      "target": ">= 98%",
-     "passed": false,
+     "passed": true,
      "method": "automated",
      "unit": "ratio",
-     "detail": "17 of 18 numeric claims match their cited source (or, if uncited, any evidence)",
-     "examples": [
-      "Net margin: 40.3 % in FY2026 (up from 36.1 % in FY2025)[E4]"
-     ]
+     "detail": "18 of 18 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
     },
     {
      "id": "FA-2",
@@ -67,22 +66,20 @@
      "passed": true,
      "method": "automated",
      "unit": "ratio",
-     "detail": "11 of 11 entities verified (0 tickers, 1 companies, 10 executive names)",
+     "detail": "9 of 9 entities verified (0 tickers, 1 companies, 8 executive names)",
      "examples": []
     },
     {
      "id": "FA-5",
      "name": "Hallucination Rate",
      "category": "Factual Accuracy",
-     "value": 1,
+     "value": 0,
      "target": "0",
-     "passed": false,
+     "passed": true,
      "method": "automated",
      "unit": "count",
-     "detail": "1 of 18 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
-     "examples": [
-      "Net margin: 40.3 % in FY2026 (up from 36.1 % in FY2025)[E4]"
-     ]
+     "detail": "0 of 18 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
     },
     {
      "id": "CO-1",
@@ -639,15 +636,13 @@
      "id": "FA-1",
      "name": "Numerical Accuracy Rate",
      "category": "Factual Accuracy",
-     "value": 0.9231,
+     "value": 1.0,
      "target": ">= 98%",
-     "passed": false,
+     "passed": true,
      "method": "automated",
      "unit": "ratio",
-     "detail": "12 of 13 numeric claims match their cited source (or, if uncited, any evidence)",
-     "examples": [
-      "**Earnings volatility** \u2013 Net income fell 46.5 % year-over-year despite a smaller revenue decline, underscoring sensitivity to margin swings and one-off item..."
-     ]
+     "detail": "13 of 13 numeric claims match their cited source (or, if uncited, any evidence)",
+     "examples": []
     },
     {
      "id": "FA-2",
@@ -691,15 +686,13 @@
      "id": "FA-5",
      "name": "Hallucination Rate",
      "category": "Factual Accuracy",
-     "value": 1,
+     "value": 0,
      "target": "0",
-     "passed": false,
+     "passed": true,
      "method": "automated",
      "unit": "count",
-     "detail": "1 of 13 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
-     "examples": [
-      "**Earnings volatility** \u2013 Net income fell 46.5 % year-over-year despite a smaller revenue decline, underscoring sensitivity to margin swings and one-off item..."
-     ]
+     "detail": "0 of 13 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
+     "examples": []
     },
     {
      "id": "CO-1",
@@ -1591,45 +1584,45 @@
      "unit": "ratio",
      "detail": "23 of 24 numeric claims match their cited source (or, if uncited, any evidence)",
      "examples": [
-      "BAC\u2019s margin expansion (+1.5 pp) suggests improved pricing or cost efficiencies [E13, E21]."
+      "GS shows the strongest margin improvement (+2.6 pp) alongside the highest revenue growth rate among peers [E18, E21]."
      ]
     },
     {
      "id": "FA-2",
      "name": "Citation Accuracy",
      "category": "Factual Accuracy",
-     "value": 1.0,
+     "value": 0.9286,
      "target": "100%",
-     "passed": true,
+     "passed": false,
      "method": "automated",
      "unit": "ratio",
-     "detail": "14 of 14 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
-     "examples": []
+     "detail": "13 of 14 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)",
+     "examples": [
+      "E21: no citing sentence is supported"
+     ]
     },
     {
      "id": "FA-3",
      "name": "Temporal Accuracy",
      "category": "Factual Accuracy",
-     "value": 0.8333,
+     "value": 1.0,
      "target": "100%",
-     "passed": false,
+     "passed": true,
      "method": "automated",
      "unit": "ratio",
-     "detail": "5 of 6 period-bearing numeric claims use a period present in their cited evidence",
-     "examples": [
-      "*Growth rates are taken from the resolved brief or calculated by the engine (e.g., JPM CAGR 7.4% over FY2023-FY2025) [E20]."
-     ]
+     "detail": "6 of 6 period-bearing numeric claims use a period present in their cited evidence",
+     "examples": []
     },
     {
      "id": "FA-4",
      "name": "Entity Accuracy",
      "category": "Factual Accuracy",
-     "value": 0.8571,
+     "value": 0.85,
      "target": "100%",
      "passed": false,
      "method": "automated",
      "unit": "ratio",
-     "detail": "18 of 21 entities verified (6 tickers, 7 companies, 8 executive names)",
+     "detail": "17 of 20 entities verified (6 tickers, 7 companies, 7 executive names)",
      "examples": [
       "unverified entity: Brian M. Moynihan",
       "unverified entity: Charlie Schwab",
@@ -1647,7 +1640,7 @@
      "unit": "count",
      "detail": "1 of 24 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record",
      "examples": [
-      "BAC\u2019s margin expansion (+1.5 pp) suggests improved pricing or cost efficiencies [E13, E21]."
+      "GS shows the strongest margin improvement (+2.6 pp) alongside the highest revenue growth rate among peers [E18, E21]."
      ]
     },
     {
@@ -1678,12 +1671,12 @@
      "id": "CO-3",
      "name": "Temporal Coverage",
      "category": "Completeness",
-     "value": 12,
+     "value": 3,
      "target": ">= 3 years",
      "passed": true,
      "method": "automated",
      "unit": "years",
-     "detail": "years 2014-2025 appear in numeric claims/tables",
+     "detail": "years 2023-2025 appear in numeric claims/tables",
      "examples": []
     },
     {
@@ -1858,11 +1851,11 @@
      "name": "Latency",
      "category": "Agent Behaviour",
      "value": 83.5,
-     "target": "< 300 s",
+     "target": "< 600 s",
      "passed": true,
      "method": "automated",
      "unit": "seconds",
-     "detail": "single-company run, limit 300 s",
+     "detail": "multi-company run, limit 600 s",
      "examples": []
     }
    ]
@@ -2481,30 +2474,30 @@
    "category": "Factual Accuracy",
    "target": ">= 98%",
    "unit": "ratio",
-   "passed": 4,
+   "passed": 6,
    "measured": 8,
    "n": 8,
-   "mean": 0.9686125
+   "mean": 0.985175
   },
   "FA-2": {
    "name": "Citation Accuracy",
    "category": "Factual Accuracy",
    "target": "100%",
    "unit": "ratio",
-   "passed": 5,
+   "passed": 4,
    "measured": 8,
    "n": 8,
-   "mean": 0.9226125
+   "mean": 0.9136875
   },
   "FA-3": {
    "name": "Temporal Accuracy",
    "category": "Factual Accuracy",
    "target": "100%",
    "unit": "ratio",
-   "passed": 7,
+   "passed": 8,
    "measured": 8,
    "n": 8,
-   "mean": 0.9791625
+   "mean": 1.0
   },
   "FA-4": {
    "name": "Entity Accuracy",
@@ -2514,17 +2507,17 @@
    "passed": 7,
    "measured": 8,
    "n": 8,
-   "mean": 0.9821375
+   "mean": 0.98125
   },
   "FA-5": {
    "name": "Hallucination Rate",
    "category": "Factual Accuracy",
    "target": "0",
    "unit": "count",
-   "passed": 4,
+   "passed": 6,
    "measured": 8,
    "n": 8,
-   "mean": 0.5
+   "mean": 0.25
   },
   "CO-1": {
    "name": "Section Coverage",
@@ -2554,7 +2547,7 @@
    "passed": 6,
    "measured": 8,
    "n": 8,
-   "mean": 4.25
+   "mean": 3.125
   },
   "CO-4": {
    "name": "Risk Factor Coverage",
@@ -2709,10 +2702,10 @@
  },
  "summary": {
   "metrics_total": 23,
-  "pass_rate": 0.5114942528735632,
+  "pass_rate": 0.5344827586206896,
   "by_category": {
    "Factual Accuracy": {
-    "passed": 27,
+    "passed": 31,
     "measured": 40
    },
    "Completeness": {

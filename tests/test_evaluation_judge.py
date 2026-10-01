@@ -179,3 +179,10 @@ def test_gold_facts_file_is_well_formed():
             if f["kind"] == "qualitative":
                 assert 3 <= len(f["keywords"]) <= 5
     assert gold_for("C99") is None
+
+
+def test_compare_possessive_company_name_is_not_a_segment_qualifier():
+    # "Microsoft's revenue" used to read as a segment ("s revenue") and so never counted as a conflict.
+    report = "Microsoft’s revenue was $250.0 billion in fiscal 2025.\n"
+    result = compare({"report_markdown": report}, GOLD)
+    assert result.examples == ["report says $250.0 billion, gold says Revenue FY2025 $281.7B [rev]"]

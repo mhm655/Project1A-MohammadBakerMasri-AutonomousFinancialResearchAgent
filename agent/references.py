@@ -13,6 +13,7 @@ says so. Anything it cannot resolve unambiguously is left to the LLM, as before.
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Any
 
@@ -69,7 +70,9 @@ def resolve_references(args: dict[str, Any], sources: list[dict[str, Any]]) -> t
                 if not isinstance(value, (int, float)) or not isinstance(key_year, int):
                     continue
                 key = (metric, key_year, period)
-                table[key] = value if table.get(key, value) == value else None
+                # Float noise between providers (4475.45 vs 4475.450000001) is the same figure, not a conflict.
+                seen = table.get(key, value)
+                table[key] = seen if seen is not None and math.isclose(seen, value, rel_tol=1e-9) else None
     if not table:
         return None, ""
     metrics = {m for m, _, _ in table}

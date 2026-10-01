@@ -774,9 +774,10 @@ class ResearchAgent:
         # reruns lost 2-4 sections that way. Ask it to carry on: the cut section is rewritten in full.
         for attempt in range(MAX_CONTINUATIONS):
             missing = [s for s in sections_needed if s not in sections]
-            if reply.finish_reason != "length" or not missing or not self._time_left_to_write():
-                break
             written = [s for s in sections_needed if s in sections]
+            # A cut can also land inside the final section, leaving nothing "missing" but it unfinished.
+            if reply.finish_reason != "length" or not (missing or written) or not self._time_left_to_write():
+                break
             todo = written[-1:] + missing  # the last section was probably cut off: write it again
             self.tracer.thought(f"Synthesis was cut off by the output limit; continuing with {todo}",
                                 node="synthesize", attempt=attempt + 1)
@@ -787,7 +788,12 @@ class ResearchAgent:
             except LLMError as exc:
                 self.gaps.append(f"The report was cut off and could not be completed: {str(exc)[:200]}")
                 break
-            sections.update(parse_sections(reply.content, todo))
+            # Only the sections asked for: a model that also repeats a finished section must not replace
+            # good text, and a rewrite cut off again must not replace a longer one.
+            for key, text in parse_sections(reply.content, todo).items():
+                if key in todo and not (key in sections and reply.finish_reason == "length"
+                                        and len(text) < len(sections[key])):
+                    sections[key] = text
         return {"sections": sections}
 
     def _time_left_to_write(self) -> bool:

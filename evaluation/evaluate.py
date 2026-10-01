@@ -22,6 +22,7 @@ def _backends() -> SimpleNamespace:
     """Import scoring backends lazily (they are separate modules; tests substitute fakes here)."""
     from evaluation import benchmark, judge, metrics
     return SimpleNamespace(Run=metrics.Run, score_run=metrics.score_run, judge_bundle=judge.judge_bundle,
+                           is_cached=judge.is_cached,
                            JudgeError=judge.JudgeError, gold_for=benchmark.gold_for, compare=benchmark.compare)
 
 
@@ -69,13 +70,20 @@ def _run_entry(bundle: dict[str, Any], metrics: list[dict[str, Any]]) -> dict[st
 def evaluate_dir(runs_dir: Path, ids: list[str] | None, *, use_judge: bool, force_judge: bool,
                  pause: float) -> dict[str, Any]:
     be = _backends()
+    wanted = {i.upper() for i in ids} if ids else None
     runs: list[tuple[int, Any]] = []
+    skipped: dict[str, str] = {}
     for path in sorted(runs_dir.glob("C*.json")):
-        run = be.Run.load(path)
-        ch = run.bundle.get("challenge", {})
-        if ids and ch.get("id") not in ids:
+        try:
+            run = be.Run.load(path)
+            ch = run.bundle["challenge"]
+            cid = ch["id"]
+        except Exception as exc:  # empty/truncated/malformed bundle: skip it, keep scoring the rest
+            skipped[path.name] = f"{type(exc).__name__}: {exc}"
             continue
-        runs.append((ch.get("number", 0), run))
+        if wanted and str(cid).upper() not in wanted:
+            continue
+        runs.append((ch.get("number") or 0, run))
     runs.sort(key=lambda t: t[0])
 
     entries: list[dict[str, Any]] = []
@@ -88,9 +96,11 @@ def evaluate_dir(runs_dir: Path, ids: list[str] | None, *, use_judge: bool, forc
         if use_judge:
             if need_pause and pause > 0:
                 time.sleep(pause)  # free-tier quota: space out real LLM calls
+            # A cache hit makes no LLM call, so it needs no quota spacing (judge_bundle's result does not say).
+            cached = not force_judge and getattr(be, "is_cached", lambda b: False)(bundle)
             try:
                 judgement = be.judge_bundle(bundle, force=force_judge)
-                need_pause = not (judgement or {}).get("cached", False)
+                need_pause = not cached
             except Exception as exc:  # JudgeError or any provider failure: keep scoring without the judge
                 errors[cid] = f"{type(exc).__name__}: {exc}"
                 need_pause = True
@@ -101,7 +111,7 @@ def evaluate_dir(runs_dir: Path, ids: list[str] | None, *, use_judge: bool, forc
 
     agg, summary = aggregate(entries)
     return {"generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
-            "judge": {"enabled": use_judge, "errors": errors}, "runs": entries,
+            "judge": {"enabled": use_judge, "errors": errors}, "skipped": skipped, "runs": entries,
             "aggregate": agg, "summary": summary}
 
 
@@ -115,6 +125,8 @@ def _print_summary(scores: dict[str, Any]) -> None:
     print(f"overall pass rate {100 * s['pass_rate']:.0f}%")
     for cid, err in scores["judge"]["errors"].items():
         print(f"judge error {cid}: {err}")
+    for name, err in scores.get("skipped", {}).items():
+        print(f"skipped {name}: {err}")
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
+import re
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -132,8 +135,15 @@ def _score(block: Any) -> tuple[int, str]:
     """Clamp a rubric score to an int in 1-5; a missing score becomes a neutral 3 and says so."""
     if not isinstance(block, dict):
         return 3, "The judge did not return this rubric."
+    raw = block.get("score")
+    if isinstance(raw, str):
+        found = re.match(r"\s*(-?\d+(?:\.\d+)?)", raw)  # "4", "4/5", "4 out of 5"
+        raw = found.group(1) if found else raw
     try:
-        score = int(round(float(block.get("score"))))
+        value = float(raw)
+        if not math.isfinite(value):  # round(inf) raises OverflowError, which is not a ValueError
+            raise ValueError(raw)
+        score = int(round(value))
     except (TypeError, ValueError):
         return 3, str(block.get("rationale") or "The judge returned no usable score.")
     return max(1, min(5, score)), str(block.get("rationale") or "")
@@ -142,7 +152,7 @@ def _score(block: Any) -> tuple[int, str]:
 def _strings(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
-    return [str(v).strip() for v in value if str(v).strip()]
+    return [str(v).strip() for v in value if v is not None and str(v).strip()]  # null is not the text 'None'
 
 
 def normalise(raw: dict[str, Any], *, provider: str, model: str) -> dict[str, Any]:
@@ -175,6 +185,11 @@ def cache_key(bundle: dict[str, Any]) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def is_cached(bundle: dict[str, Any], cache_path: Path | None = DEFAULT_CACHE) -> bool:
+    """True if ``judge_bundle`` would answer from the cache (no LLM call, so no quota to space out)."""
+    return bool(cache_path) and cache_key(bundle) in _load_cache(cache_path)
+
+
 def _load_cache(path: Path) -> dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -189,7 +204,14 @@ def _save_cache(path: Path, cache: dict[str, Any]) -> None:
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             json.dump(cache, fh, indent=1, ensure_ascii=False)
-        os.replace(tmp, path)  # atomic: a crash never leaves a half-written cache
+        for attempt in range(5):
+            try:
+                os.replace(tmp, path)  # atomic: a crash never leaves a half-written cache
+                break
+            except PermissionError:  # Windows: the target is briefly open in another reader
+                if attempt == 4:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
     except BaseException:
         Path(tmp).unlink(missing_ok=True)
         raise

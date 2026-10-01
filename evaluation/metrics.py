@@ -222,23 +222,33 @@ class Run:
             return True
         # A margin or growth rate the report computed itself is traceable (spec P2 asks for exactly
         # that), so accept a claim whose every quantity is either in the sources or derived from
-        # figures the report states in the same section (the working is visible to the reader; those
+        # figures the report states in the same paragraph (the working is visible to the reader; those
         # input figures are themselves checked by this metric).
         sources = [self.digests[i] for i in (self.digests if ids is None else ids) if i in self.digests]
         quantities = extract_quantities(text)
         return bool(quantities) and bool(sources) and all(
             fact_checker(q.text, sources)["status"] == "supported"
-            or (q.kind == "percent" and _derivable(q, self._section_amounts(text))) for q in quantities)
+            or (q.kind == "percent" and (_derivable(q, self._section_amounts(text))
+                                         # Only for cited records: a ratio of two fields of one statement row (margin)
+                                         # or of one field across rows (growth), not of any two amounts in them.
+                                         or (ids is not None and any(_row_derivable(q, self.digests[i])
+                                                                     for i in ids if i in self.digests))))
+            for q in quantities)
 
     def _section_amounts(self, text: str) -> list[float]:
-        """Amounts stated in the report section that contains ``text`` (or in ``text`` itself)."""
+        """Amounts stated in the paragraph that contains ``text`` (or in ``text`` itself).
+
+        A paragraph, not the whole section: a dense peer table offers so many amount pairs that 62%
+        of random one-decimal percentages "derive" from some pair (Day 11 debugging pass, C6).
+        """
         own = {abs(q.value) for q in extract_quantities(text) if q.kind == "amount" and q.value}
-        for key, body in self.body_sections.items():
-            if text[:60] in _UNVERIFIED.sub("", body):
-                if key not in self._amount_cache:
-                    self._amount_cache[key] = sorted({abs(q.value) for q in extract_quantities(_UNVERIFIED.sub("", body))
-                                                      if q.kind == "amount" and q.value})
-                return sorted(own | set(self._amount_cache[key]))
+        for body in self.body_sections.values():
+            for para in re.split(r"\n\s*\n", _UNVERIFIED.sub("", body)):
+                if text[:60] in para:
+                    if para not in self._amount_cache:
+                        self._amount_cache[para] = sorted({abs(q.value) for q in extract_quantities(para)
+                                                           if q.kind == "amount" and q.value})
+                    return sorted(own | set(self._amount_cache[para]))
         return sorted(own)
 
     def text_supported(self, claim: Claim, ids: list[str] | None = None) -> bool:
@@ -269,6 +279,47 @@ def _derivable(q: Quantity, amounts: list[float]) -> bool:
             lo = bisect.bisect_left(amounts, target - tol * b)
             if lo < len(amounts) and amounts[lo] <= target + tol * b and amounts[lo] != b:
                 return True
+    return False
+
+
+_FIELD = re.compile(r"(\w+)=(-?\d[\d,]*(?:\.\d+)?)")
+
+
+def _row_derivable(q: Quantity, digest: str) -> bool:
+    """``q`` equals a/b of two fields of one statement row, or the growth of one field between two rows.
+
+    Digests list statements as "FY 2026 (...): revenue=331,839; net_income=133,749" lines; a margin or
+    growth rate quoted without its inputs is checkable against those rows. Pairing only fields of the
+    same row / the same field keeps coincidental matches rare even for long statements.
+    """
+    printed = re.search(r"\d+(?:\.(\d+))?", q.text.replace(",", ""))
+    decimals = len(printed.group(1) or "") if printed else 0
+    if decimals == 0:
+        return False
+    tol = 0.5 * 10 ** -(decimals + 2) + 1e-6
+    fraction = abs(q.value)
+    rows = [{k: float(v.replace(",", "")) for k, v in _FIELD.findall(line)} for line in digest.splitlines()]
+    rows = [r for r in rows if r]
+    if re.search(r"pp|point", q.text, re.IGNORECASE):
+        # "margin up 1.2 percentage points": the change of one a/b ratio between two rows, not a ratio itself.
+        for i, newer in enumerate(rows):
+            for older in rows[i + 1:]:
+                for a in newer.keys() & older.keys():
+                    for b in newer.keys() & older.keys():
+                        if a != b and newer[b] and older[b] and abs(
+                                abs(newer[a] / newer[b] - older[a] / older[b]) - fraction) <= tol:
+                            return True
+        return False
+    for row in rows:
+        for a in row.values():
+            for b in row.values():
+                if b and a != b and abs(abs(a / b) - fraction) <= tol:
+                    return True
+    for i, newer in enumerate(rows):
+        for older in rows[i + 1:]:
+            for key in newer.keys() & older.keys():
+                if older[key] and abs(abs(newer[key] / older[key] - 1) - fraction) <= tol:
+                    return True
     return False
 
 
@@ -350,7 +401,10 @@ def fa3_temporal_accuracy(run: Run, _j: dict | None) -> MetricResult:
         if not years:
             continue
         total += 1
-        cited = [i for i in c.ids if i in run.evidence] or list(run.digests)
+        # A calculation_engine record has inputs and a result but no fiscal years; its inputs came from
+        # other evidence, so a claim citing only calculators is checked against all evidence.
+        cited = [i for i in c.ids if i in run.evidence and run.evidence[i].tool != "calculation_engine"]
+        cited = cited or list(run.digests)
         if any(_digest_has_period(run.digests[i], years, quarters) for i in cited):
             ok += 1
         else:
@@ -384,7 +438,8 @@ def fa4_entity_accuracy(run: Run, _j: dict | None) -> MetricResult:
 
 
 def fa5_hallucination_rate(run: Run, _j: dict | None) -> MetricResult:
-    bad = [c.text for c in run.numeric_claims if not run.numeric_ok(c.text)]
+    bad = [c.text for c in run.numeric_claims if not run.numeric_ok(c.text)
+           and not (c.ids & set(run.evidence) and run.numeric_ok(c.text, sorted(c.ids & set(run.evidence))))]
     return _make("FA-5", len(bad), f"{len(bad)} of {len(run.numeric_claims)} numeric claims can be neither found in "
                  "nor derived (ratio or growth of two source amounts) from any evidence record", bad)
 
@@ -438,6 +493,9 @@ def co3_temporal_coverage(run: Run, _j: dict | None) -> MetricResult:
         if line.strip().startswith("|"):
             years.update(int(y) for y in _YEAR.findall(line))
     years = {y for y in years if 2000 <= y <= 2035}
+    # Spec: a 3-5 year horizon. Only years within 5 years of the latest count, so one stale data point
+    # (a peer's FY2014 figure) does not stretch the span of the years the report actually analyses.
+    years = {y for y in years if y > max(years, default=0) - 5}
     if not years:
         return _make("CO-3", 0, "no years found in numeric claims or tables")
     return _make("CO-3", max(years) - min(years) + 1, f"years {min(years)}-{max(years)} appear in numeric claims/tables")
@@ -604,7 +662,9 @@ def _same_value(a: float, b: float) -> bool:
 
 #: Words before a metric name that do not narrow it to a segment ("total revenue" is revenue).
 _NEUTRAL_QUALIFIERS = frozenset("total the its and of in for company consolidated annual quarterly reported gaap "
-                                "fiscal full year group overall".split())
+                                "fiscal full year group overall net diluted".split())
+#: A company's own name before the metric ("Microsoft revenue", "Microsoft's revenue") is the company total.
+_COMPANY_QUALIFIERS = frozenset(KNOWN_COMPANIES) | {t.lower() for t in KNOWN_COMPANIES.values()}
 
 
 def _stated_value(text: str, metric: str, kind: str) -> tuple[str, float] | None:
@@ -614,7 +674,9 @@ def _stated_value(text: str, metric: str, kind: str) -> tuple[str, float] | None
     metric ("Mac revenue", "AWS revenue") becomes part of the metric, so a segment figure is never
     compared with the company total. "3M" as a partner's name or "$10bn in revenue" are skipped.
     """
-    m = re.search(rf"(?:([A-Za-z0-9&.\-]+)\s+)?\b{re.escape(metric)}\b", text, re.IGNORECASE)
+    # An optional possessive ("Microsoft's", curly apostrophe, or U+FFFD from a mangled one) is not part of
+    # the qualifier word, and "revenues" is the metric too.
+    m = re.search(rf"(?:([A-Za-z0-9&.\-]+)(?:['’�]s)?\s+)?\b{re.escape(metric)}s?\b", text, re.IGNORECASE)
     if m is None:
         return None
     window = " ".join(text[m.end():].split()[:6])
@@ -622,7 +684,7 @@ def _stated_value(text: str, metric: str, kind: str) -> tuple[str, float] | None
     if not quantities:
         return None
     before = (m.group(1) or "").lower().strip(".")
-    if before in _NEUTRAL_QUALIFIERS or _YEAR.fullmatch(before) or re.fullmatch(r"fy\d{2,4}|q[1-4]", before):
+    if before in _NEUTRAL_QUALIFIERS or before in _COMPANY_QUALIFIERS or _YEAR.fullmatch(before) or re.fullmatch(r"fy\d{2,4}|q[1-4]", before):
         before = ""
     return before, quantities[0].value
 
@@ -631,7 +693,7 @@ def _automated_contradictions(run: Run) -> list[str]:
     seen: dict[tuple[str, str, str, str], list[tuple[float, str]]] = {}
     for c in run.numeric_claims:
         lowered = c.text.lower()
-        present = [m for m in _METRICS if re.search(rf"\b{m}\b", lowered)]
+        present = [m for m in _METRICS if re.search(rf"\b{m}s?\b", lowered)]
         period, entity = _period_key(c.text), _entity(c.text, run.tickers)
         if len(present) != 1 or period is None or entity is None:
             continue  # ambiguous sentences are skipped: a false contradiction is worse than a missed one
@@ -796,7 +858,13 @@ def ab5_latency(run: Run, _j: dict | None) -> MetricResult:
     duration = run.bundle.get("duration_s")
     if duration is None:
         return _make("AB-5", None, "no duration recorded")
-    multi = len(run.tickers) >= 2 or run.template in ("comparative_analysis", "thematic")
+    # A vague query ("the banks") resolves to its companies only while running: with no ticker in the profile,
+    # count the distinct tickers the tools were called with (peer lookups must not turn a single-company run
+    # into a multi-company one).
+    called = (
+        {str(r.args["ticker"]).upper() for r in run.evidence.values() if r.args.get("ticker")}
+        if not run.tickers else set())
+    multi = len(set(run.tickers) | called) >= 2 or run.template in ("comparative_analysis", "thematic")
     limit = 600 if multi else 300
     return _make("AB-5", round(float(duration), 1), f"{'multi' if multi else 'single'}-company run, limit {limit} s",
                  target=f"< {limit} s", threshold=limit)

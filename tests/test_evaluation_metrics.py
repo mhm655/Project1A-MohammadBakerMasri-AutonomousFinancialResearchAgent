@@ -301,3 +301,78 @@ def test_benchmark_appended():
     bench = m.MetricResult("BM-1", "Bench", "Benchmark", 0.5, ">= 0.5", True, "benchmark", "ratio")
     res = m.score_run(m.Run.from_bundle(_body("A [E1].")), None, bench)
     assert res[-1].id == "BM-1" and len(res) == 23
+
+
+def _statement():
+    rows = [("FY", 2026, 331839e6, 133749e6), ("FY", 2025, 281724e6, 101832e6)]
+    data = {"company_name": "Microsoft", "ticker": "MSFT", "statement_type": "income_statement", "period": "annual",
+            "unit": "millions", "fiscal_year_end": "0630",
+            "data": [{"fiscal_period": fp, "fiscal_year": y, "period_end": f"{y}-06-30",
+                      "values": {"revenue": rev / 1e6, "net_income": ni / 1e6}} for fp, y, rev, ni in rows]}
+    return _ev("E1", "financial_data_api", data=data)
+
+
+def test_margin_and_growth_derived_from_cited_statement_rows():
+    # The report states only the computed ratios; inputs sit in the cited statement (C1/C3 live bundles).
+    b = _body("Net margin was 40.3 % in FY2026 [E1]. Net income grew 31.3 % in FY2026 [E1].",
+              evidence={"E1": _statement()})
+    s = _score(b)
+    assert s["FA-1"].value == 1.0 and s["FA-5"].value == 0
+
+
+def test_wrong_margin_not_derived_from_statement_rows():
+    b = _body("Net margin was 52.7 % in FY2026 [E1].", evidence={"E1": _statement()})
+    assert _score(b)["FA-1"].value == 0.0
+
+
+def test_margin_change_in_points_derived_from_statement_rows():
+    # 133,749/331,839 = 40.31 % vs 101,832/281,724 = 36.15 %: a 4.2-point change; 9.9 points is not.
+    ev = {"E1": _statement()}
+    ok = _score(_body("Net margin improved by 4.2 percentage points in FY2026 [E1].", evidence=ev))["FA-1"]
+    bad = _score(_body("Net margin improved by 9.9 percentage points in FY2026 [E1].", evidence=ev))["FA-1"]
+    assert ok.value == 1.0 and bad.value == 0.0
+
+
+def test_fa3_calculation_engine_citation_is_period_agnostic():
+    # A calculator record holds only inputs and the result, never fiscal years: the year is checked against
+    # the data the inputs came from (C6 live bundle: "JPM CAGR 7.4% over FY2023-FY2025 [E20]").
+    ev = {"E1": _ev("E1", "web_search", "JPM revenue FY2023: 158,104; FY2025: 182,447"),
+          "E2": _ev("E2", "calculation_engine", "cagr(begin_value=158104, end_value=182447, years=2) = 0.0742 (= 7.42%)")}
+    ok = _score(_body("JPM revenue CAGR was 7.4% over FY2023-FY2025 [E2].", evidence=ev))["FA-3"]
+    bad = _score(_body("JPM revenue CAGR was 7.4% over FY2019-FY2021 [E2].", evidence=ev))["FA-3"]
+    assert ok.value == 1.0 and bad.value == 0.0
+
+
+def test_co3_ignores_stale_outlier_years():
+    # C6 live bundle: stale peer data points (FY2014, FY2019) stretched 2023-2025 to a 12-year "history".
+    text = ("Revenue was $10 billion in FY2025 [E1]. Revenue was $9 billion in FY2024 [E1]. "
+            "Revenue was $8 billion in FY2023 [E1]. Revenue was $5 billion in FY2014 [E1]. "
+            "Revenue was $6 billion in FY2019 [E1].")
+    assert _score(_body(text))["CO-3"].value == 3
+
+
+def test_cs2_possessive_company_name_does_not_hide_contradiction():
+    # "Microsoft's revenue" used to get the qualifier "s", so it never met "Revenue" for the same year.
+    text = ("Microsoft’s revenue was $245.1 billion in FY2024 [E1]. "
+            "Total revenues were $300.0 billion in FY2024 [E1].")
+    assert _score(_body(text))["CS-2"].value == 1
+    segment = ("AWS’s revenue was $100.0 billion in FY2024 [E1]. Revenue was $300.0 billion in FY2024 [E1].")
+    assert _score(_body(segment))["CS-2"].value == 0  # a segment is not the company total
+
+
+def test_ab5_multi_company_detected_from_tool_arguments():
+    # C6 ("What's happening with the banks?") resolves to several tickers only at run time: profile.tickers is
+    # empty and the template is company_profile, yet five banks were researched.
+    ev = {"E1": _ev("E1", "financial_data_api", args={"ticker": "JPM"}),
+          "E2": _ev("E2", "financial_data_api", args={"ticker": "BAC"})}
+    b = _bundle(profile={"tickers": [], "template": "company_profile"}, evidence=ev, duration_s=400.0)
+    r = _score(b)["AB-5"]
+    assert r.target == "< 600 s" and r.passed is True
+
+def test_derivation_pool_is_the_paragraph_not_a_dense_table_elsewhere_in_the_section():
+    # Day 11 C6: a peer table in the same section made "-1.7 pp" look derivable from unrelated pairs.
+    ev = {"E1": _ev("E1", "web_search", "Revenue 100 million; costs 98.3 million.")}
+    table = "| Bank | Revenue | Costs |\n|---|---|---|\n| A | $100 million | $98.3 million |"
+    claim = "Margins contracted 1.7% at the bank [E1]."
+    assert _score(_body(f"{table}\n\n{claim}", evidence=ev))["FA-5"].value == 1
+    assert _score(_body(f"Revenue was $100 million and costs $98.3 million; {claim}", evidence=ev))["FA-5"].value == 0

@@ -131,7 +131,7 @@ def _failing(run: dict[str, Any]) -> list[dict[str, Any]]:
 def _facts(run: dict[str, Any]) -> str:
     parts = [f"stop: {run.get('stop_reason')}", f"{run.get('duration_s') or 0:.0f} s",
              f"{run.get('tool_calls', 0)} tool calls", f"{run.get('llm_calls', 0)} LLM calls",
-             f"{run.get('tokens', 0):,} tokens"]
+             f"{run.get('tokens') or 0:,} tokens"]
     if run.get("injected_failures"):
         parts.append("injected failures: " + ", ".join(f"{k}={v}" for k, v in run["injected_failures"].items()))
     return " · ".join(parts)
@@ -218,7 +218,8 @@ def render_html(scores: dict[str, Any]) -> str:
 
 # --------------------------------------------------------------------------- Markdown
 def _md(text: Any) -> str:
-    return str(text).replace("|", "\\|").replace("\n", " ")
+    # CR is a line break in Markdown too, so drop it along with LF (real details are multi-line table rows).
+    return str(text).replace("|", "\\|").replace("\r", "").replace("\n", " ")
 
 
 def render_markdown(scores: dict[str, Any], existing: str | None = None) -> str:
@@ -276,9 +277,22 @@ def render_markdown(scores: dict[str, Any], existing: str | None = None) -> str:
     return head + ANALYSIS_MARKER + "\n## Analysis\n\n" + ANALYSIS_PLACEHOLDER + "\n"
 
 
+def _read_report(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    try:
+        text = raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        # Windows editors (Notepad) may save the hand-written Analysis as cp1252; decoding it as UTF-8 would
+        # crash the re-render, and the Analysis must survive.
+        text = raw.decode("cp1252", errors="replace")
+    return text.replace("\r\n", "\n")  # text-mode write below re-adds CRs on Windows; avoid CR CR LF
+
+
 def write_outputs(scores: dict[str, Any], html_path: Path, report_path: Path) -> None:
     """Write both files, preserving a hand-written Analysis section in an existing report."""
-    existing = report_path.read_text(encoding="utf-8") if report_path.exists() else None
+    existing = _read_report(report_path)
     html_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.parent.mkdir(parents=True, exist_ok=True)
     html_path.write_text(render_html(scores), encoding="utf-8")

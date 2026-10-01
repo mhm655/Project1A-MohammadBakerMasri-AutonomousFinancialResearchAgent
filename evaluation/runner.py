@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import math
 import os
 import sys
 import time
@@ -71,16 +72,20 @@ CHALLENGES: dict[str, Challenge] = {c.id: c for c in (
 )}
 
 
-def _jsonable(value: Any) -> Any:
-    """Plain JSON (dataclasses, tuples, sets, dates), with very long strings cut."""
+def _jsonable(value: Any, _depth: int = 0) -> Any:
+    """Plain strict JSON (dataclasses, tuples, sets, dates), with very long strings cut."""
+    if _depth > 40:  # a cyclic structure would otherwise recurse forever and lose the whole run
+        return "[...too deep]"
     if dataclasses.is_dataclass(value) and not isinstance(value, type):
-        return _jsonable(dataclasses.asdict(value))
+        return _jsonable(dataclasses.asdict(value), _depth + 1)
     if isinstance(value, dict):
-        return {str(k): _jsonable(v) for k, v in value.items()}
+        return {str(k): _jsonable(v, _depth + 1) for k, v in value.items()}
     if isinstance(value, (list, tuple, set, frozenset)):
-        return [_jsonable(v) for v in value]
+        return [_jsonable(v, _depth + 1) for v in value]
     if isinstance(value, str):
         return value if len(value) <= MAX_STRING else value[:MAX_STRING] + " [...cut]"
+    if isinstance(value, float) and not math.isfinite(value):
+        return None  # json.dumps would write NaN/Infinity, which is not valid JSON for other tools
     if value is None or isinstance(value, (bool, int, float)):
         return value
     return str(value)
@@ -90,12 +95,12 @@ def _trace_events(path: str | None) -> list[dict[str, Any]]:
     if not path or not Path(path).exists():
         return []
     events = []
-    for line in Path(path).read_text(encoding="utf-8").splitlines():
+    for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if event.get("type") in TRACE_TYPES:
+        if isinstance(event, dict) and event.get("type") in TRACE_TYPES:
             events.append(_jsonable(event))
     return events
 
@@ -181,7 +186,18 @@ def main(argv: list[str] | None = None) -> int:
                         help="seconds between runs, so free-tier per-minute LLM quotas recover")
     args = parser.parse_args(argv)
 
+    previous_mode = os.environ.get("ARA_DATA_MODE")
     os.environ["ARA_DATA_MODE"] = args.data
+    try:
+        return _run_all(args, parser)
+    finally:  # do not leave the data mode set for whoever called main() in-process
+        if previous_mode is None:
+            os.environ.pop("ARA_DATA_MODE", None)
+        else:
+            os.environ["ARA_DATA_MODE"] = previous_mode
+
+
+def _run_all(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     ids = [i.upper() for i in args.ids] or list(CHALLENGES)
     unknown = [i for i in ids if i not in CHALLENGES]
     if unknown:

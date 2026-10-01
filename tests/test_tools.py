@@ -782,3 +782,34 @@ def test_integral_floats_for_integer_arguments_become_ints(registry):
     assert len(registry.dispatch("web_search", {"query": "nvidia", "num_results": 3.0}).data["results"]) == 3
     with pytest.raises(ToolValidationError, match="num_results"):
         registry.validate_args("web_search", {"query": "nvidia", "num_results": 5.5})
+
+
+def test_name_verifier_ignores_business_phrases_and_companies_next_to_titles():
+    from tools.fact_checker import unsupported_names
+    src = ["nothing relevant"]
+    for text in ("Executive Vice President Worldwide Sales rose.", "The Commercial Business President grew.",
+                 "Tesla's Full Self-Driving, said the CEO.", "Wells Fargo & Company CEO"):
+        assert unsupported_names(text, src) == [], text
+    # The company before the title is not a person; the person after it still is.
+    assert unsupported_names("Goldman Sachs CEO David Solomon said", src) == ["David Solomon"]
+    assert unsupported_names("Goldman Sachs CEO David Solomon said", ["David Solomon leads the bank"]) == []
+
+
+def test_name_verifier_handles_titles_inside_runs_hyphens_and_apostrophes():
+    from tools.fact_checker import unsupported_names
+    src = ["nothing relevant"]
+    assert unsupported_names("Bank of America Chairman Brian Moynihan", src) == ["Brian Moynihan"]
+    assert unsupported_names("CEO Jean-Pierre Lacroix said", src) == ["Jean-Pierre Lacroix"]
+    assert unsupported_names("CEO Pat O'Brien said", src) == ["Pat O'Brien"]
+    assert unsupported_names("CEO Zoë Smith said", src) == ["Zoë Smith"]
+    assert unsupported_names("CEO Zoë Smith said", ["zoë smith, chief executive"]) == []
+    assert unsupported_names("Dr. Lisa Su, CEO of AMD", ["Lisa Su"]) == []
+
+def test_name_verifier_accepts_familiar_first_names_but_not_other_surnames():
+    # Day 11 C6: sources list "James  Dimon" and "Charles W. Scharf"; the report wrote "Jamie Dimon".
+    from tools.fact_checker import unsupported_names
+    src = ["executives: James  Dimon, Chairman & CEO; Charles W. Scharf, CEO; David M. Solomon, CEO"]
+    assert unsupported_names("Jamie Dimon, CEO, leads the bank.", src) == []
+    assert unsupported_names("Charlie Scharf, CEO, runs it.", src) == []
+    assert unsupported_names("Charlie Schwab, CEO, runs it.", src) == ["Charlie Schwab"]
+    assert unsupported_names("David M. Sullivan, Chairman & CEO, said so.", src) == ["David M. Sullivan"]

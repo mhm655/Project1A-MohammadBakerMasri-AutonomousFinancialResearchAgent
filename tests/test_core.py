@@ -869,3 +869,47 @@ def test_clear_query_adds_no_assumption_block():
     result = agent.run(QUERY)
     assert agent.disambiguation.level == "low"
     assert "request was ambiguous" not in result.report_markdown
+
+
+def _cut_report_responder(cut_at, continuation):
+    """LLM stub: the first synthesis stops (finish_reason "length") after ``cut_at`` text; ``continuation``
+    maps the full scripted report to the reply to the CONTINUE request."""
+    from agent.llm import LLMResponse, TokenUsage
+
+    script, state = ScriptedLLM(), {"calls": 0}
+
+    def responder(request):
+        prompt = request.messages[-1]["content"]
+        if "[ARA:CONTINUE]" in prompt:
+            state["calls"] += 1
+            return LLMResponse(continuation(state["full"]), [], "mock", "m", TokenUsage(), 1.0, finish_reason="stop")
+        reply = script(request)
+        if "[ARA:SYNTHESIZE]" in prompt:
+            state["full"] = reply
+            return LLMResponse(reply[:cut_at(reply)], [], "mock", "m", TokenUsage(), 1.0, finish_reason="length")
+        return reply
+
+    return responder, state
+
+
+def test_continuation_never_overwrites_complete_sections_or_adds_unrequested_keys():
+    def cont(full):
+        # Also repeats an already-complete section with different text, and invents an extra one.
+        return ("=== SECTION: executive_summary ===\nREWRITTEN badly.\n=== SECTION: extra_stuff ===\nnoise\n"
+                + full[full.index("=== SECTION: financial_summary ==="):])
+
+    responder, _ = _cut_report_responder(lambda r: r.index("=== SECTION: financial_summary ===") + 60, cont)
+    result = make_agent(responder).run(QUERY)
+    assert "REWRITTEN" not in result.sections["executive_summary"]
+    assert "extra_stuff" not in result.sections
+    assert "Gross margin was 69.76%" in result.sections["financial_summary"]
+
+
+def test_a_cut_in_the_last_section_is_continued_even_when_no_section_is_missing():
+    # The final template section was cut mid-sentence: nothing is "missing" but it is incomplete.
+    responder, state = _cut_report_responder(
+        lambda r: r.index("=== SECTION: recent_developments ===") + 55,
+        lambda full: full[full.index("=== SECTION: recent_developments ==="):])
+    result = make_agent(responder).run(QUERY)
+    assert state["calls"] == 1
+    assert "Coverage was mixed" in result.sections["recent_developments"]

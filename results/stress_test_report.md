@@ -145,9 +145,39 @@ Degradation was handled correctly: nothing crashed, every failure was disclosed,
 | 2 | AB-2 and AD-3 in C2–C7 | The planner wrote calculation inputs as names (`"s2.revenue_FY2026"`). The LLM repair cost a call each time, and failed in C4 and C5. | `agent/references.py` resolves names from the step's financial data without the LLM. If the year is not reported yet, every year is moved back together and the report says so. Segment names (AWS, Azure) are left alone. | `tests/test_references.py` (4) |
 | 3 | CO-1 in the Day 12 re-runs | On rate limits the writer fell back to Groq's Qwen, which is capped at 1,000 output tokens. The report stopped mid-section, and C8 lost 4 of 7 sections. | When the reply ends with `finish_reason == "length"`, the agent asks for the remaining sections (up to 2 continuations) and rewrites the cut section in full. | `test_a_report_cut_off_by_the_output_limit_is_continued` (fails with the fix disabled) |
 | 4 | Challenge 8 set-up | Failure injection hit every network tool, while the spec names two. | `resilience.fail_tools` setting, `ARA_FAIL_TOOLS` and `--fail-tools`. | `test_fail_tools_setting_limits_injection_to_named_tools` |
-| 5 | Review of metric output | Six measurement errors in the new metrics (see the Analysis in `results/evaluation_report.md`). | Fixed before the Day 11 scores were accepted. | `tests/test_evaluation_metrics.py`, `tests/test_evaluation_judge.py` |
+| 5 | Review of metric output | 13 measurement errors in the new metrics (see "What the evaluation changed" in `results/evaluation_report.md`). | Fixed before the Day 11 scores were accepted. | `tests/test_evaluation_metrics.py`, `tests/test_evaluation_judge.py` |
 
-The test suite now has 572 tests, all passing; `ruff` reports no problems.
+### Supervised debugging pass (Day 11–12 code)
+
+Three debuggers checked the new code; every fix has a test that fails without it. Bugs fixed:
+
+**Name check (Day 12):**
+- It now handles hyphenated, apostrophe and accented names ("Jean-Pierre", "O'Brien", "Zoë").
+- A title inside the name run ("Bank of America Chairman Brian Moynihan") no longer hides the name.
+- Business phrases next to titles ("Worldwide Sales", "Full Self-Driving") are no longer flagged.
+- Familiar first names are accepted ("Jamie Dimon" against the source's "James Dimon").
+- On the eight live reports it flags exactly the three real errors in C6, and nothing else.
+
+**Report continuation (Day 12):**
+- A report cut inside its last section is now continued.
+- A continuation can no longer overwrite finished sections, add sections nobody asked for, or replace a longer text with a cut-off one.
+
+**Calculation inputs (Day 12):** a rounding difference like 4475.45 vs 4475.450000001 no longer counts as two sources disagreeing.
+
+**Evaluation pipeline (Day 11):**
+- A lower-case `--ids c1` no longer selects nothing.
+- One bad run record no longer aborts the whole evaluation.
+- The pause before a grading call is now applied only when the grader actually calls the LLM, not on cache hits.
+- Run records no longer contain NaN or Infinity, which are invalid JSON.
+- Unreadable trace lines are tolerated.
+- `ARA_DATA_MODE` is restored after a run.
+- A report saved in Notepad's encoding no longer loses its Analysis section when re-rendered.
+- `|` and line breaks in metric details no longer break the report's Markdown tables.
+- On Windows, the grader cache write retries if another program has the file open.
+
+**Token profile:** it no longer says rate-limited calls "re-pay the prompt": a rejected (HTTP 429) call is not billed.
+
+The test suite now has 617 tests, all passing; `ruff` reports no problems.
 
 ### Found, not yet fixed (for Day 13)
 - A provider that answers `quota_exhausted`, or Ollama with a closed port, is still tried on every call. Each attempt adds latency: 31 rate-limit errors in the second C8 re-run.

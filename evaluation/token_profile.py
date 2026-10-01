@@ -134,7 +134,7 @@ def opportunities(prof: dict[str, Any], max_prompt_tokens: int = DEFAULT_MAX_PRO
                    "evidence is probably re-sent on every step; send digests or only new evidence.")
     if overall["failures"] > FAILURE_LIMIT:
         out.append(f"{overall['failures']} LLM failures/retries across {overall['challenges']} runs "
-                   f"(> {FAILURE_LIMIT}): each retry re-pays the prompt; check provider limits and backoff.")
+                   f"(> {FAILURE_LIMIT}): rate-limit rejections (HTTP 429) are not billed, so this costs latency rather than tokens; check provider limits and backoff.")
     visible = overall["completion"] + overall["reasoning"]
     if visible and overall["reasoning"] / visible > REASONING_SHARE_LIMIT:
         out.append(f"Reasoning tokens are {overall['reasoning'] / visible:.0%} of output "

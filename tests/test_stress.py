@@ -89,3 +89,38 @@ def test_context_small_filler_respects_limit() -> None:
 def test_render_report_layout() -> None:
     text = stress.render([stress.StressResult("X", True, {"a": 1}, ["f"], 0.1, method="m")])
     assert "## Summary" in text and "| X | PASS |" in text and "## Live-mode note" in text and "none found" in text
+
+
+def test_purpose_group_handles_continuation_and_repair_purposes() -> None:
+    assert token_profile.purpose_group("synthesize:continue") == "synthesize"
+    assert token_profile.purpose_group("execute:r10") == "execute"
+
+
+def test_failure_opportunity_does_not_claim_rejected_calls_cost_tokens() -> None:
+    prof = token_profile.profile([_bundle("C1", [_call("plan", 1000, 100)], failures=9)])
+    text = " ".join(prof["opportunities"])
+    assert "LLM failures" in text and "re-pay" not in text and "latency" in text
+
+
+def test_env_is_restored_after_an_exception() -> None:
+    import os
+
+    os.environ["ARA_FAIL_RATE"] = "0.5"
+    os.environ.pop("ARA_MODE", None)
+    try:
+        with stress._mock_env(ARA_FAIL_RATE="1.0"):
+            assert os.environ["ARA_MODE"] == "mock" and os.environ["ARA_FAIL_RATE"] == "1.0"
+            raise RuntimeError("boom")
+    except RuntimeError:
+        pass
+    assert os.environ["ARA_FAIL_RATE"] == "0.5" and "ARA_MODE" not in os.environ
+    os.environ.pop("ARA_FAIL_RATE")
+
+
+def test_analysis_text_survives_rerender_with_a_second_marker_and_crlf() -> None:
+    prof = token_profile.profile([_bundle("C1", [_call("plan", 1000, 100)])])
+    m = token_profile.MARKER
+    edited = token_profile.render(prof).split(m)[0] + f"{m}\r\nMy analysis.\r\nquote: {m}\r\nmore\r\n"
+    again = token_profile.render(prof, existing=edited)
+    assert "My analysis." in again and "more" in again
+    assert token_profile.render(prof, existing=again) == again  # stable on a further re-render

@@ -182,7 +182,15 @@ def _result(claim: str, status: str, confidence: float, evidence: list, notes: l
 
 _TITLE = re.compile(r"\b(?:CEO|CFO|COO|CTO|Chief\s+(?:\w+\s+)?Officer|Chairman|Chairwoman|President|founder|"
                     r"Founder)\b")
-_NAME_RUN = re.compile(r"\b[A-Z][a-z]+(?:\s+[A-Z]\.?)?(?:\s+[A-Z][a-z]+){1,2}\b")
+# A name word allows accents, hyphens and apostrophes ("Zoë", "Jean-Pierre", "O'Brien").
+_W = r"[A-ZÀ-ÖØ-Þ](?:['’][A-ZÀ-ÖØ-Þ])?[a-zà-öø-ÿ]+(?:[-'’][A-ZÀ-ÖØ-Þ]?[a-zà-öø-ÿ]+)*"
+_NAME_RUN = re.compile(rf"(?<![\w'’-]){_W}(?:\s+[A-Z]\.?)?(?:\s+{_W}){{1,2}}(?![\w'’-])")
+# "Goldman Sachs CEO David Solomon" (a name follows the title); "Charlie Schwab CEO |" is a person.
+_TITLE_NEXT = re.compile(r"\s*&|\s+and\b|\s+(?:CEO|CFO|COO|CTO|Chairman|Chairwoman|President)\s+[A-ZÀ-Þ]")
+# Capitalised business phrases that are not people ("Worldwide Sales", "Full Self-Driving").
+_NOT_NAME = frozenset("Sales Business Businesses Driving Growth Services Worldwide Commercial Self Group Bank Banking "
+                      "Capital Segment Division Products Product Markets Cloud Retail Consumer Wealth Management "
+                      "Americas Global International Revenue Operations Energy Automotive Sachs".split())
 _NAME_SKIP = frozenset("The Its Our In As At Chief Executive Officer Financial Operating Technology President Chairman "
                        "Founder And Of For With Board Directors Company Corporation Inc Vice Senior".split())
 
@@ -190,9 +198,15 @@ _NAME_SKIP = frozenset("The Its Our In As At Chief Executive Officer Financial O
 def executive_names(text: str) -> set[str]:
     """Two or three capitalised words within six tokens of a title word."""
     names: set[str] = set()
-    for m in _NAME_RUN.finditer(text):
-        words = [w for w in m.group(0).split() if w not in _NAME_SKIP]
-        if len(words) < 2:
+    # Mask title words (same length, so offsets hold) so a run cannot swallow one: in "Bank of America
+    # Chairman Brian Moynihan" the name is "Brian Moynihan", not "America Chairman Brian".
+    masked = _TITLE.sub(lambda t: "|" * len(t.group(0)), text)
+    for m in _NAME_RUN.finditer(masked):
+        words = [w for w in text[m.start():m.end()].split() if w not in _NAME_SKIP]
+        if len(words) < 2 or any(p in _NOT_NAME for w in words for p in w.split("-")):
+            continue
+        # "Goldman Sachs CEO David Solomon": a run directly before a title is the company, not the person.
+        if _TITLE_NEXT.match(text, m.end()):
             continue
         before = text[: m.start()].split()[-6:]
         after = text[m.end():].split()[:6]
@@ -210,11 +224,27 @@ def name_in_sources(name: str, blob_l: str) -> bool:
     parts = name.lower().replace(".", "").split()
     first, last = parts[0], parts[-1]
     initial = parts[1][0] if len(parts) == 3 else ""
-    for m in re.finditer(rf"\b{re.escape(first)}\b((?:\s+[a-z][\w.\-]*){{0,2}}?)\s+{re.escape(last)}\b", blob_l):
+    # Filings use legal first names ("James Dimon", "Charles W. Scharf"); reports use the familiar one.
+    firsts = "|".join(re.escape(f) for f in {first, *_NICKNAMES.get(first, ())})
+    for m in re.finditer(rf"\b(?:{firsts})\b((?:\s+[a-z][\w.\-]*){{0,2}}?)\s+{re.escape(last)}\b", blob_l):
         middle = m.group(1).split()
         if not initial or not middle or middle[0][0] == initial:
             return True
     return False
+
+
+#: Familiar first name -> legal forms that sources use.
+_NICKNAMES: dict[str, tuple[str, ...]] = {
+    "jamie": ("james",), "jim": ("james",), "charlie": ("charles",), "chuck": ("charles",),
+    "bill": ("william",), "will": ("william",), "bob": ("robert",), "rob": ("robert",),
+    "mike": ("michael",), "tim": ("timothy",), "tom": ("thomas",), "andy": ("andrew",),
+    "dave": ("david",), "dan": ("daniel",), "steve": ("steven", "stephen"), "joe": ("joseph",),
+    "ben": ("benjamin",), "matt": ("matthew",), "chris": ("christopher",), "nick": ("nicholas",),
+    "tony": ("anthony",), "ken": ("kenneth",), "jeff": ("jeffrey",), "sam": ("samuel",),
+    "kate": ("katherine", "catherine"), "liz": ("elizabeth",), "beth": ("elizabeth",),
+    "jen": ("jennifer",), "sue": ("susan",), "pat": ("patrick", "patricia"),
+}
+
 
 def unsupported_names(text: str, sources: list[str]) -> list[str]:
     """Executive names in ``text`` that no source mentions (see :func:`name_in_sources`)."""

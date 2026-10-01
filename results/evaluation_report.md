@@ -1,6 +1,6 @@
 # ARA-1 Evaluation Report
 
-Generated: 2026-10-01T00:10:19+00:00  
+Generated: 2026-10-01T18:23:20+00:00  
 Data mode: live  
 LLM judge: enabled
 
@@ -8,11 +8,11 @@ Reproduce: `python -m evaluation.runner`, then `python -m evaluation.evaluate`.
 
 ## Summary
 
-Overall pass rate: **51%** (23 metrics x 8 challenges). Total LLM tokens: 257,229.
+Overall pass rate: **53%** (23 metrics x 8 challenges). Total LLM tokens: 257,229.
 
 | Category | Passed | Measured | Rate |
 |---|---|---|---|
-| Factual Accuracy | 27 | 40 | 68% |
+| Factual Accuracy | 31 | 40 | 78% |
 | Completeness | 18 | 28 | 64% |
 | Analytical Depth | 6 | 32 | 19% |
 | Coherence and Structure | 15 | 32 | 47% |
@@ -27,11 +27,11 @@ Legend: ✓ meets target, ✗ misses target, — not measured.
 
 | ID | Metric | Target | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| FA-1 | Numerical Accuracy Rate | >= 98% | 94% ✗ | 100% ✓ | 92% ✗ | 92% ✗ | 100% ✓ | 96% ✗ | 100% ✓ | 100% ✓ |
-| FA-2 | Citation Accuracy | 100% | 100% ✓ | 100% ✓ | 86% ✗ | 67% ✗ | 100% ✓ | 100% ✓ | 86% ✗ | 100% ✓ |
-| FA-3 | Temporal Accuracy | 100% | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 83% ✗ | 100% ✓ | 100% ✓ |
-| FA-4 | Entity Accuracy | 100% | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 86% ✗ | 100% ✓ | 100% ✓ |
-| FA-5 | Hallucination Rate | 0 | 1 ✗ | 0 ✓ | 1 ✗ | 1 ✗ | 0 ✓ | 1 ✗ | 0 ✓ | 0 ✓ |
+| FA-1 | Numerical Accuracy Rate | >= 98% | 100% ✓ | 100% ✓ | 100% ✓ | 92% ✗ | 100% ✓ | 96% ✗ | 100% ✓ | 100% ✓ |
+| FA-2 | Citation Accuracy | 100% | 100% ✓ | 100% ✓ | 86% ✗ | 67% ✗ | 100% ✓ | 93% ✗ | 86% ✗ | 100% ✓ |
+| FA-3 | Temporal Accuracy | 100% | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ |
+| FA-4 | Entity Accuracy | 100% | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 85% ✗ | 100% ✓ | 100% ✓ |
+| FA-5 | Hallucination Rate | 0 | 0 ✓ | 0 ✓ | 0 ✓ | 1 ✗ | 0 ✓ | 1 ✗ | 0 ✓ | 0 ✓ |
 
 ### Completeness
 
@@ -39,7 +39,7 @@ Legend: ✓ meets target, ✗ misses target, — not measured.
 |---|---|---|---|---|---|---|---|---|---|---|
 | CO-1 | Section Coverage | 100% | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ | 100% ✓ |
 | CO-2 | Data Source Diversity | >= 4 source types | 3 ✗ | 3 ✗ | 4 ✓ | 5 ✓ | 4 ✓ | 3 ✗ | 2 ✗ | 4 ✓ |
-| CO-3 | Temporal Coverage | >= 3 years | 3 ✓ | 2 ✗ | 3 ✓ | 4 ✓ | 4 ✓ | 12 ✓ | 2 ✗ | 4 ✓ |
+| CO-3 | Temporal Coverage | >= 3 years | 3 ✓ | 2 ✗ | 3 ✓ | 4 ✓ | 4 ✓ | 3 ✓ | 2 ✗ | 4 ✓ |
 | CO-4 | Risk Factor Coverage | >= 80% | — | — | 78% ✗ | 27% ✗ | 27% ✗ | — | 64% ✗ | — |
 
 ### Analytical Depth
@@ -85,8 +85,6 @@ Query: Create a comprehensive profile of Microsoft Corporation including busines
 Run: template `company_profile`, stop: completed · 44 s · 7 tool calls · 4 LLM calls · 13,150 tokens
 
 Failing metrics:
-- ✗ **FA-1** Numerical Accuracy Rate: 94% (target >= 98%) — 17 of 18 numeric claims match their cited source (or, if uncited, any evidence)
-- ✗ **FA-5** Hallucination Rate: 1 (target 0) — 1 of 18 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record
 - ✗ **CO-2** Data Source Diversity: 3 (target >= 4 source types) — 3 distinct source types cited: financial data, industry/peer data, news/web
 - ✗ **AD-1** Insight Density: 2.3/pg (target >= 3 per page) — 5 insights over 2.2 pages (~500 words each)
 - ✗ **AD-2** Cross-Source Synthesis: 2 (target >= 5) — 2 claims cite evidence from two or more different tools
@@ -120,9 +118,7 @@ Query: Produce a comprehensive risk assessment for Tesla Inc. covering financial
 Run: template `risk_assessment`, stop: completed · 76 s · 10 tool calls · 9 LLM calls · 29,107 tokens
 
 Failing metrics:
-- ✗ **FA-1** Numerical Accuracy Rate: 92% (target >= 98%) — 12 of 13 numeric claims match their cited source (or, if uncited, any evidence)
 - ✗ **FA-2** Citation Accuracy: 86% (target 100%) — 6 of 7 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)
-- ✗ **FA-5** Hallucination Rate: 1 (target 0) — 1 of 13 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record
 - ✗ **CO-4** Risk Factor Coverage: 78% (target >= 80%) — 7 of 9 risk categories in the 10-K are covered by the report
 - ✗ **AD-1** Insight Density: 1.9/pg (target >= 3 per page) — 5 insights over 2.7 pages (~500 words each)
 - ✗ **AD-3** Quantitative Reasoning: 6 (target >= 10 original calculations) — 6 distinct derived quantities (percentages, multiples, calculated table cells)
@@ -178,8 +174,8 @@ Run: template `company_profile`, stop: completed · 84 s · 17 tool calls · 8 L
 
 Failing metrics:
 - ✗ **FA-1** Numerical Accuracy Rate: 96% (target >= 98%) — 23 of 24 numeric claims match their cited source (or, if uncited, any evidence)
-- ✗ **FA-3** Temporal Accuracy: 83% (target 100%) — 5 of 6 period-bearing numeric claims use a period present in their cited evidence
-- ✗ **FA-4** Entity Accuracy: 86% (target 100%) — 18 of 21 entities verified (6 tickers, 7 companies, 8 executive names)
+- ✗ **FA-2** Citation Accuracy: 93% (target 100%) — 13 of 14 cited ids are real and support a claim; accessible = evidence record present with retrievable data (no URL fetching)
+- ✗ **FA-4** Entity Accuracy: 85% (target 100%) — 17 of 20 entities verified (6 tickers, 7 companies, 7 executive names)
 - ✗ **FA-5** Hallucination Rate: 1 (target 0) — 1 of 24 numeric claims can be neither found in nor derived (ratio or growth of two source amounts) from any evidence record
 - ✗ **CO-2** Data Source Diversity: 3 (target >= 4 source types) — 3 distinct source types cited: financial data, industry/peer data, news/web
 - ✗ **AD-1** Insight Density: 0.7/pg (target >= 3 per page) — 2 insights over 3.0 pages (~500 words each)
@@ -267,13 +263,12 @@ Note: AB-4 uses memory_hits ÷ external_api_calls; the spec's "multiplied by" is
 
 ### Strengths
 - **Grounding of figures.**
-  - Citation accuracy (FA-2), temporal accuracy (FA-3) and entity accuracy (FA-4) are 100% in 5 to 7 of 8 reports. Numerical accuracy (FA-1) averages 97%.
-  - FA-5 flags 4 numeric claims as untraceable, out of 141 numeric claims in eight reports.
-  - Manual review: three of those four are correct calculations whose inputs sit in another section of the report.
-    - MSFT net margin: 133,749 / 331,839 = 40.3%.
-    - MSFT operating-margin change: 46.8% − 45.6% = +1.2 pp.
-    - TSLA net income: 3,794 vs 7,091 = −46.5%.
-  - The fourth (Bank of America "+1.5 pp margin expansion", C6) is unconfirmed.
+  - Temporal accuracy (FA-3) is 100% in all 8 reports. Entity accuracy (FA-4) is 100% in 7 of 8, and numerical accuracy (FA-1) averages 98.5%.
+  - FA-5 flags 2 numeric claims as untraceable, out of 141 numeric claims in eight reports.
+  - Manual review of those two:
+    - C4, MSFT operating-margin change: 155,237 / 331,839 = 46.8% against 128,528 / 281,724 = 45.6%, i.e. +1.2 pp. The figure is correct, but the claim cites the 10-K record (E9), not the income statement it was computed from.
+    - C6, Goldman Sachs "+2.6 pp margin improvement": cannot be confirmed from the evidence.
+  - Margins and growth rates computed from the cited statement rows (MSFT net margin 40.3%, TSLA net income −46.5%) are recognised as derived figures, not counted as hallucinations.
 - **Structure and reliability.**
   - Every report has every template section (CO-1 = 100%).
   - Every run completed within its latency target. The slowest single-company run (C5) took 138 s against the 300 s target, and the slowest multi-company run (C7) took 246 s against 600 s.
@@ -309,18 +304,29 @@ Note: AB-4 uses memory_hits ÷ external_api_calls; the spec's "multiplied by" is
    - Memory utilisation is 0–0.21 in the company-specific runs: their companies had little stored memory. C7, which is built on memory, scores 1.5.
 
 ### What the evaluation changed
-Reviewing the metrics against these reports found and fixed six measurement errors before the scores were accepted (tests in `tests/test_evaluation_metrics.py`):
-- FA-5 counted correct derived percentages as hallucinations. A derivation now counts only from figures stated in the same section, at printed precision; coincidental matches are ≤ 6% against random percentages, and a whole-evidence version had allowed 80–100%.
+Before the scores were accepted, two review passes checked the metrics against these reports. They found and fixed 13 measurement errors, each covered by a test in `tests/test_evaluation_metrics.py` or `tests/test_evaluation_judge.py` that fails without the fix. The pass rate moved from 51% to 53%; no reported figure became "correct" by loosening a check.
+
+**Lead review:**
+- FA-5 counted correct derived percentages as hallucinations.
 - CS-2 compared segment revenue with company revenue, and read "3M" (the company) as $3 million.
 - AB-2 ignored calls recovered by corrected arguments.
 - FA-4 missed names written with extra spaces or without a middle name.
 - BM-1 reported a segment growth rate as a conflict.
 - AB-3 ignored tools the agent runs outside the plan.
 
+**Supervised debugging pass:**
+- FA-1 and FA-5 now accept margins and growth rates computed from the cited statement rows, including point changes of a ratio.
+- Derivation from figures in the report is limited to the claim's own paragraph. A whole section had let a dense peer table "explain" 62% of random percentages; within a paragraph the rate is 1.6% (4,250 trials).
+- FA-3 no longer treats a cited calculator record as a temporal error.
+- CO-3 counts only years within the 5-year horizon, so an incidental FY2014 mention no longer stretches C6 to 12 years.
+- CS-2 and BM-1 no longer read "Microsoft's revenue" as a segment called "s".
+- AB-5 classes C6 (several banks) as multi-company.
+- FA-4 accepts familiar first names ("Jamie" for "James Dimon").
+
 ### Known limitations of the metrics
-- CO-3 counts any year mentioned with a number: C6's "12 years" includes a historical reference to 2014.
 - CO-4 uses a 12-category keyword taxonomy, not a semantic comparison with Item 1A.
 - AD-1, CS-1, CS-3 and AB-3 rest on a single judge call per report.
+- FA-2's prose check is keyword overlap: a sentence is supported if 30% of its content words appear in the cited source.
 
 ### Priorities (carried into Day 12 and 13)
 1. A verifier check for invented names. Done on Day 12.
