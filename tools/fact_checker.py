@@ -174,3 +174,49 @@ def fact_checker(claim: str, sources: list[str] | None = None) -> dict[str, Any]
 
 def _result(claim: str, status: str, confidence: float, evidence: list, notes: list[str]) -> dict[str, Any]:
     return {"claim": claim, "status": status, "confidence": confidence, "evidence": evidence, "notes": notes}
+
+
+# --------------------------------------------------------------------------------------------------
+# People: executive names must come from the sources too (a model can invent a plausible CEO)
+# --------------------------------------------------------------------------------------------------
+
+_TITLE = re.compile(r"\b(?:CEO|CFO|COO|CTO|Chief\s+(?:\w+\s+)?Officer|Chairman|Chairwoman|President|founder|"
+                    r"Founder)\b")
+_NAME_RUN = re.compile(r"\b[A-Z][a-z]+(?:\s+[A-Z]\.?)?(?:\s+[A-Z][a-z]+){1,2}\b")
+_NAME_SKIP = frozenset("The Its Our In As At Chief Executive Officer Financial Operating Technology President Chairman "
+                       "Founder And Of For With Board Directors Company Corporation Inc Vice Senior".split())
+
+
+def executive_names(text: str) -> set[str]:
+    """Two or three capitalised words within six tokens of a title word."""
+    names: set[str] = set()
+    for m in _NAME_RUN.finditer(text):
+        words = [w for w in m.group(0).split() if w not in _NAME_SKIP]
+        if len(words) < 2:
+            continue
+        before = text[: m.start()].split()[-6:]
+        after = text[m.end():].split()[:6]
+        if _TITLE.search(" ".join(before)) or _TITLE.search(" ".join(after)):
+            names.add(" ".join(words))
+    return names
+
+
+def name_in_sources(name: str, blob_l: str) -> bool:
+    """First and last name appear together in the sources; a written middle initial must agree.
+
+    Sources give full names ("Jane Nind Fraser", "Brian Thomas Moynihan"), reports usually shorten
+    them, so middle names may be dropped, but "Brian M. Moynihan" against "Brian Thomas" is wrong.
+    """
+    parts = name.lower().replace(".", "").split()
+    first, last = parts[0], parts[-1]
+    initial = parts[1][0] if len(parts) == 3 else ""
+    for m in re.finditer(rf"\b{re.escape(first)}\b((?:\s+[a-z][\w.\-]*){{0,2}}?)\s+{re.escape(last)}\b", blob_l):
+        middle = m.group(1).split()
+        if not initial or not middle or middle[0][0] == initial:
+            return True
+    return False
+
+def unsupported_names(text: str, sources: list[str]) -> list[str]:
+    """Executive names in ``text`` that no source mentions (see :func:`name_in_sources`)."""
+    blob_l = re.sub(r"\s+", " ", "\n".join(sources)).lower()
+    return sorted(n for n in executive_names(text) if not name_in_sources(n, blob_l))

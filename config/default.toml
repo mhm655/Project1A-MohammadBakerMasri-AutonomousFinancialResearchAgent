@@ -96,6 +96,7 @@ window_failure_ratio = 0.5
 cooldown_s = 30.0
 max_open_providers = 3      # this many providers down at once: stop researching, write the report
 fail_rate = 0.0             # injected failures for network tools (ARA_FAIL_RATE; Challenge 8: 0.5)
+fail_tools = []             # limit injection to these tools (ARA_FAIL_TOOLS="a,b"); empty = all network tools
 
 [synthesis]                 # spec A6.2 / architecture section 12
 # Base weight of source tiers 1-5: SEC filings, curated data, company communications, major news,

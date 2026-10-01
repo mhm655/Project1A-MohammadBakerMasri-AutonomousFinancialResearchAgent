@@ -1,0 +1,498 @@
+{
+ "C1": {
+  "company": "Microsoft",
+  "ticker": "MSFT",
+  "facts": [
+   {
+    "id": "msft-rev-fy26",
+    "kind": "numeric",
+    "text": "Microsoft revenue for fiscal 2026 was $331.8 billion.",
+    "value": 331839000000,
+    "unit": "USD",
+    "period": "FY2026",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "msft-rev-fy25",
+    "kind": "numeric",
+    "text": "Microsoft revenue for fiscal 2025 was $281.7 billion.",
+    "value": 281724000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "msft-rev-growth-fy26",
+    "kind": "numeric",
+    "text": "Fiscal 2026 revenue grew 17.8% year on year.",
+    "value": 17.8,
+    "unit": "percent",
+    "period": "FY2026",
+    "keywords": [
+     "revenue",
+     "growth"
+    ]
+   },
+   {
+    "id": "msft-gm-fy26",
+    "kind": "numeric",
+    "text": "Fiscal 2026 gross margin was 67.9%.",
+    "value": 67.9,
+    "unit": "percent",
+    "period": "FY2026",
+    "keywords": [
+     "gross margin"
+    ]
+   },
+   {
+    "id": "msft-opinc-fy26",
+    "kind": "numeric",
+    "text": "Fiscal 2026 operating income was $155.2 billion.",
+    "value": 155237000000,
+    "unit": "USD",
+    "period": "FY2026",
+    "keywords": [
+     "operating income"
+    ]
+   },
+   {
+    "id": "msft-ni-fy26",
+    "kind": "numeric",
+    "text": "Fiscal 2026 net income was $133.7 billion.",
+    "value": 133749000000,
+    "unit": "USD",
+    "period": "FY2026",
+    "keywords": [
+     "net income"
+    ]
+   },
+   {
+    "id": "msft-eps-fy26",
+    "kind": "numeric",
+    "text": "Fiscal 2026 diluted EPS was $17.95.",
+    "value": 17.95,
+    "unit": "USD/share",
+    "period": "FY2026",
+    "keywords": [
+     "diluted",
+     "EPS",
+     "earnings per share"
+    ]
+   },
+   {
+    "id": "msft-ceo",
+    "kind": "entity",
+    "text": "Satya Nadella is Chairman and CEO.",
+    "value": "Satya Nadella",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CEO"
+    ]
+   },
+   {
+    "id": "msft-cfo",
+    "kind": "entity",
+    "text": "Amy Hood is Executive VP and CFO.",
+    "value": "Amy Hood",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CFO"
+    ]
+   },
+   {
+    "id": "msft-segments",
+    "kind": "qualitative",
+    "text": "Three segments: Productivity and Business Processes, Intelligent Cloud, More Personal Computing.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "Productivity and Business Processes",
+     "Intelligent Cloud",
+     "More Personal Computing",
+     "segment"
+    ]
+   },
+   {
+    "id": "msft-risk-ai",
+    "kind": "qualitative",
+    "text": "Cloud and AI strategy needs substantial investment and depends on customer demand.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "AI",
+     "cloud",
+     "investment",
+     "demand"
+    ]
+   },
+   {
+    "id": "msft-risk-competition",
+    "kind": "qualitative",
+    "text": "Intense competition across all markets is a key risk.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "competition",
+     "competitive",
+     "intense",
+     "risk"
+    ]
+   },
+   {
+    "id": "msft-risk-cyber",
+    "kind": "qualitative",
+    "text": "Cyberattacks and security vulnerabilities are a key risk.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "cyberattack",
+     "security",
+     "vulnerabilities",
+     "risk"
+    ]
+   }
+  ]
+ },
+ "C2": {
+  "company": "Apple",
+  "ticker": "AAPL",
+  "facts": [
+   {
+    "id": "aapl-rev-q3fy26",
+    "kind": "numeric",
+    "text": "Apple revenue for the June 2026 quarter (fiscal Q3 2026) was $109.4 billion.",
+    "value": 109417000000,
+    "unit": "USD",
+    "period": "Q3 FY2026",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "aapl-eps-q3fy26",
+    "kind": "numeric",
+    "text": "Apple diluted EPS for fiscal Q3 2026 was $2.02.",
+    "value": 2.02,
+    "unit": "USD/share",
+    "period": "Q3 FY2026",
+    "keywords": [
+     "diluted",
+     "EPS",
+     "earnings per share"
+    ]
+   },
+   {
+    "id": "aapl-rev-growth-q3fy26",
+    "kind": "numeric",
+    "text": "Fiscal Q3 2026 revenue grew 16.4% year on year.",
+    "value": 16.4,
+    "unit": "percent",
+    "period": "Q3 FY2026",
+    "keywords": [
+     "revenue",
+     "growth"
+    ]
+   },
+   {
+    "id": "aapl-gm-q3fy26",
+    "kind": "numeric",
+    "text": "Fiscal Q3 2026 gross margin was 50.1%.",
+    "value": 50.1,
+    "unit": "percent",
+    "period": "Q3 FY2026",
+    "keywords": [
+     "gross margin"
+    ]
+   },
+   {
+    "id": "aapl-ni-q3fy26",
+    "kind": "numeric",
+    "text": "Fiscal Q3 2026 net income was $29.8 billion.",
+    "value": 29789000000,
+    "unit": "USD",
+    "period": "Q3 FY2026",
+    "keywords": [
+     "net income"
+    ]
+   },
+   {
+    "id": "aapl-rev-fy25",
+    "kind": "numeric",
+    "text": "Apple revenue for fiscal 2025 was $416.2 billion.",
+    "value": 416161000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "aapl-rev-growth-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 revenue grew 6.4%.",
+    "value": 6.4,
+    "unit": "percent",
+    "period": "FY2025",
+    "keywords": [
+     "revenue",
+     "growth"
+    ]
+   },
+   {
+    "id": "aapl-gm-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 gross margin was 46.9%.",
+    "value": 46.9,
+    "unit": "percent",
+    "period": "FY2025",
+    "keywords": [
+     "gross margin"
+    ]
+   },
+   {
+    "id": "aapl-opinc-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 operating income was $133.1 billion.",
+    "value": 133050000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "operating income"
+    ]
+   },
+   {
+    "id": "aapl-ni-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 net income was $112.0 billion.",
+    "value": 112010000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "net income"
+    ]
+   },
+   {
+    "id": "aapl-eps-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 diluted EPS was $7.46.",
+    "value": 7.46,
+    "unit": "USD/share",
+    "period": "FY2025",
+    "keywords": [
+     "diluted",
+     "EPS",
+     "earnings per share"
+    ]
+   },
+   {
+    "id": "aapl-ceo",
+    "kind": "entity",
+    "text": "John Ternus is CEO (per the company profile).",
+    "value": "John Ternus",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CEO"
+    ]
+   },
+   {
+    "id": "aapl-cfo",
+    "kind": "entity",
+    "text": "Kevan Parekh is Senior VP and CFO.",
+    "value": "Kevan Parekh",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CFO"
+    ]
+   },
+   {
+    "id": "aapl-risk-supply",
+    "kind": "qualitative",
+    "text": "Dependence on outsourcing partners and components is a key risk.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "outsourcing",
+     "components",
+     "supply",
+     "manufacturing"
+    ]
+   }
+  ]
+ },
+ "C3": {
+  "company": "Tesla",
+  "ticker": "TSLA",
+  "facts": [
+   {
+    "id": "tsla-rev-fy25",
+    "kind": "numeric",
+    "text": "Tesla revenue for fiscal 2025 was $94.8 billion.",
+    "value": 94827000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "tsla-rev-fy24",
+    "kind": "numeric",
+    "text": "Tesla revenue for fiscal 2024 was $97.7 billion.",
+    "value": 97690000000,
+    "unit": "USD",
+    "period": "FY2024",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "tsla-rev-growth-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 revenue declined 2.9%.",
+    "value": -2.9,
+    "unit": "percent",
+    "period": "FY2025",
+    "keywords": [
+     "revenue"
+    ]
+   },
+   {
+    "id": "tsla-gm-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 gross margin was 18.0%.",
+    "value": 18.0,
+    "unit": "percent",
+    "period": "FY2025",
+    "keywords": [
+     "gross margin"
+    ]
+   },
+   {
+    "id": "tsla-opinc-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 operating income was $4.4 billion.",
+    "value": 4355000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "operating income"
+    ]
+   },
+   {
+    "id": "tsla-ni-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 net income was $3.8 billion.",
+    "value": 3794000000,
+    "unit": "USD",
+    "period": "FY2025",
+    "keywords": [
+     "net income"
+    ]
+   },
+   {
+    "id": "tsla-eps-fy25",
+    "kind": "numeric",
+    "text": "Fiscal 2025 diluted EPS was $1.08.",
+    "value": 1.08,
+    "unit": "USD/share",
+    "period": "FY2025",
+    "keywords": [
+     "diluted",
+     "EPS",
+     "earnings per share"
+    ]
+   },
+   {
+    "id": "tsla-ceo",
+    "kind": "entity",
+    "text": "Elon Musk is CEO.",
+    "value": "Elon Musk",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CEO"
+    ]
+   },
+   {
+    "id": "tsla-cfo",
+    "kind": "entity",
+    "text": "Vaibhav Taneja is CFO.",
+    "value": "Vaibhav Taneja",
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "CFO"
+    ]
+   },
+   {
+    "id": "tsla-segments",
+    "kind": "qualitative",
+    "text": "Two segments: automotive and energy generation and storage.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "automotive",
+     "energy generation",
+     "storage",
+     "segment"
+    ]
+   },
+   {
+    "id": "tsla-risk-production",
+    "kind": "qualitative",
+    "text": "Production ramp and launch delays are a key risk.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "production",
+     "ramp",
+     "delays",
+     "launch"
+    ]
+   },
+   {
+    "id": "tsla-risk-demand",
+    "kind": "qualitative",
+    "text": "Demand for EVs and competition are key risks.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "demand",
+     "competition",
+     "electric vehicles",
+     "autonomous"
+    ]
+   },
+   {
+    "id": "tsla-ai",
+    "kind": "qualitative",
+    "text": "Strategy emphasises AI: FSD, Robotaxi and Optimus.",
+    "value": null,
+    "unit": null,
+    "period": null,
+    "keywords": [
+     "AI",
+     "Robotaxi",
+     "Optimus",
+     "Full Self-Driving"
+    ]
+   }
+  ]
+ }
+}

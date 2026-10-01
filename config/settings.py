@@ -119,6 +119,8 @@ class ResilienceSettings:
     #: Injected failure rate for network tools (0 = off; Challenge 8 uses 0.5). ARA_FAIL_RATE overrides.
     fail_rate: float = 0.0
     fail_seed: int | None = None
+    #: Inject only into these tools (empty = every network tool). ARA_FAIL_TOOLS="a,b" overrides.
+    fail_tools: tuple[str, ...] = ()
 
     def breaker_config(self) -> Any:
         from agent.circuit_breaker import BreakerConfig
@@ -233,8 +235,13 @@ def _resilience_settings(raw: dict[str, Any], env: Mapping[str, str]) -> Resilie
             values["fail_rate"] = float(env["ARA_FAIL_RATE"])
         if env.get("ARA_FAIL_SEED"):
             values["fail_seed"] = int(env["ARA_FAIL_SEED"])
+        if env.get("ARA_FAIL_TOOLS"):
+            values["fail_tools"] = env["ARA_FAIL_TOOLS"]
     except ValueError as exc:
         raise ConfigError(f"ARA_FAIL_RATE / ARA_FAIL_SEED must be numbers: {exc}") from exc
+    if isinstance(values.get("fail_tools"), str):
+        values["fail_tools"] = [t for t in values["fail_tools"].split(",")]
+    values["fail_tools"] = tuple(t.strip() for t in values.get("fail_tools", ()) if t.strip())
     settings = ResilienceSettings(**values)
     if not 0 <= settings.fail_rate <= 1:
         raise ConfigError(f"resilience.fail_rate must be between 0 and 1, got {settings.fail_rate}")

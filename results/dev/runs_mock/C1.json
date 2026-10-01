@@ -1,0 +1,1187 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C1",
+  "number": 1,
+  "title": "Single-Company Profile",
+  "expected_pages": [
+   3,
+   5
+  ]
+ },
+ "query": "Create a comprehensive profile of Microsoft Corporation including business overview, financial summary, key executives, and recent developments.",
+ "session_id": "session-20260930-233851-7824",
+ "data_mode": "mock",
+ "fail_rate": 0.0,
+ "fail_tools": [],
+ "injected_failures": {},
+ "profile": {
+  "template": "company_profile",
+  "tickers": [
+   "MSFT"
+  ],
+  "names": [
+   "Microsoft"
+  ],
+  "query_type": "profile",
+  "complexity": "single_company",
+  "periods": [
+   "recent"
+  ],
+  "ambiguity": 0.0,
+  "ambiguity_level": "low",
+  "signals": [
+   "no ambiguity signals: entity, aspect and timeframe are all stated"
+  ],
+  "sector": null
+ },
+ "template": "company_profile",
+ "stop_reason": "completed",
+ "duration_s": 0.31,
+ "tool_calls": 5,
+ "llm_usage": {
+  "calls": 5,
+  "failures": 0,
+  "prompt_tokens": 8968,
+  "completion_tokens": 7,
+  "reasoning_tokens": 0
+ },
+ "report_markdown": "# Microsoft: Company Profile\n\n> **Warning:** this report was generated from MOCK data and must not be used or cited.\n\n## Executive Summary\n\nMOCK RESPONSE\n\n## Business Overview\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Financial Summary\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Key Executives\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Recent Developments\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Data Gaps and Limitations\n\n- Section not completed: Business Overview.\n- Section not completed: Financial Summary.\n- Section not completed: Key Executives.\n- Section not completed: Recent Developments.\n\n## Research Methodology\n\n- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- **Mock data was used; figures are approximations for development only.**\n\n## Sources\n\n- [E2] company_profile: MSFT (company data, 2026-09-30)\n- [E3] financial_data_api: MSFT, income_statement, annual, 3 (financial data, 2026-09-30)\n- [E6] news_sentiment: MSFT, 10, 30 (news, 2026-09-30)\n- [E4] financial_data_api: MSFT, key_ratios, annual, 3 (financial data, 2026-09-30)\n- [E5] sec_filing_search: MSFT, 10-K (SEC filing, 2024-08-04). https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm\n",
+ "sections": {
+  "executive_summary": "MOCK RESPONSE"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "msft_profile",
+    "goal": "Company profile of MSFT",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "MSFT"
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E2"
+    ],
+    "summary": "company_profile returned E2",
+    "attempts": 1
+   },
+   {
+    "id": "msft_income",
+    "goal": "Three years of MSFT income statements",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "MSFT",
+     "statement_type": "income_statement",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E3"
+    ],
+    "summary": "financial_data_api returned E3",
+    "attempts": 1
+   },
+   {
+    "id": "msft_ratios",
+    "goal": "Key ratios for MSFT",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "MSFT",
+     "statement_type": "key_ratios",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E4"
+    ],
+    "summary": "financial_data_api returned E4",
+    "attempts": 1
+   },
+   {
+    "id": "msft_10k",
+    "goal": "Latest MSFT annual report",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "MSFT",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E5"
+    ],
+    "summary": "sec_filing_search returned E5",
+    "attempts": 1
+   },
+   {
+    "id": "msft_news",
+    "goal": "Recent news about MSFT",
+    "tool": "news_sentiment",
+    "args": {
+     "query": "MSFT",
+     "num_articles": 10,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E6"
+    ],
+    "summary": "news_sentiment returned E6",
+    "attempts": 1
+   }
+  ],
+  "rationale": "Default plan (the LLM plan was unusable).",
+  "rejected": []
+ },
+ "evidence": {
+  "E2": {
+   "evidence_id": "E2",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "data": {
+    "ticker": "MSFT",
+    "name": "Microsoft Corporation",
+    "cik": "0000789019",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Software - Infrastructure",
+    "sic_code": "7372",
+    "headquarters": "Redmond, Washington, USA",
+    "employees": 228000,
+    "fiscal_year_end": "0630",
+    "market_cap": 3100000000000.0,
+    "description": "Develops and licenses software, cloud services and devices. Reports three segments: Productivity and Business Processes, Intelligent Cloud (including Azure), and More Personal Computing.",
+    "executives": [
+     {
+      "name": "Satya Nadella",
+      "title": "Chairman and Chief Executive Officer"
+     },
+     {
+      "name": "Amy Hood",
+      "title": "Executive Vice President and Chief Financial Officer"
+     },
+     {
+      "name": "Brad Smith",
+      "title": "Vice Chair and President"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.232,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E3": {
+   "evidence_id": "E3",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "MSFT",
+    "company_name": "Microsoft Corporation",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "millions",
+    "fiscal_year_end": "0630",
+    "data": [
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-06-30",
+      "values": {
+       "revenue": 245122,
+       "gross_profit": 171008,
+       "operating_income": 109433,
+       "net_income": 88136,
+       "eps_diluted": 11.8
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-06-30",
+      "values": {
+       "revenue": 211915,
+       "gross_profit": 146052,
+       "operating_income": 88523,
+       "net_income": 72361,
+       "eps_diluted": 9.68
+      }
+     },
+     {
+      "fiscal_year": 2022,
+      "fiscal_period": "FY",
+      "period_end": "2022-06-30",
+      "values": {
+       "revenue": 198270,
+       "gross_profit": 135620,
+       "operating_income": 83383,
+       "net_income": 72738,
+       "eps_diluted": 9.65
+      }
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.313,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E6": {
+   "evidence_id": "E6",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "MSFT",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "MSFT",
+    "lookback_days": 30,
+    "article_count": 10,
+    "overall": {
+     "score": 0.1978,
+     "label": "positive",
+     "positive": 0.6,
+     "negative": 0.3,
+     "neutral": 0.1
+    },
+    "articles": [
+     {
+      "title": "MSFT unveils new products at annual event",
+      "url": "https://mock.wsj.com/msft-unveils-new-products-at-annual-event-1",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-08",
+      "summary": "[mock] MSFT unveils new products at annual event.",
+      "sentiment_score": 0.4157,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT beats expectations as demand stays strong",
+      "url": "https://mock.ft.com/msft-beats-expectations-as-demand-stays-strong-2",
+      "source": "Financial Times",
+      "published": "2025-06-02",
+      "summary": "[mock] MSFT beats expectations as demand stays strong.",
+      "sentiment_score": 0.6393,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT unveils new products at annual event",
+      "url": "https://mock.reuters.com/msft-unveils-new-products-at-annual-event-3",
+      "source": "Reuters",
+      "published": "2025-06-04",
+      "summary": "[mock] MSFT unveils new products at annual event.",
+      "sentiment_score": 0.3252,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT beats expectations as demand stays strong",
+      "url": "https://mock.cnbc.com/msft-beats-expectations-as-demand-stays-strong-4",
+      "source": "CNBC",
+      "published": "2025-06-18",
+      "summary": "[mock] MSFT beats expectations as demand stays strong.",
+      "sentiment_score": 0.7287,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT beats expectations as demand stays strong",
+      "url": "https://mock.seekingalpha.com/msft-beats-expectations-as-demand-stays-strong-5",
+      "source": "Seeking Alpha",
+      "published": "2025-06-13",
+      "summary": "[mock] MSFT beats expectations as demand stays strong.",
+      "sentiment_score": 0.5622,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT faces supply-chain pressure",
+      "url": "https://mock.finance.yahoo.com/msft-faces-supply-chain-pressure-6",
+      "source": "Yahoo Finance",
+      "published": "2025-06-09",
+      "summary": "[mock] MSFT faces supply-chain pressure.",
+      "sentiment_score": -0.4312,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "MSFT holds steady in volatile market",
+      "url": "https://mock.cnbc.com/msft-holds-steady-in-volatile-market-7",
+      "source": "CNBC",
+      "published": "2025-06-18",
+      "summary": "[mock] MSFT holds steady in volatile market.",
+      "sentiment_score": -0.0316,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "MSFT unveils new products at annual event",
+      "url": "https://mock.seekingalpha.com/msft-unveils-new-products-at-annual-event-8",
+      "source": "Seeking Alpha",
+      "published": "2025-06-16",
+      "summary": "[mock] MSFT unveils new products at annual event.",
+      "sentiment_score": 0.3926,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "MSFT faces supply-chain pressure",
+      "url": "https://mock.seekingalpha.com/msft-faces-supply-chain-pressure-9",
+      "source": "Seeking Alpha",
+      "published": "2025-06-26",
+      "summary": "[mock] MSFT faces supply-chain pressure.",
+      "sentiment_score": -0.2694,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "Regulators step up scrutiny of MSFT",
+      "url": "https://mock.finance.yahoo.com/regulators-step-up-scrutiny-of-msft-10",
+      "source": "Yahoo Finance",
+      "published": "2025-06-20",
+      "summary": "[mock] Regulators step up scrutiny of MSFT.",
+      "sentiment_score": -0.354,
+      "sentiment_label": "negative"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores."
+    ]
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.808,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E4": {
+   "evidence_id": "E4",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "data": {
+    "ticker": "MSFT",
+    "company_name": "Microsoft Corporation",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "currency": "USD",
+    "unit": "ratio",
+    "fiscal_year_end": "0630",
+    "data": [
+     {
+      "fiscal_year": 2024,
+      "fiscal_period": "FY",
+      "period_end": "2024-06-30",
+      "values": {
+       "gross_margin": 0.6976,
+       "operating_margin": 0.4464,
+       "net_margin": 0.3596,
+       "roe": 0.3283,
+       "debt_to_equity_proxy": 0.9077,
+       "fcf_margin": 0.3022
+      }
+     },
+     {
+      "fiscal_year": 2023,
+      "fiscal_period": "FY",
+      "period_end": "2023-06-30",
+      "values": {
+       "gross_margin": 0.6892,
+       "operating_margin": 0.4177,
+       "net_margin": 0.3415,
+       "roe": 0.3509,
+       "debt_to_equity_proxy": 0.9977,
+       "fcf_margin": 0.2807
+      }
+     },
+     {
+      "fiscal_year": 2022,
+      "fiscal_period": "FY",
+      "period_end": "2022-06-30",
+      "values": {
+       "gross_margin": 0.684,
+       "operating_margin": 0.4206,
+       "net_margin": 0.3669,
+       "roe": 0.4368,
+       "debt_to_equity_proxy": 1.1907,
+       "fcf_margin": 0.3286
+      }
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.35,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E5": {
+   "evidence_id": "E5",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "data": {
+    "ticker": "MSFT",
+    "cik": "0000789019",
+    "company_name": "Microsoft Corporation",
+    "filing_type": "10-K",
+    "filing_date": "2024-08-04",
+    "period_of_report": "2024-06-30",
+    "accession_number": "0000789019-24-001000",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm",
+    "sections": [
+     {
+      "item": "1",
+      "title": "Business",
+      "text": "Develops and licenses software, cloud services and devices. Reports three segments: Productivity and Business Processes, Intelligent Cloud (including Azure), and More Personal Computing."
+     },
+     {
+      "item": "1A",
+      "title": "Risk Factors",
+      "text": "- Intense competition across cloud, productivity, gaming and devices.\n- Heavy investment in AI infrastructure may not earn expected returns.\n- Cybersecurity attacks on Microsoft or its customers could damage trust.\n- Evolving regulation of AI, privacy and competition in multiple jurisdictions.\n- Dependence on third-party hardware and datacenter capacity."
+     },
+     {
+      "item": "7",
+      "title": "Management's Discussion and Analysis",
+      "text": "Fiscal 2024 revenue was $245,122 million, up 15.7% from the prior year. Operating income was $109,433 million and net income $88,136 million."
+     },
+     {
+      "item": "8",
+      "title": "Financial Statements and Supplementary Data",
+      "text": "Audited consolidated financial statements (see financial_data_api for line items)."
+     }
+    ],
+    "risk_factors": [
+     "Intense competition across cloud, productivity, gaming and devices.",
+     "Heavy investment in AI infrastructure may not earn expected returns.",
+     "Cybersecurity attacks on Microsoft or its customers could damage trust.",
+     "Evolving regulation of AI, privacy and competition in multiple jurisdictions.",
+     "Dependence on third-party hardware and datacenter capacity."
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 1,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.271,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Create a comprehensive profile of Microsoft Corporation including business overview, financial summary, key executives, and recent developments.",
+    "top_k": 5,
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.138,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "ok": true,
+   "latency_ms": 0.29,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 0.37,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": true,
+   "latency_ms": 0.407,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "ok": true,
+   "latency_ms": 0.318,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "MSFT",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 0.907,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "company_profile",
+    "title": "Microsoft: Company Profile",
+    "sections": {
+     "executive_summary": "MOCK RESPONSE",
+     "data_gaps_and_limitations": "",
+     "research_methodology": "- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E2",
+      "title": "company_profile: MSFT",
+      "source_type": "company data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E3",
+      "title": "financial_data_api: MSFT, income_statement, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "news_sentiment: MSFT, 10, 30",
+      "source_type": "news",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "financial_data_api: MSFT, key_ratios, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "sec_filing_search: MSFT, 10-K",
+      "source_type": "SEC filing",
+      "date": "2024-08-04",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm"
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 0.66,
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [],
+ "failures": [],
+ "disambiguation": {
+  "level": "low",
+  "proceed_reading": "Proceeding as requested.",
+  "assumptions": [],
+  "clarifying_questions": [],
+  "tickers": [
+   "MSFT"
+  ],
+  "timeframe": "recent",
+  "themes": [],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [],
+ "verification": {
+  "checked": 0,
+  "supported": 0,
+  "partially_supported": 0,
+  "unsupported": 0,
+  "unverifiable": 0,
+  "uncited": 0,
+  "auto_cited": 0,
+  "flagged": []
+ },
+ "report_checks": {
+  "missing_sections": [
+   "business_overview",
+   "financial_summary",
+   "key_executives",
+   "recent_developments"
+  ],
+  "unknown_citations": [],
+  "uncited_sources": [
+   "E2",
+   "E3",
+   "E4",
+   "E5",
+   "E6"
+  ]
+ },
+ "trace_path": "C:\\Users\\user\\intern\\Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent\\traces\\session-20260930-233851-7824.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-09-30T23:38:51.476+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "thought",
+   "text": "Report type 'company_profile' (profile, single_company); companies ['MSFT']; ambiguity 0.00 (low: no ambiguity signals: entity, aspect and timeframe are all stated).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-09-30T23:38:51.477+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Create a comprehensive profile of Microsoft Corporation including business overview, financial summary, key executives, and recent developments.",
+    "top_k": 5,
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 4,
+   "ts": "2026-09-30T23:38:51.477+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 0.138
+  },
+  {
+   "seq": 5,
+   "ts": "2026-09-30T23:38:51.477+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "thought",
+   "text": "Memory recall found 0 prior finding(s).",
+   "node": "recall"
+  },
+  {
+   "seq": 6,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1745,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 7,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{}"
+  },
+  {
+   "seq": 8,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "error",
+   "source": "parser",
+   "error_kind": "plan_parse",
+   "message": "'steps' must be a list",
+   "attempt": 1
+  },
+  {
+   "seq": 9,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1768,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 10,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{}"
+  },
+  {
+   "seq": 11,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "error",
+   "source": "parser",
+   "error_kind": "plan_parse",
+   "message": "'steps' must be a list",
+   "attempt": 2
+  },
+  {
+   "seq": 12,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "Default plan (the LLM plan was unusable).",
+   "steps": 5
+  },
+  {
+   "seq": 13,
+   "ts": "2026-09-30T23:38:51.478+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company profile of MSFT",
+   "step_id": "msft_profile",
+   "args": {
+    "ticker": "MSFT"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 14,
+   "ts": "2026-09-30T23:38:51.479+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Three years of MSFT income statements",
+   "step_id": "msft_income",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 15,
+   "ts": "2026-09-30T23:38:51.479+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Key ratios for MSFT",
+   "step_id": "msft_ratios",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 16,
+   "ts": "2026-09-30T23:38:51.479+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest MSFT annual report",
+   "step_id": "msft_10k",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 17,
+   "ts": "2026-09-30T23:38:51.479+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "news_sentiment",
+   "rationale": "Recent news about MSFT",
+   "step_id": "msft_news",
+   "args": {
+    "query": "MSFT",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 18,
+   "ts": "2026-09-30T23:38:51.481+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "MSFT"
+   }
+  },
+  {
+   "seq": 19,
+   "ts": "2026-09-30T23:38:51.481+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 0.29
+  },
+  {
+   "seq": 20,
+   "ts": "2026-09-30T23:38:51.481+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 21,
+   "ts": "2026-09-30T23:38:51.481+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 0.37
+  },
+  {
+   "seq": 22,
+   "ts": "2026-09-30T23:38:51.481+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "step msft_profile done: company_profile returned E2",
+   "step_id": "msft_profile"
+  },
+  {
+   "seq": 23,
+   "ts": "2026-09-30T23:38:51.482+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "MSFT",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 24,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "MSFT",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 25,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "step msft_income done: financial_data_api returned E3",
+   "step_id": "msft_income"
+  },
+  {
+   "seq": 26,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "MSFT",
+    "num_articles": 10,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 27,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 0.907
+  },
+  {
+   "seq": 28,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "financial_data_api",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 0.407
+  },
+  {
+   "seq": 29,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "sec_filing_search",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 0.318
+  },
+  {
+   "seq": 30,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "step msft_news done: news_sentiment returned E6",
+   "step_id": "msft_news"
+  },
+  {
+   "seq": 31,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "step msft_ratios done: financial_data_api returned E4",
+   "step_id": "msft_ratios"
+  },
+  {
+   "seq": 32,
+   "ts": "2026-09-30T23:38:51.484+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "step msft_10k done: sec_filing_search returned E5",
+   "step_id": "msft_10k"
+  },
+  {
+   "seq": 33,
+   "ts": "2026-09-30T23:38:51.485+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1420,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 34,
+   "ts": "2026-09-30T23:38:51.485+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 36,
+   "ts": "2026-09-30T23:38:51.656+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "synthesize",
+   "prompt_tokens": 2550,
+   "completion_tokens": 3,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "MOCK RESPONSE"
+  },
+  {
+   "seq": 38,
+   "ts": "2026-09-30T23:38:51.657+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "thought",
+   "text": "Reflection: 4 section(s) missing ['business_overview', 'financial_summary', 'key_executives', 'recent_developments']",
+   "node": "reflect"
+  },
+  {
+   "seq": 39,
+   "ts": "2026-09-30T23:38:51.658+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1485,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 40,
+   "ts": "2026-09-30T23:38:51.658+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 41,
+   "ts": "2026-09-30T23:38:51.659+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "company_profile",
+    "title": "Microsoft: Company Profile",
+    "sections": {
+     "executive_summary": "MOCK RESPONSE",
+     "data_gaps_and_limitations": "",
+     "research_methodology": "- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E2",
+      "title": "company_profile: MSFT",
+      "source_type": "company data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E3",
+      "title": "financial_data_api: MSFT, income_statement, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "news_sentiment: MSFT, 10, 30",
+      "source_type": "news",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "financial_data_api: MSFT, key_ratios, annual, 3",
+      "source_type": "financial data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "sec_filing_search: MSFT, 10-K",
+      "source_type": "SEC filing",
+      "date": "2024-08-04",
+      "is_mock": true,
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000078901924001000/mock.htm"
+     }
+    ]
+   }
+  },
+  {
+   "seq": 42,
+   "ts": "2026-09-30T23:38:51.659+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "latency_ms": 0.66
+  },
+  {
+   "seq": 43,
+   "ts": "2026-09-30T23:38:51.660+00:00",
+   "session_id": "session-20260930-233851-7824",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 18,
+   "facts": 33,
+   "findings": 0
+  }
+ ]
+}

@@ -1,0 +1,315 @@
+{
+ "b3803470c138ef9cef3b65891014e0170435235c3cd2c90d0f81c76f4fffe696": {
+  "insights": [
+   "FX headwind of 5pp implies underlying organic growth is significantly higher than the reported 16.4% YoY increase.",
+   "Gross margin guidance (47-48%) is ~200bps below actual (50.06%), signaling anticipated mix shift or cost pressure.",
+   "Mac's 29% YoY growth despite supply constraints suggests strong demand elasticity or successful inventory management."
+  ],
+  "insight_count": 3,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "The report is well-structured and logically progresses from summary to detailed analysis. The failure to compare against consensus is explicitly acknowledged rather than ignored, maintaining integrity. The analysis of guidance vs. actuals is sound."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "The summary accurately captures the main financial results and key qualitative takeaways (Mac, Broadcom). It omits the specific guidance figures and the FX headwind analysis, which are significant parts of the body, but it is not misleading.",
+   "missed_findings": [
+    "Specific Q4 guidance figures (revenue growth, gross margin, opex)",
+    "Quantified FX headwind of 5 percentage points"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan covered all necessary steps: company profile, financials, transcript, and consensus estimates. The failure to retrieve consensus numbers is a data retrieval issue, not a planning flaw, as the step was correctly identified and attempted."
+  },
+  "contradictions": [],
+  "provider": "groq_qwen",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "45f4c24d2d9af9330bd1e320f399c36c1167610d9006cd29934d053eb8671cea": {
+  "insights": [
+   "AI partnership with 3M could boost Azure margins by integrating proprietary hardware, offsetting slower growth in traditional software.",
+   "Operating margin expansion outpaces revenue growth, indicating pricing power and cost discipline beyond scale effects.",
+   "Free cash flow decline despite record operating cash flow suggests higher capex intensity, likely for data-center expansion.",
+   "Microsoft's dominant revenue rank but fourth growth rank implies peers are catching up in top-line acceleration.",
+   "Diversified segment mix reduces reliance on any single product line, cushioning against sector-specific downturns."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "Sections follow a logical order—summary, business overview, financials, executives, developments—and conclusions generally stem from presented data, though some claims are marked unverified."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue growth, margin improvement, and cash generation, but omits balance-sheet strength, detailed capital allocation, and the executive team, which are notable findings in the body.",
+   "missed_findings": [
+    "Balance sheet highlights (assets, liabilities, equity, cash position)",
+    "Capital expenditures and free cash flow details",
+    "List of key executives"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan includes all necessary data sources—company profile, financial statements, peer comparison, calculations, and recent news—without major gaps; duplicate financial API calls are minor redundancy."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "2282a86d8d7ba61cc672c1156a04e25425b451f12638a1728da441b7ee4d18cf": {
+  "insights": [
+   "Stable gross margin alongside falling operating margin implies rising SG&A or R&D expenses eroding profitability.",
+   "The $30 bn borrowing plan ties Tesla’s cash flow to interest-rate environments, heightening financial risk if rates rise.",
+   "Tesla’s high P/E magnifies downside risk: any miss on growth or margin targets could trigger outsized valuation corrections.",
+   "Dependence on Elon Musk creates a key-person risk; leadership turnover could disrupt strategic execution and investor confidence.",
+   "Operating margin superiority over legacy automakers is less meaningful because absolute margins remain low compared to high-margin tech peers."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "The report follows a logical progression from summary to detailed risk categories, and conclusions are generally supported by cited evidence. Minor issues include occasional restatement of numbers without deeper analysis."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue decline, margin compression, and primary risk themes, but omits the disclosed $30 bn borrowing plan and the valuation pressure risk highlighted later in the body.",
+   "missed_findings": [
+    "The 10-K notes a $30 billion borrowing plan, indicating reliance on external financing and interest-rate risk.",
+    "Tesla’s extremely high P/E ratio creates valuation pressure and potential for sharp price corrections."
+   ]
+  },
+  "planning": {
+   "score": 5,
+   "rationale": "The plan covered all necessary data sources (financials, 10-K risk factors, news sentiment, peer comparison) and handled unavailable steps (earnings transcript, web search) appropriately."
+  },
+  "contradictions": [
+   {
+    "a": "Gross margin stood at 18.0 % in FY2025, down from 18.0 % in FY2024 (no change reported)",
+    "b": "Gross margin stood at 18.0 % in FY2025, down from 18.0 % in FY2024 (no change reported)",
+    "why": "The statement says the margin is \"down\" yet reports identical percentages, creating a self-contradiction."
+   }
+  ],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "8bb4c6efb89bbb941ff0b50c1f30a0e298885d0e75a4b678f8080ac171012713": {
+  "insights": [
+   "Azure's higher growth ties to its hybrid-cloud and AI services, leveraging enterprise ecosystem beyond pure infrastructure.",
+   "Microsoft's operating margin rise reflects cost efficiencies in its Intelligent Cloud segment, not just revenue scaling."
+  ],
+  "insight_count": 2,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections are ordered, but conclusions often rely on unverified figures and the market-share gap is noted without analysis, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "Summary captures main growth, margin, and competitive-advantage points, but it overstates completeness of market-share data and repeats unverified numbers.",
+   "missed_findings": [
+    "Absence of market-share data limits comparative positioning",
+    "Margin improvements are linked to cost efficiencies in Intelligent Cloud"
+   ]
+  },
+  "planning": {
+   "score": 3,
+   "rationale": "Plan includes necessary filings and peer data but contains redundant financial_data_api calls and several skipped calculations without clear remediation."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "5cae76c475d50665188a19291579c2db117df2d8bfde2d4d50fd69305037a457": {
+  "insights": [
+   "Operating margin jump from 10.8% to 31.6% suggests successful scaling of high-margin software contracts, not just cost cuts.",
+   "Despite 93% Q2 FY2026 revenue growth, market sentiment remains only mildly positive, indicating valuation concerns outweigh short-term performance.",
+   "Peer comparison shows Palantir’s growth outpaces most rivals but still trails NVIDIA, highlighting a ceiling to its market-share expansion."
+  ],
+  "insight_count": 3,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "The report follows a clear structure—summary, contradiction analysis, evidence review, resolution, and implications—with most conclusions directly tied to cited data. Minor repetition in the 'Growth Trajectory' and 'Profitability Expansion' sections prevents a perfect score."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "The executive summary captures the core finding that strong fundamentals coexist with a negative market narrative. It omits the FY2026 revenue guidance disclosed in the earnings call, which is a notable body finding.",
+   "missed_findings": [
+    "FY2026 revenue guidance of $8.15-$8.16 billion indicating ~82% YoY growth"
+   ]
+  },
+  "planning": {
+   "score": 5,
+   "rationale": "The research plan addressed all required components—company profile, audited financials, earnings transcript, news sentiment, peer comparison, and SEC filings—while sensibly skipping unavailable calculations and avoiding invented data."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "390579b4be8764f0562b1f379c9eff68d059c0d28e14f6331f9e3d454b59ed53": {
+  "insights": [
+   "Goldman Sachs' higher revenue growth combined with the largest margin improvement suggests a successful shift toward higher-margin advisory and wealth-management businesses.",
+   "JPMorgan's slowing revenue growth alongside margin compression indicates rising cost pressures outpacing income, likely from legacy banking expenses."
+  ],
+  "insight_count": 2,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections follow a reasonable order, but conclusions about margins and growth lack cited evidence, and some content is duplicated or vague, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary reflects the body’s revenue and margin trends but omits the important observation that recent news coverage is sparse, limiting short-term catalyst analysis.",
+   "missed_findings": [
+    "The report notes a lack of recent news for most banks, which constrains assessment of near-term catalysts."
+   ]
+  },
+  "planning": {
+   "score": 2,
+   "rationale": "The plan contains many redundant company_profile steps and skips essential web searches without justification, showing inefficiency and incomplete coverage of the query."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "13850c8d9c4b72b94c23fef11ad547a939b9accdcedcd5c970b944c4aba42ffe": {
+  "insights": [
+   "Palantir's 56% growth inflates the sector average revenue growth, masking slower expansion at the larger peers.",
+   "Apple's 152% ROE stems largely from share buy-backs and cash returns, not from superior operating efficiency.",
+   "The wide operating-margin gap (Microsoft 46.8% vs Amazon 11.2%) reflects divergent business models: cloud/software versus low-margin logistics.",
+   "Talent-shortage risk disproportionately threatens fast-growing firms like Palantir and Amazon, where hiring constraints can throttle scaling.",
+   "Regulatory exposure is a common tail risk, but Palantir faces an added sovereign-risk dimension due to its government contracts."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections follow a logical order, but conclusions in the executive summary repeat points from the body and some risk statements lack direct citation, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue scale, margin differences, and growth themes, but omits key risks such as talent shortage and supply-chain dependency highlighted later in the report.",
+   "missed_findings": [
+    "Talent shortage risk across the sector",
+    "Supply-chain and component dependency risk"
+   ]
+  },
+  "planning": {
+   "score": 2,
+   "rationale": "The plan includes necessary filings, financials, news, and peer comparison, but contains many redundant earnings_transcript calls that were impossible without tickers, indicating inefficiency."
+  },
+  "contradictions": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "2f6e76cd181316037a7e4684eea47765866be0edbca5ef6f72262d80437d7fed": {
+  "insights": [
+   "Supply bottlenecks could prevent NVIDIA from achieving its FY2028 70% growth target despite management guidance.",
+   "NVIDIA's superior operating margin stems from AI-driven data-center demand, enabling premium pricing unavailable to peers focused on commoditized chips.",
+   "The reported $5.5 trillion market cap implies a price-to-sales ratio near 25×, unusually high even for high-growth AI stocks, highlighting valuation risk.",
+   "Peer comparison shows NVIDIA's revenue is over three times the next-largest peer, yet the report later claims it ranks 2nd in revenue size, revealing inconsistency.",
+   "The projected FY2028 revenue of $108 B assumes a decline from FY2026 $215 B, suggesting a likely typo or misinterpretation of guidance."
+  ],
+  "insight_count": 5,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "Sections follow a typical structure, but conclusions sometimes lack supporting evidence and the report repeats contradictory statements, reducing coherence."
+  },
+  "exec_summary": {
+   "score": 3,
+   "rationale": "The summary captures revenue, margin, growth, and risk themes, but omits key valuation concerns, cash-flow figures, and the inconsistency in revenue-size ranking.",
+   "missed_findings": [
+    "Valuation pressure from a high P/E relative to peers",
+    "Operating cash flow of $24.08 bn and free cash flow of $21.40 bn",
+    "Inconsistency in revenue-size ranking versus peer comparison"
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan includes all necessary data sources (financials, filings, transcript, news, peers). Minor redundancy in separate peer-comparison and calculation steps, but no major gaps."
+  },
+  "contradictions": [
+   {
+    "a": "NVIDIA’s revenue is more than three times that of the next-largest peer (SK Hynix) and its operating margin exceeds the sector median by roughly 20 percentage points...",
+    "b": "Against its five peers, NVIDIA ranks **2nd in revenue size** (behind SK Hynix) but **1st in operating margin**...",
+    "why": "The same report claims NVIDIA is both over three times larger than the next peer and only second-largest in revenue, which cannot both be true."
+   }
+  ],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+ },
+ "91a9e225b92ab496707c4a7299719b796d7bfe9051b9426cf7b143227a271b7a": {
+  "insights": [
+   "The 'struggling' narrative is driven by a 276x P/E multiple, not operational failure, creating a valuation-fundamental disconnect.",
+   "Operating margin expanded 20.8 points YoY, indicating a structural shift to high-margin software subscriptions rather than just volume growth.",
+   "Guidance volatility (raising targets twice) paradoxically fuels skepticism, as aggressive 61-82% growth targets are viewed as risky.",
+   "PLTR's 56% growth outpaces peers like Microsoft (17.8%), suggesting a distinct AI-infrastructure premium over general software."
+  ],
+  "insight_count": 4,
+  "logical_flow": {
+   "score": 4,
+   "rationale": "The report follows a clear structure: identifying the contradiction, presenting evidence, and resolving it. However, the 'Resolution' section relies on external context (macro AI uncertainty) that is not fully supported by the specific evidence cited in the 'Evidence Review' section, creating a slight logical gap."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "The summary accurately captures the core contradiction and the primary driver (valuation). It omits the specific detail about guidance volatility as a secondary driver of negative sentiment, which is a notable finding in the body.",
+   "missed_findings": [
+    "Guidance volatility and aggressive targets contribute to the negative media narrative."
+   ]
+  },
+  "planning": {
+   "score": 3,
+   "rationale": "The plan included redundant steps where tools were called multiple times (e.g., news_sentiment, sec_filing_search) and some steps were skipped due to missing tickers despite the company being known. The execution was inefficient, though the final data set appears sufficient."
+  },
+  "contradictions": [],
+  "provider": "groq_qwen",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "ec5628cf21cad139aa066c95d2468b0a5c1da806af9e24944954e20bc0fc5c7b": {
+  "insights": [
+   "JPMorgan's FY2025 net income declined 2.4% despite 2.75% revenue growth, indicating margin compression or one-off costs.",
+   "Goldman Sachs achieved a 29.5% net margin, outperforming JPMorgan's 31.3% only slightly but with much smaller revenue base.",
+   "Citigroup's 16.8% net margin is less than half of JPMorgan's, highlighting significant operational efficiency gaps among peers."
+  ],
+  "insight_count": 3,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "The report presents data logically but lacks deep analysis. The Financial Summary section repeats figures already stated in the Executive Summary without adding new context or connecting the dots between revenue growth and profitability changes."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "The summary accurately reflects the key financial metrics presented in the body. It correctly identifies JPMorgan as the top performer by revenue and notes the margin disparities. It misses the specific calculation of JPMorgan's revenue growth rate mentioned in the body, but this is a minor omission.",
+   "missed_findings": [
+    "JPMorgan Chase's calculated revenue growth rate of 2.75% from FY2024 to FY2025."
+   ]
+  },
+  "planning": {
+   "score": 4,
+   "rationale": "The plan covered the necessary financial data and peer comparisons. However, it lacked specific steps for qualitative analysis such as reading recent earnings call transcripts or detailed news sentiment analysis beyond a generic 'news_sentiment' call, which might have provided more context on 'what's happening' beyond just numbers."
+  },
+  "contradictions": [],
+  "provider": "groq_qwen",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "ab06f764ab8d633e9c3b9bf11a1894ec866a7e9ebe849d71fbddaa234614579a": {
+  "insights": [
+   "NVIDIA's revenue scale exceeds the combined total of its top four semiconductor peers (AVGO, SKHY, MU, AMD).",
+   "Management attributes FY2028 growth limits to supply constraints, implying demand significantly exceeds current production capacity.",
+   "NVIDIA's 60.4% operating margin is 11.8 percentage points higher than the next best peer, SK hynix."
+  ],
+  "insight_count": 3,
+  "logical_flow": {
+   "score": 3,
+   "rationale": "The report structure is standard, but the Financial Analysis section ends abruptly with an incomplete sentence ('is *(unverified: no source cited)*'), breaking the logical flow and leaving the analysis unfinished. The peer comparison table is presented, but the narrative analysis is cut off."
+  },
+  "exec_summary": {
+   "score": 4,
+   "rationale": "The summary accurately captures the key financial metrics, peer ranking, and management guidance. It omits the specific detail about the supply constraint being the primary limiting factor, which is a notable nuance in the body, but otherwise remains faithful.",
+   "missed_findings": [
+    "Supply constraints are cited as the primary limiting factor on demand fulfillment for FY2028 guidance."
+   ]
+  },
+  "planning": {
+   "score": 3,
+   "rationale": "The plan covers all necessary research steps (profile, financials, filings, transcript, peers, news). However, it lists multiple redundant 'Call financial_data_api' and 'Call calculation_engine' steps without specific goals, and the prompt notes a 50% failure rate which seems to have resulted in the incomplete output, suggesting the plan did not adequately account for or handle the intermittent failures effectively in the final execution."
+  },
+  "contradictions": [],
+  "provider": "groq_qwen",
+  "model": "qwen/qwen3.8-27b"
+ }
+}

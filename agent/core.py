@@ -364,8 +364,10 @@ class ResearchAgent:
         self._research_deadline = self._deadline - min(self.max_seconds / 2, max(60.0, self.max_seconds / 4))
         self.registry = self.registry_factory()
         if self.resilience_cfg.fail_rate > 0:
-            self.registry.failure_injector = FailureInjector(rate=self.resilience_cfg.fail_rate,
-                                                             seed=self.resilience_cfg.fail_seed)
+            rc = self.resilience_cfg
+            per_tool = {t: rc.fail_rate for t in rc.fail_tools}
+            self.registry.failure_injector = FailureInjector(rate=0.0 if per_tool else rc.fail_rate,
+                                                             per_tool=per_tool, seed=rc.fail_seed)
         self.breakers = BreakerBoard(self.resilience_cfg.breaker_config(), clock=self._clock)
         self.resilience_events: list[tuple[str, dict[str, Any]]] = []
         self.dispatcher = ResilientDispatcher(
@@ -851,7 +853,9 @@ class ResearchAgent:
         injector = self.registry.failure_injector
         if injector is not None:
             lines.append(f"- **Failure injection test:** {sum(injector.injected.values())} tool failure(s) were "
-                         f"injected on purpose (rate {self.resilience_cfg.fail_rate:.0%}).")
+                         f"injected on purpose (rate {self.resilience_cfg.fail_rate:.0%}"
+                         + (f" on {', '.join(self.resilience_cfg.fail_tools)}" if self.resilience_cfg.fail_tools else "")
+                         + ").")
         return lines
 
     def _methodology(self, plan: Plan, verification: dict[str, Any]) -> str:

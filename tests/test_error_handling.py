@@ -770,6 +770,21 @@ def test_injector_from_env() -> None:
         FailureInjector.from_env({"ARA_FAIL_RATE": "lots"})
 
 
+def test_fail_tools_setting_limits_injection_to_named_tools() -> None:
+    # Challenge 8: only the financial data API and SEC filing search fail, at 50%.
+    from config.settings import load_settings
+
+    env = {"ARA_FAIL_RATE": "1.0", "ARA_FAIL_TOOLS": "financial_data_api, sec_filing_search"}
+    settings = load_settings(env, load_dotenv_file=False)
+    assert settings.resilience.fail_tools == ("financial_data_api", "sec_filing_search")
+    assert load_settings({}, load_dotenv_file=False).resilience.fail_tools == ()
+
+    rc = settings.resilience
+    injector = FailureInjector(rate=0.0, per_tool={t: rc.fail_rate for t in rc.fail_tools}, seed=1)
+    assert all(r is not None for r in _run_injector(injector, "financial_data_api", 5))
+    assert _run_injector(injector, "web_search", 5) == [None] * 5
+
+
 def test_injected_failures_exercise_recovery_through_the_dispatcher() -> None:
     injector = FailureInjector(rate=0.5, seed=11)
     registry = build_default_registry("mock")

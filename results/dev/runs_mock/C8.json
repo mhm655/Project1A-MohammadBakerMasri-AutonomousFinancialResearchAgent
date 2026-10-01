@@ -1,0 +1,1618 @@
+{
+ "bundle_version": 1,
+ "challenge": {
+  "id": "C8",
+  "number": 8,
+  "title": "Full Research Report With Degradation",
+  "expected_pages": [
+   15,
+   20
+  ]
+ },
+ "query": "Produce a complete investment research report on NVIDIA Corporation. Note: The financial data API and SEC filing search tools are currently experiencing intermittent failures (simulate 50% failure rate).",
+ "session_id": "session-20260930-233851-0b7a",
+ "data_mode": "mock",
+ "fail_rate": 0.5,
+ "fail_tools": [
+  "financial_data_api",
+  "sec_filing_search"
+ ],
+ "injected_failures": {
+  "financial_data_api": 2,
+  "sec_filing_search": 1
+ },
+ "profile": {
+  "template": "full_report",
+  "tickers": [
+   "NVDA"
+  ],
+  "names": [
+   "Nvidia"
+  ],
+  "query_type": "full_report",
+  "complexity": "single_company",
+  "periods": [],
+  "ambiguity": 0.1,
+  "ambiguity_level": "low",
+  "signals": [
+   "+0.10: no timeframe stated"
+  ],
+  "sector": null
+ },
+ "template": "full_report",
+ "stop_reason": "completed",
+ "duration_s": 1.41,
+ "tool_calls": 5,
+ "llm_usage": {
+  "calls": 5,
+  "failures": 0,
+  "prompt_tokens": 9681,
+  "completion_tokens": 7,
+  "reasoning_tokens": 0
+ },
+ "report_markdown": "# Nvidia: Full Report\n\n> **Warning:** this report was generated from MOCK data and must not be used or cited.\n\n## Executive Summary\n\nMOCK RESPONSE\n\n## Company Overview\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Financial Analysis\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Risk Assessment\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Competitive Position\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Outlook\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Valuation Scenarios\n\n_This section could not be completed. See Data Gaps and Limitations._\n\n## Data Gaps and Limitations\n\n- Step 'Latest NVDA annual report' (sec_filing_search NVDA, 10-K): Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Three years of NVDA income statements' (financial_data_api NVDA, income_statement, annual, 3): Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search. [E5] is less reliable than the primary source.\n- Step 'Key ratios for NVDA' (financial_data_api NVDA, key_ratios, annual, 3): Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search. [E6] is less reliable than the primary source.\n- Section not completed: Company Overview.\n- Section not completed: Financial Analysis.\n- Section not completed: Risk Assessment.\n- Section not completed: Competitive Position.\n- Section not completed: Outlook.\n- Section not completed: Valuation Scenarios.\n\n## Research Methodology\n\n- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E5] web_search instead of financial_data_api; [E6] web_search instead of financial_data_api.\n- Resilience: 2 retried call(s); circuit breakers opened for sec_edgar at the end of research.\n- **Failure injection test:** 3 tool failure(s) were injected on purpose (rate 50% on financial_data_api, sec_filing_search).\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**\n\n## Sources\n\n- [E2] company_profile: NVDA (company data, 2026-09-30)\n- [E3] web_search: NVDA 10-K SEC filing, 10 (web, 2026-09-30)\n- [E4] news_sentiment: NVDA, 10, 30 (news, 2026-09-30)\n- [E5] web_search: NVDA income statement financials, 10 (web, 2026-09-30)\n- [E6] web_search: NVDA key ratios financials, 10 (web, 2026-09-30)\n",
+ "sections": {
+  "executive_summary": "MOCK RESPONSE"
+ },
+ "plan": {
+  "steps": [
+   {
+    "id": "nvda_profile",
+    "goal": "Company profile of NVDA",
+    "tool": "company_profile",
+    "args": {
+     "ticker": "NVDA"
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E2"
+    ],
+    "summary": "company_profile returned E2",
+    "attempts": 1
+   },
+   {
+    "id": "nvda_income",
+    "goal": "Three years of NVDA income statements",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "NVDA",
+     "statement_type": "income_statement",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E5"
+    ],
+    "summary": "financial_data_api returned E5",
+    "attempts": 1
+   },
+   {
+    "id": "nvda_ratios",
+    "goal": "Key ratios for NVDA",
+    "tool": "financial_data_api",
+    "args": {
+     "ticker": "NVDA",
+     "statement_type": "key_ratios",
+     "period": "annual",
+     "years": 3
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E6"
+    ],
+    "summary": "financial_data_api returned E6",
+    "attempts": 1
+   },
+   {
+    "id": "nvda_10k",
+    "goal": "Latest NVDA annual report",
+    "tool": "sec_filing_search",
+    "args": {
+     "ticker": "NVDA",
+     "filing_type": "10-K"
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E3"
+    ],
+    "summary": "sec_filing_search returned E3",
+    "attempts": 1
+   },
+   {
+    "id": "nvda_news",
+    "goal": "Recent news about NVDA",
+    "tool": "news_sentiment",
+    "args": {
+     "query": "NVDA",
+     "num_articles": 10,
+     "lookback_days": 30
+    },
+    "depends_on": [],
+    "reason": "",
+    "status": "done",
+    "evidence_ids": [
+     "E4"
+    ],
+    "summary": "news_sentiment returned E4",
+    "attempts": 1
+   }
+  ],
+  "rationale": "Default plan (the LLM plan was unusable).",
+  "rejected": []
+ },
+ "evidence": {
+  "E2": {
+   "evidence_id": "E2",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "NVDA"
+   },
+   "data": {
+    "ticker": "NVDA",
+    "name": "NVIDIA Corporation",
+    "cik": "0001045810",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "sic_code": "3674",
+    "headquarters": "Santa Clara, California, USA",
+    "employees": 36000,
+    "fiscal_year_end": "0126",
+    "market_cap": 3500000000000.0,
+    "description": "Designs accelerated computing platforms: data-center GPUs, networking and software, plus gaming, professional visualisation and automotive products. Reports Compute & Networking and Graphics segments.",
+    "executives": [
+     {
+      "name": "Jensen Huang",
+      "title": "President and Chief Executive Officer"
+     },
+     {
+      "name": "Colette Kress",
+      "title": "Executive Vice President and Chief Financial Officer"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - approximate figures for development only; do not cite."
+    ]
+   },
+   "source_tier": 2,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.191,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E3": {
+   "evidence_id": "E3",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA 10-K SEC filing",
+    "num_results": 10
+   },
+   "data": {
+    "query": "NVDA 10-K SEC filing",
+    "date_range": null,
+    "results": [
+     {
+      "title": "NVDA 10-K SEC filing: what investors need to know",
+      "url": "https://mock.seekingalpha.com/nvda-10-k-sec-filing-1",
+      "snippet": "[mock] Seeking Alpha coverage of NVDA 10-K SEC filing, published 2024-12-10.",
+      "source": "Seeking Alpha",
+      "published": "2024-12-10"
+     },
+     {
+      "title": "Analysts weigh in on NVDA 10-K SEC filing",
+      "url": "https://mock.reuters.com/nvda-10-k-sec-filing-2",
+      "snippet": "[mock] Reuters coverage of NVDA 10-K SEC filing, published 2024-07-26.",
+      "source": "Reuters",
+      "published": "2024-07-26"
+     },
+     {
+      "title": "NVDA 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.finance.yahoo.com/nvda-10-k-sec-filing-3",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA 10-K SEC filing, published 2025-06-15.",
+      "source": "Yahoo Finance",
+      "published": "2025-06-15"
+     },
+     {
+      "title": "Five takeaways on NVDA 10-K SEC filing",
+      "url": "https://mock.finance.yahoo.com/nvda-10-k-sec-filing-4",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA 10-K SEC filing, published 2025-03-13.",
+      "source": "Yahoo Finance",
+      "published": "2025-03-13"
+     },
+     {
+      "title": "Why NVDA 10-K SEC filing matters for the market",
+      "url": "https://mock.reuters.com/nvda-10-k-sec-filing-5",
+      "snippet": "[mock] Reuters coverage of NVDA 10-K SEC filing, published 2024-08-03.",
+      "source": "Reuters",
+      "published": "2024-08-03"
+     },
+     {
+      "title": "NVDA 10-K SEC filing: risks and opportunities ahead",
+      "url": "https://mock.reuters.com/nvda-10-k-sec-filing-6",
+      "snippet": "[mock] Reuters coverage of NVDA 10-K SEC filing, published 2024-12-16.",
+      "source": "Reuters",
+      "published": "2024-12-16"
+     },
+     {
+      "title": "NVDA 10-K SEC filing: what investors need to know",
+      "url": "https://mock.finance.yahoo.com/nvda-10-k-sec-filing-7",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA 10-K SEC filing, published 2025-04-14.",
+      "source": "Yahoo Finance",
+      "published": "2025-04-14"
+     },
+     {
+      "title": "Analysts weigh in on NVDA 10-K SEC filing",
+      "url": "https://mock.finance.yahoo.com/nvda-10-k-sec-filing-8",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA 10-K SEC filing, published 2025-01-14.",
+      "source": "Yahoo Finance",
+      "published": "2025-01-14"
+     },
+     {
+      "title": "NVDA 10-K SEC filing - latest developments and outlook",
+      "url": "https://mock.ft.com/nvda-10-k-sec-filing-9",
+      "snippet": "[mock] Financial Times coverage of NVDA 10-K SEC filing, published 2025-03-21.",
+      "source": "Financial Times",
+      "published": "2025-03-21"
+     },
+     {
+      "title": "Five takeaways on NVDA 10-K SEC filing",
+      "url": "https://mock.cnbc.com/nvda-10-k-sec-filing-10",
+      "snippet": "[mock] CNBC coverage of NVDA 10-K SEC filing, published 2024-12-21.",
+      "source": "CNBC",
+      "published": "2024-12-21"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search.",
+     "Fallback data is web results about the filing instead of the filing itself."
+    ],
+    "fallback_for": "sec_filing_search"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.516,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E4": {
+   "evidence_id": "E4",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "NVDA",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "data": {
+    "query": "NVDA",
+    "lookback_days": 30,
+    "article_count": 10,
+    "overall": {
+     "score": 0.1323,
+     "label": "positive",
+     "positive": 0.6,
+     "negative": 0.3,
+     "neutral": 0.1
+    },
+    "articles": [
+     {
+      "title": "NVDA beats expectations as demand stays strong",
+      "url": "https://mock.wsj.com/nvda-beats-expectations-as-demand-stays-strong-1",
+      "source": "The Wall Street Journal",
+      "published": "2025-06-03",
+      "summary": "[mock] NVDA beats expectations as demand stays strong.",
+      "sentiment_score": 0.5491,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "NVDA beats expectations as demand stays strong",
+      "url": "https://mock.reuters.com/nvda-beats-expectations-as-demand-stays-strong-2",
+      "source": "Reuters",
+      "published": "2025-06-26",
+      "summary": "[mock] NVDA beats expectations as demand stays strong.",
+      "sentiment_score": 0.658,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "NVDA beats expectations as demand stays strong",
+      "url": "https://mock.seekingalpha.com/nvda-beats-expectations-as-demand-stays-strong-3",
+      "source": "Seeking Alpha",
+      "published": "2025-06-20",
+      "summary": "[mock] NVDA beats expectations as demand stays strong.",
+      "sentiment_score": 0.503,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "Analysts raise price targets on NVDA",
+      "url": "https://mock.finance.yahoo.com/analysts-raise-price-targets-on-nvda-4",
+      "source": "Yahoo Finance",
+      "published": "2025-06-16",
+      "summary": "[mock] Analysts raise price targets on NVDA.",
+      "sentiment_score": 0.4826,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "NVDA holds steady in volatile market",
+      "url": "https://mock.marketwatch.com/nvda-holds-steady-in-volatile-market-5",
+      "source": "MarketWatch",
+      "published": "2025-06-04",
+      "summary": "[mock] NVDA holds steady in volatile market.",
+      "sentiment_score": 0.0887,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "NVDA faces supply-chain pressure",
+      "url": "https://mock.marketwatch.com/nvda-faces-supply-chain-pressure-6",
+      "source": "MarketWatch",
+      "published": "2025-06-26",
+      "summary": "[mock] NVDA faces supply-chain pressure.",
+      "sentiment_score": -0.2799,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "NVDA holds steady in volatile market",
+      "url": "https://mock.finance.yahoo.com/nvda-holds-steady-in-volatile-market-7",
+      "source": "Yahoo Finance",
+      "published": "2025-06-12",
+      "summary": "[mock] NVDA holds steady in volatile market.",
+      "sentiment_score": -0.0193,
+      "sentiment_label": "neutral"
+     },
+     {
+      "title": "NVDA shares slip amid margin concerns",
+      "url": "https://mock.seekingalpha.com/nvda-shares-slip-amid-margin-concerns-8",
+      "source": "Seeking Alpha",
+      "published": "2025-06-05",
+      "summary": "[mock] NVDA shares slip amid margin concerns.",
+      "sentiment_score": -0.5278,
+      "sentiment_label": "negative"
+     },
+     {
+      "title": "NVDA holds steady in volatile market",
+      "url": "https://mock.ft.com/nvda-holds-steady-in-volatile-market-9",
+      "source": "Financial Times",
+      "published": "2025-06-01",
+      "summary": "[mock] NVDA holds steady in volatile market.",
+      "sentiment_score": 0.0785,
+      "sentiment_label": "positive"
+     },
+     {
+      "title": "NVDA faces supply-chain pressure",
+      "url": "https://mock.finance.yahoo.com/nvda-faces-supply-chain-pressure-10",
+      "source": "Yahoo Finance",
+      "published": "2025-06-13",
+      "summary": "[mock] NVDA faces supply-chain pressure.",
+      "sentiment_score": -0.2104,
+      "sentiment_label": "negative"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic articles and scores."
+    ]
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-09-30T23:38:51+00:00",
+   "latency_ms": 0.743,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": false
+  },
+  "E5": {
+   "evidence_id": "E5",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA income statement financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "NVDA income statement financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "NVDA income statement financials: what investors need to know",
+      "url": "https://mock.ft.com/nvda-income-statement-financials-1",
+      "snippet": "[mock] Financial Times coverage of NVDA income statement financials, published 2025-01-17.",
+      "source": "Financial Times",
+      "published": "2025-01-17"
+     },
+     {
+      "title": "Analysts weigh in on NVDA income statement financials",
+      "url": "https://mock.finance.yahoo.com/nvda-income-statement-financials-2",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA income statement financials, published 2024-08-31.",
+      "source": "Yahoo Finance",
+      "published": "2024-08-31"
+     },
+     {
+      "title": "NVDA income statement financials - latest developments and outlook",
+      "url": "https://mock.reuters.com/nvda-income-statement-financials-3",
+      "snippet": "[mock] Reuters coverage of NVDA income statement financials, published 2025-06-01.",
+      "source": "Reuters",
+      "published": "2025-06-01"
+     },
+     {
+      "title": "Five takeaways on NVDA income statement financials",
+      "url": "https://mock.marketwatch.com/nvda-income-statement-financials-4",
+      "snippet": "[mock] MarketWatch coverage of NVDA income statement financials, published 2025-02-17.",
+      "source": "MarketWatch",
+      "published": "2025-02-17"
+     },
+     {
+      "title": "Why NVDA income statement financials matters for the market",
+      "url": "https://mock.reuters.com/nvda-income-statement-financials-5",
+      "snippet": "[mock] Reuters coverage of NVDA income statement financials, published 2024-08-26.",
+      "source": "Reuters",
+      "published": "2024-08-26"
+     },
+     {
+      "title": "NVDA income statement financials: risks and opportunities ahead",
+      "url": "https://mock.finance.yahoo.com/nvda-income-statement-financials-6",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA income statement financials, published 2024-08-30.",
+      "source": "Yahoo Finance",
+      "published": "2024-08-30"
+     },
+     {
+      "title": "NVDA income statement financials: what investors need to know",
+      "url": "https://mock.bloomberg.com/nvda-income-statement-financials-7",
+      "snippet": "[mock] Bloomberg coverage of NVDA income statement financials, published 2025-01-21.",
+      "source": "Bloomberg",
+      "published": "2025-01-21"
+     },
+     {
+      "title": "Analysts weigh in on NVDA income statement financials",
+      "url": "https://mock.bloomberg.com/nvda-income-statement-financials-8",
+      "snippet": "[mock] Bloomberg coverage of NVDA income statement financials, published 2025-05-18.",
+      "source": "Bloomberg",
+      "published": "2025-05-18"
+     },
+     {
+      "title": "NVDA income statement financials - latest developments and outlook",
+      "url": "https://mock.bloomberg.com/nvda-income-statement-financials-9",
+      "snippet": "[mock] Bloomberg coverage of NVDA income statement financials, published 2024-07-26.",
+      "source": "Bloomberg",
+      "published": "2024-07-26"
+     },
+     {
+      "title": "Five takeaways on NVDA income statement financials",
+      "url": "https://mock.finance.yahoo.com/nvda-income-statement-financials-10",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA income statement financials, published 2025-01-10.",
+      "source": "Yahoo Finance",
+      "published": "2025-01-10"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-09-30T23:38:52+00:00",
+   "latency_ms": 0.539,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  },
+  "E6": {
+   "evidence_id": "E6",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA key ratios financials",
+    "num_results": 10
+   },
+   "data": {
+    "query": "NVDA key ratios financials",
+    "date_range": null,
+    "results": [
+     {
+      "title": "NVDA key ratios financials: what investors need to know",
+      "url": "https://mock.seekingalpha.com/nvda-key-ratios-financials-1",
+      "snippet": "[mock] Seeking Alpha coverage of NVDA key ratios financials, published 2024-08-08.",
+      "source": "Seeking Alpha",
+      "published": "2024-08-08"
+     },
+     {
+      "title": "Analysts weigh in on NVDA key ratios financials",
+      "url": "https://mock.finance.yahoo.com/nvda-key-ratios-financials-2",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA key ratios financials, published 2024-12-07.",
+      "source": "Yahoo Finance",
+      "published": "2024-12-07"
+     },
+     {
+      "title": "NVDA key ratios financials - latest developments and outlook",
+      "url": "https://mock.finance.yahoo.com/nvda-key-ratios-financials-3",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA key ratios financials, published 2024-07-13.",
+      "source": "Yahoo Finance",
+      "published": "2024-07-13"
+     },
+     {
+      "title": "Five takeaways on NVDA key ratios financials",
+      "url": "https://mock.marketwatch.com/nvda-key-ratios-financials-4",
+      "snippet": "[mock] MarketWatch coverage of NVDA key ratios financials, published 2025-01-17.",
+      "source": "MarketWatch",
+      "published": "2025-01-17"
+     },
+     {
+      "title": "Why NVDA key ratios financials matters for the market",
+      "url": "https://mock.finance.yahoo.com/nvda-key-ratios-financials-5",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA key ratios financials, published 2025-06-02.",
+      "source": "Yahoo Finance",
+      "published": "2025-06-02"
+     },
+     {
+      "title": "NVDA key ratios financials: risks and opportunities ahead",
+      "url": "https://mock.ft.com/nvda-key-ratios-financials-6",
+      "snippet": "[mock] Financial Times coverage of NVDA key ratios financials, published 2024-12-28.",
+      "source": "Financial Times",
+      "published": "2024-12-28"
+     },
+     {
+      "title": "NVDA key ratios financials: what investors need to know",
+      "url": "https://mock.seekingalpha.com/nvda-key-ratios-financials-7",
+      "snippet": "[mock] Seeking Alpha coverage of NVDA key ratios financials, published 2025-04-30.",
+      "source": "Seeking Alpha",
+      "published": "2025-04-30"
+     },
+     {
+      "title": "Analysts weigh in on NVDA key ratios financials",
+      "url": "https://mock.finance.yahoo.com/nvda-key-ratios-financials-8",
+      "snippet": "[mock] Yahoo Finance coverage of NVDA key ratios financials, published 2024-08-12.",
+      "source": "Yahoo Finance",
+      "published": "2024-08-12"
+     },
+     {
+      "title": "NVDA key ratios financials - latest developments and outlook",
+      "url": "https://mock.wsj.com/nvda-key-ratios-financials-9",
+      "snippet": "[mock] The Wall Street Journal coverage of NVDA key ratios financials, published 2025-03-31.",
+      "source": "The Wall Street Journal",
+      "published": "2025-03-31"
+     },
+     {
+      "title": "Five takeaways on NVDA key ratios financials",
+      "url": "https://mock.ft.com/nvda-key-ratios-financials-10",
+      "snippet": "[mock] Financial Times coverage of NVDA key ratios financials, published 2024-09-07.",
+      "source": "Financial Times",
+      "published": "2024-09-07"
+     }
+    ],
+    "notes": [
+     "MOCK DATA - synthetic search results.",
+     "Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search.",
+     "Fallback data is web-reported figures, lower reliability than filings."
+    ],
+    "fallback_for": "financial_data_api"
+   },
+   "source_tier": 4,
+   "retrieved_at": "2026-09-30T23:38:53+00:00",
+   "latency_ms": 0.538,
+   "cache_hit": false,
+   "is_mock": true,
+   "is_fallback": true
+  }
+ },
+ "call_log": [
+  {
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Produce a complete investment research report on NVIDIA Corporation. Note: The financial data API and SEC filing search tools are currently experiencing intermittent failures (simulate 50% failure rate).",
+    "top_k": 5,
+    "ticker": "NVDA"
+   },
+   "ok": true,
+   "latency_ms": 0.138,
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "company_profile",
+   "args": {
+    "ticker": "NVDA"
+   },
+   "ok": true,
+   "latency_ms": 0.239,
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.079,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "HTTP 503 from injected failure for financial_data_api"
+  },
+  {
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "ok": false,
+   "latency_ms": 0.079,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "malformed_response",
+   "error_message": "financial_data_api: response malformed (injected)"
+  },
+  {
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "NVDA",
+    "filing_type": "10-K"
+   },
+   "ok": false,
+   "latency_ms": 0.127,
+   "evidence_id": null,
+   "cache_hit": false,
+   "error_kind": "execution_error",
+   "error_message": "sec_filing_search: request timed out (injected)"
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA 10-K SEC filing",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.576,
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "news_sentiment",
+   "args": {
+    "query": "NVDA",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "ok": true,
+   "latency_ms": 0.837,
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA income statement financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.603,
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA key ratios financials",
+    "num_results": 10
+   },
+   "ok": true,
+   "latency_ms": 0.604,
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  },
+  {
+   "tool": "report_generator",
+   "args": {
+    "template": "full_report",
+    "title": "Nvidia: Full Report",
+    "sections": {
+     "executive_summary": "MOCK RESPONSE",
+     "data_gaps_and_limitations": "- Step 'Latest NVDA annual report' (sec_filing_search NVDA, 10-K): Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Three years of NVDA income statements' (financial_data_api NVDA, income_statement, annual, 3): Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search. [E5] is less reliable than the primary source.\n- Step 'Key ratios for NVDA' (financial_data_api NVDA, key_ratios, annual, 3): Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search. [E6] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E5] web_search instead of financial_data_api; [E6] web_search instead of financial_data_api.\n- Resilience: 2 retried call(s); circuit breakers opened for sec_edgar at the end of research.\n- **Failure injection test:** 3 tool failure(s) were injected on purpose (rate 50% on financial_data_api, sec_filing_search).\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E2",
+      "title": "company_profile: NVDA",
+      "source_type": "company data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E3",
+      "title": "web_search: NVDA 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "news_sentiment: NVDA, 10, 30",
+      "source_type": "news",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "web_search: NVDA income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "web_search: NVDA key ratios financials, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     }
+    ]
+   },
+   "ok": true,
+   "latency_ms": 0.675,
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "error_kind": null,
+   "error_message": null
+  }
+ ],
+ "resilience_events": [
+  [
+   "retry",
+   {
+    "tool": "financial_data_api",
+    "attempt": 1,
+    "error_class": "transient",
+    "delay_s": 1.1265519110561193
+   }
+  ],
+  [
+   "retry",
+   {
+    "tool": "financial_data_api",
+    "attempt": 1,
+    "error_class": "malformed",
+    "delay_s": 1.3105242133431088
+   }
+  ],
+  [
+   "breaker_open",
+   {
+    "tool": "sec_filing_search",
+    "provider": "sec_edgar",
+    "reason": "tripped"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "sec_filing_search",
+    "fallback": "web_search",
+    "error_class": "timeout"
+   }
+  ],
+  [
+   "breaker_open",
+   {
+    "tool": "financial_data_api",
+    "provider": "sec_edgar",
+    "reason": "refused"
+   }
+  ],
+  [
+   "breaker_open",
+   {
+    "tool": "sec_filing_search",
+    "provider": "sec_edgar",
+    "reason": "refused"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "unavailable",
+    "message": "circuit open for sec_edgar"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "transient"
+   }
+  ],
+  [
+   "breaker_open",
+   {
+    "tool": "financial_data_api",
+    "provider": "sec_edgar",
+    "reason": "refused"
+   }
+  ],
+  [
+   "breaker_open",
+   {
+    "tool": "sec_filing_search",
+    "provider": "sec_edgar",
+    "reason": "refused"
+   }
+  ],
+  [
+   "fallback_failed",
+   {
+    "tool": "financial_data_api",
+    "fallback": "sec_filing_search",
+    "error_class": "unavailable",
+    "message": "circuit open for sec_edgar"
+   }
+  ],
+  [
+   "fallback_used",
+   {
+    "tool": "financial_data_api",
+    "fallback": "web_search",
+    "error_class": "malformed"
+   }
+  ]
+ ],
+ "failures": [
+  [
+   "sec_filing_search",
+   {
+    "ticker": "NVDA",
+    "filing_type": "10-K"
+   },
+   "Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "ticker": "NVDA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search."
+  ],
+  [
+   "financial_data_api",
+   {
+    "ticker": "NVDA",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search."
+  ]
+ ],
+ "disambiguation": {
+  "level": "low",
+  "proceed_reading": "Proceeding as requested.",
+  "assumptions": [
+   "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+  ],
+  "clarifying_questions": [],
+  "tickers": [
+   "NVDA"
+  ],
+  "timeframe": "latest reported period as of 2026-10-01",
+  "themes": [],
+  "mode": "autonomous"
+ },
+ "conflicts": [],
+ "gaps": [
+  "Step 'Latest NVDA annual report' (sec_filing_search NVDA, 10-K): Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search. [E3] is less reliable than the primary source.",
+  "Step 'Three years of NVDA income statements' (financial_data_api NVDA, income_statement, annual, 3): Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search. [E5] is less reliable than the primary source.",
+  "Step 'Key ratios for NVDA' (financial_data_api NVDA, key_ratios, annual, 3): Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search. [E6] is less reliable than the primary source."
+ ],
+ "verification": {
+  "checked": 0,
+  "supported": 0,
+  "partially_supported": 0,
+  "unsupported": 0,
+  "unverifiable": 0,
+  "uncited": 0,
+  "auto_cited": 0,
+  "flagged": []
+ },
+ "report_checks": {
+  "missing_sections": [
+   "company_overview",
+   "financial_analysis",
+   "risk_assessment",
+   "competitive_position",
+   "outlook",
+   "valuation_scenarios"
+  ],
+  "unknown_citations": [],
+  "uncited_sources": [
+   "E2",
+   "E4"
+  ]
+ },
+ "trace_path": "C:\\Users\\user\\intern\\Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent\\traces\\session-20260930-233851-0b7a.jsonl",
+ "trace_events": [
+  {
+   "seq": 2,
+   "ts": "2026-09-30T23:38:51.766+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "thought",
+   "text": "Report type 'full_report' (full_report, single_company); companies ['NVDA']; ambiguity 0.10 (low: +0.10: no timeframe stated).",
+   "node": "analyze"
+  },
+  {
+   "seq": 3,
+   "ts": "2026-09-30T23:38:51.769+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "disambiguate",
+   "rationale": "Proceeding as requested.",
+   "assumptions": [
+    "Timeframe: latest reported period as of 2026-10-01, because the request names no period."
+   ],
+   "questions": []
+  },
+  {
+   "seq": 4,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "vector_db_search",
+   "args": {
+    "query": "Produce a complete investment research report on NVIDIA Corporation. Note: The financial data API and SEC filing search tools are currently experiencing intermittent failures (simulate 50% failure rate).",
+    "top_k": 5,
+    "ticker": "NVDA"
+   }
+  },
+  {
+   "seq": 5,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "vector_db_search",
+   "evidence_id": "E1",
+   "cache_hit": false,
+   "latency_ms": 0.138
+  },
+  {
+   "seq": 6,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "thought",
+   "text": "Memory recall found 0 prior finding(s).",
+   "node": "recall"
+  },
+  {
+   "seq": 7,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1767,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 8,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{}"
+  },
+  {
+   "seq": 9,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "error",
+   "source": "parser",
+   "error_kind": "plan_parse",
+   "message": "'steps' must be a list",
+   "attempt": 1
+  },
+  {
+   "seq": 10,
+   "ts": "2026-09-30T23:38:51.770+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "plan",
+   "prompt_tokens": 1789,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 11,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "raw plan reply",
+   "raw": "{}"
+  },
+  {
+   "seq": 12,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "error",
+   "source": "parser",
+   "error_kind": "plan_parse",
+   "message": "'steps' must be a list",
+   "attempt": 2
+  },
+  {
+   "seq": 13,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "plan",
+   "rationale": "Default plan (the LLM plan was unusable).",
+   "steps": 5
+  },
+  {
+   "seq": 14,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "company_profile",
+   "rationale": "Company profile of NVDA",
+   "step_id": "nvda_profile",
+   "args": {
+    "ticker": "NVDA"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 15,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Three years of NVDA income statements",
+   "step_id": "nvda_income",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 16,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "financial_data_api",
+   "rationale": "Key ratios for NVDA",
+   "step_id": "nvda_ratios",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 17,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "sec_filing_search",
+   "rationale": "Latest NVDA annual report",
+   "step_id": "nvda_10k",
+   "args": {
+    "ticker": "NVDA",
+    "filing_type": "10-K"
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 18,
+   "ts": "2026-09-30T23:38:51.771+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "news_sentiment",
+   "rationale": "Recent news about NVDA",
+   "step_id": "nvda_news",
+   "args": {
+    "query": "NVDA",
+    "num_articles": 10,
+    "lookback_days": 30
+   },
+   "depends_on": []
+  },
+  {
+   "seq": 19,
+   "ts": "2026-09-30T23:38:51.772+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "company_profile",
+   "args": {
+    "ticker": "NVDA"
+   }
+  },
+  {
+   "seq": 20,
+   "ts": "2026-09-30T23:38:51.772+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "company_profile",
+   "evidence_id": "E2",
+   "cache_hit": false,
+   "latency_ms": 0.239
+  },
+  {
+   "seq": 21,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "income_statement",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 22,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "execution_error",
+   "message": "HTTP 503 from injected failure for financial_data_api",
+   "latency_ms": 0.079
+  },
+  {
+   "seq": 23,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience retry: tool=financial_data_api, attempt=1, error_class=transient, delay_s=1.1265519110561193"
+  },
+  {
+   "seq": 24,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "financial_data_api",
+   "args": {
+    "ticker": "NVDA",
+    "statement_type": "key_ratios",
+    "period": "annual",
+    "years": 3
+   }
+  },
+  {
+   "seq": 25,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "error",
+   "source": "tool",
+   "tool": "financial_data_api",
+   "error_kind": "malformed_response",
+   "message": "financial_data_api: response malformed (injected)",
+   "latency_ms": 0.079
+  },
+  {
+   "seq": 26,
+   "ts": "2026-09-30T23:38:51.773+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience retry: tool=financial_data_api, attempt=1, error_class=malformed, delay_s=1.3105242133431088"
+  },
+  {
+   "seq": 27,
+   "ts": "2026-09-30T23:38:51.774+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "sec_filing_search",
+   "args": {
+    "ticker": "NVDA",
+    "filing_type": "10-K"
+   }
+  },
+  {
+   "seq": 28,
+   "ts": "2026-09-30T23:38:51.774+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "error",
+   "source": "tool",
+   "tool": "sec_filing_search",
+   "error_kind": "execution_error",
+   "message": "sec_filing_search: request timed out (injected)",
+   "latency_ms": 0.127
+  },
+  {
+   "seq": 29,
+   "ts": "2026-09-30T23:38:51.774+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience breaker_open: tool=sec_filing_search, provider=sec_edgar, reason=tripped"
+  },
+  {
+   "seq": 30,
+   "ts": "2026-09-30T23:38:51.774+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "step nvda_profile done: company_profile returned E2",
+   "step_id": "nvda_profile"
+  },
+  {
+   "seq": 31,
+   "ts": "2026-09-30T23:38:51.774+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA 10-K SEC filing",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 32,
+   "ts": "2026-09-30T23:38:51.775+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E3",
+   "cache_hit": false,
+   "latency_ms": 0.576
+  },
+  {
+   "seq": 33,
+   "ts": "2026-09-30T23:38:51.776+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience fallback_used: tool=sec_filing_search, fallback=web_search, error_class=timeout"
+  },
+  {
+   "seq": 34,
+   "ts": "2026-09-30T23:38:51.776+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "news_sentiment",
+   "args": {
+    "query": "NVDA",
+    "num_articles": 10,
+    "lookback_days": 30
+   }
+  },
+  {
+   "seq": 35,
+   "ts": "2026-09-30T23:38:51.776+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "news_sentiment",
+   "evidence_id": "E4",
+   "cache_hit": false,
+   "latency_ms": 0.837
+  },
+  {
+   "seq": 36,
+   "ts": "2026-09-30T23:38:51.776+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "step nvda_10k done: sec_filing_search returned E3",
+   "step_id": "nvda_10k"
+  },
+  {
+   "seq": 37,
+   "ts": "2026-09-30T23:38:51.776+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "step nvda_news done: news_sentiment returned E4",
+   "step_id": "nvda_news"
+  },
+  {
+   "seq": 38,
+   "ts": "2026-09-30T23:38:52.900+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience breaker_open: tool=financial_data_api, provider=sec_edgar, reason=refused"
+  },
+  {
+   "seq": 39,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience breaker_open: tool=sec_filing_search, provider=sec_edgar, reason=refused"
+  },
+  {
+   "seq": 40,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=unavailable, message=circuit open for sec_edgar"
+  },
+  {
+   "seq": 41,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA income statement financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 42,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E5",
+   "cache_hit": false,
+   "latency_ms": 0.603
+  },
+  {
+   "seq": 43,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=transient"
+  },
+  {
+   "seq": 44,
+   "ts": "2026-09-30T23:38:52.901+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "step nvda_income done: financial_data_api returned E5",
+   "step_id": "nvda_income"
+  },
+  {
+   "seq": 45,
+   "ts": "2026-09-30T23:38:53.084+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience breaker_open: tool=financial_data_api, provider=sec_edgar, reason=refused"
+  },
+  {
+   "seq": 46,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience breaker_open: tool=sec_filing_search, provider=sec_edgar, reason=refused"
+  },
+  {
+   "seq": 47,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience fallback_failed: tool=financial_data_api, fallback=sec_filing_search, error_class=unavailable, message=circuit open for sec_edgar"
+  },
+  {
+   "seq": 48,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "web_search",
+   "args": {
+    "query": "NVDA key ratios financials",
+    "num_results": 10
+   }
+  },
+  {
+   "seq": 49,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "web_search",
+   "evidence_id": "E6",
+   "cache_hit": false,
+   "latency_ms": 0.604
+  },
+  {
+   "seq": 50,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "resilience fallback_used: tool=financial_data_api, fallback=web_search, error_class=malformed"
+  },
+  {
+   "seq": 51,
+   "ts": "2026-09-30T23:38:53.085+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "step nvda_ratios done: financial_data_api returned E6",
+   "step_id": "nvda_ratios"
+  },
+  {
+   "seq": 52,
+   "ts": "2026-09-30T23:38:53.086+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1441,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 53,
+   "ts": "2026-09-30T23:38:53.086+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 55,
+   "ts": "2026-09-30T23:38:53.091+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "synthesize",
+   "prompt_tokens": 3149,
+   "completion_tokens": 3,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "MOCK RESPONSE"
+  },
+  {
+   "seq": 57,
+   "ts": "2026-09-30T23:38:53.092+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "thought",
+   "text": "Reflection: 6 section(s) missing ['company_overview', 'financial_analysis', 'risk_assessment', 'competitive_position', 'outlook', 'valuation_scenarios']",
+   "node": "reflect"
+  },
+  {
+   "seq": 58,
+   "ts": "2026-09-30T23:38:53.093+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "llm_call",
+   "provider": "mock",
+   "model": "mock-llm",
+   "purpose": "review",
+   "prompt_tokens": 1535,
+   "completion_tokens": 1,
+   "reasoning_tokens": 0,
+   "latency_ms": 0.0,
+   "fallback_depth": 0,
+   "attempt": 1,
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "preview": "{}"
+  },
+  {
+   "seq": 59,
+   "ts": "2026-09-30T23:38:53.093+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "decision",
+   "chosen": "research_complete",
+   "rationale": "no further steps needed"
+  },
+  {
+   "seq": 60,
+   "ts": "2026-09-30T23:38:53.094+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "action",
+   "tool": "report_generator",
+   "args": {
+    "template": "full_report",
+    "title": "Nvidia: Full Report",
+    "sections": {
+     "executive_summary": "MOCK RESPONSE",
+     "data_gaps_and_limitations": "- Step 'Latest NVDA annual report' (sec_filing_search NVDA, 10-K): Fallback: sec_filing_search failed (timeout: sec_filing_search: request timed out (injected)); data from web_search. [E3] is less reliable than the primary source.\n- Step 'Three years of NVDA income statements' (financial_data_api NVDA, income_statement, annual, 3): Fallback: financial_data_api failed (transient: HTTP 503 from injected failure for financial_data_api); data from web_search. [E5] is less reliable than the primary source.\n- Step 'Key ratios for NVDA' (financial_data_api NVDA, key_ratios, annual, 3): Fallback: financial_data_api failed (malformed: financial_data_api: response malformed (injected)); data from web_search. [E6] is less reliable than the primary source.",
+     "research_methodology": "- Plan: 5 step(s), 5 completed. Default plan (the LLM plan was unusable).\n- Tools used: company_profile, financial_data_api, news_sentiment, sec_filing_search; 5 of 20 research tool calls.\n- Language models: mock.\n- Verification: 0 cited numeric claim(s) checked against their sources; 0 supported, 0 unsupported, 0 without a citation. 0 citation(s) were added by the verifier where every figure in a claim matched exactly one retrieved source.\n- Stop reason: completed.\n- Fallback data (lower confidence than the primary source): [E3] web_search instead of sec_filing_search; [E5] web_search instead of financial_data_api; [E6] web_search instead of financial_data_api.\n- Resilience: 2 retried call(s); circuit breakers opened for sec_edgar at the end of research.\n- **Failure injection test:** 3 tool failure(s) were injected on purpose (rate 50% on financial_data_api, sec_filing_search).\n\n**Scope and assumptions**\n\n- Timeframe: latest reported period as of 2026-10-01, because the request names no period.\n- **Mock data was used; figures are approximations for development only.**"
+    },
+    "sources": [
+     {
+      "id": "E2",
+      "title": "company_profile: NVDA",
+      "source_type": "company data",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E3",
+      "title": "web_search: NVDA 10-K SEC filing, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E4",
+      "title": "news_sentiment: NVDA, 10, 30",
+      "source_type": "news",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E5",
+      "title": "web_search: NVDA income statement financials, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     },
+     {
+      "id": "E6",
+      "title": "web_search: NVDA key ratios financials, 10",
+      "source_type": "web",
+      "date": "2026-09-30",
+      "is_mock": true
+     }
+    ]
+   }
+  },
+  {
+   "seq": 61,
+   "ts": "2026-09-30T23:38:53.095+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "observation",
+   "tool": "report_generator",
+   "evidence_id": "E7",
+   "cache_hit": false,
+   "latency_ms": 0.675
+  },
+  {
+   "seq": 62,
+   "ts": "2026-09-30T23:38:53.095+00:00",
+   "session_id": "session-20260930-233851-0b7a",
+   "type": "note",
+   "text": "Stored in memory",
+   "chunks": 10,
+   "facts": 0,
+   "findings": 0
+  }
+ ]
+}
