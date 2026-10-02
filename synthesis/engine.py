@@ -107,10 +107,12 @@ def extract_claims(evidence: dict[str, ToolResult], config: ReliabilityConfig) -
 
 @dataclass
 class Ledger:
+    """All resolved claims and recorded conflicts for a run."""
     claims: list[Claim] = field(default_factory=list)
     conflicts: list[ConflictRecord] = field(default_factory=list)
 
     def for_entity(self, ticker: str) -> list[Claim]:
+        """Claims for one ticker."""
         return [c for c in self.claims if c.entity == ticker.upper()]
 
     def get(self, entity: str, metric: str, fiscal_year: int | None = None) -> Claim | None:
@@ -121,6 +123,7 @@ class Ledger:
         return max(found, key=lambda c: c.period.fiscal_year or 0) if found else None
 
     def summary(self) -> dict[str, Any]:
+        """Counts of claims (by status) and conflicts, plus the conflict resolution methods used."""
         by_status: dict[str, int] = {}
         for c in self.claims:
             by_status[c.status] = by_status.get(c.status, 0) + 1
@@ -129,6 +132,7 @@ class Ledger:
 
 
 def build_ledger(evidence: dict[str, ToolResult], config: ReliabilityConfig | None = None) -> Ledger:
+    """Extract claims from the evidence and resolve conflicts between them into a Ledger."""
     config = config or ReliabilityConfig()
     claims, conflicts = resolve(extract_claims(evidence, config), config)
     return Ledger(claims=claims, conflicts=conflicts)

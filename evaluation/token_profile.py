@@ -37,6 +37,7 @@ def purpose_group(purpose: str | None) -> str:
 
 
 def load_bundles(runs_dir: Path) -> list[dict[str, Any]]:
+    """Load the run bundles (C*.json) in ``runs_dir``, skipping unreadable or malformed files."""
     bundles = []
     for path in sorted(runs_dir.glob("C*.json"), key=lambda p: (len(p.stem), p.stem)):
         try:
@@ -187,6 +188,7 @@ def render(prof: dict[str, Any], existing: str | None = None) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: profile token usage of the run bundles and write the report."""
     parser = argparse.ArgumentParser(prog="python -m evaluation.token_profile", description=__doc__.split("\n\n")[0])
     parser.add_argument("--runs", default=str(ROOT / "results" / "runs"))
     parser.add_argument("--out", default=str(ROOT / "results" / "token_usage_analysis.md"))

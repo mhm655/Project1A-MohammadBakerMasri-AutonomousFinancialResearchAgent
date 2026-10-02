@@ -122,6 +122,7 @@ def _plan_text(bundle: dict[str, Any]) -> str:
 
 
 def build_prompt(bundle: dict[str, Any]) -> str:
+    """Fill the judge prompt with the query, plan and (possibly shortened) report of a bundle."""
     report, cut = _report_text(bundle)
     note = (f" (the longest sections were shortened to fit {MAX_REPORT_CHARS:,} characters; do not penalise the cuts)"
             if cut else "")
@@ -156,6 +157,7 @@ def _strings(value: Any) -> list[str]:
 
 
 def normalise(raw: dict[str, Any], *, provider: str, model: str) -> dict[str, Any]:
+    """Turn the judge's raw JSON into a validated result: clamped 1-5 scores, cleaned lists and provider/model labels."""
     flow, flow_why = _score(raw.get("logical_flow"))
     summ, summ_why = _score(raw.get("exec_summary"))
     plan, plan_why = _score(raw.get("planning"))
@@ -181,6 +183,7 @@ def normalise(raw: dict[str, Any], *, provider: str, model: str) -> dict[str, An
 # --- cache -------------------------------------------------------------------------------------------
 
 def cache_key(bundle: dict[str, Any]) -> str:
+    """SHA-256 cache key from the judge version, the query and the report."""
     text = JUDGE_VERSION + str(bundle.get("query", "")) + str(bundle.get("report_markdown", ""))
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 

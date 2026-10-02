@@ -79,6 +79,7 @@ def _explicit_peers(ticker: str, peers: list[str] | None, num_peers: int) -> lis
 
 def mock_peer_comparison(ticker: str, num_peers: int = 5, metrics: list[str] | None = None,
                          peers: list[str] | None = None) -> dict[str, Any]:
+    """Compare a ticker with its peers on selected metrics using bundled mock data."""
     ticker = ticker.upper()
     if peers:
         peers = _explicit_peers(ticker, peers, num_peers)
@@ -192,6 +193,7 @@ def live_metrics(ticker: str) -> dict[str, Any]:
 
 def live_peer_comparison(ticker: str, num_peers: int = 5, metrics: list[str] | None = None,
                          peers: list[str] | None = None) -> dict[str, Any]:
+    """Compare a ticker with its peers on selected metrics using live data; peers are chosen automatically unless given."""
     ticker = ticker.upper()
     metrics = list(metrics or METRICS)
     if peers:

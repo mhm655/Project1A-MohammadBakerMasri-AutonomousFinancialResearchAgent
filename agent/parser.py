@@ -43,6 +43,7 @@ def normalize_text(text: str | None) -> str:
 
 @dataclass
 class PlanStep:
+    """One step of a research plan; ``args`` is ``None`` when filled in from dependency results at execution time."""
     id: str
     goal: str
     tool: str
@@ -57,12 +58,14 @@ class PlanStep:
 
 @dataclass
 class Plan:
+    """An ordered set of plan steps with the rationale and any steps rejected during validation."""
     steps: list[PlanStep]
     rationale: str = ""
     #: Why steps were dropped during validation; surfaced in the trace.
     rejected: list[str] = field(default_factory=list)
 
     def get(self, step_id: str) -> PlanStep:
+        """The step with id ``step_id``; raises KeyError if absent."""
         for step in self.steps:
             if step.id == step_id:
                 return step
@@ -74,10 +77,12 @@ class Plan:
         return [s for s in self.steps if s.status == "pending" and set(s.depends_on) <= finished]
 
     def by_status(self, *statuses: str) -> list[PlanStep]:
+        """Steps whose status is one of ``statuses``."""
         return [s for s in self.steps if s.status in statuses]
 
     @property
     def complete(self) -> bool:
+        """True when no step is pending or running."""
         return not self.by_status("pending", "running")
 
 
@@ -233,6 +238,7 @@ def _cyclic_steps(steps: list[PlanStep]) -> set[str]:
 
 
 def parse_plan(text: str | None, registry: ToolRegistry, *, max_steps: int) -> Plan:
+    """Parse model output into a validated :class:`Plan` of at most ``max_steps`` steps; raises ParseError if no usable step remains."""
     data = extract_json(text)
     steps, rejected = parse_steps(data.get("steps"), registry, max_steps=max_steps)
     if not steps:
@@ -242,6 +248,7 @@ def parse_plan(text: str | None, registry: ToolRegistry, *, max_steps: int) -> P
 
 @dataclass
 class ReplanDecision:
+    """The model's replanning decision: whether research is done, plus any new steps and the steps rejected."""
     done: bool
     new_steps: list[PlanStep] = field(default_factory=list)
     rationale: str = ""
@@ -249,6 +256,7 @@ class ReplanDecision:
 
 
 def parse_replan(text: str | None, registry: ToolRegistry, plan: Plan, *, max_new_steps: int) -> ReplanDecision:
+    """Parse a replanning response into a :class:`ReplanDecision`, rejecting steps that repeat an already completed call."""
     data = extract_json(text)
     action = str(data.get("action") or "done").lower()
     if action != "continue":

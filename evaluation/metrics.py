@@ -40,6 +40,7 @@ from tools.report_gen import TEMPLATES, cited_ids, section_title
 
 @dataclass
 class MetricResult:
+    """The score of one metric for one run, with its target, pass/fail and supporting detail."""
     id: str
     name: str
     category: str
@@ -52,6 +53,7 @@ class MetricResult:
     examples: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
+        """The result as a plain dict."""
         return dataclasses.asdict(self)
 
 
@@ -138,6 +140,7 @@ def _ratio(num: int, den: int) -> float | None:
 
 @dataclass
 class Claim:
+    """One claim from the report body (a sentence or table row) with its evidence ids and quantities."""
     text: str  # sentence or table row, unverified marker removed
     raw: str  # as written in the report
     ids: set[str]  # evidence ids it cites (own or inherited)
@@ -145,6 +148,7 @@ class Claim:
 
     @property
     def flagged_unverified(self) -> bool:
+        """True if the report marked this claim as unverified."""
         return self.raw != self.text
 
 
@@ -198,15 +202,18 @@ class Run:
 
     @classmethod
     def from_bundle(cls, bundle: dict[str, Any]) -> Run:
+        """Parse an in-memory run bundle."""
         return cls(bundle)
 
     @classmethod
     def load(cls, path: str | Path) -> Run:
+        """Parse a run bundle from a JSON file."""
         return cls(json.loads(Path(path).read_text(encoding="utf-8")))
 
     # -- helpers shared by several metrics -----------------------------------------------------
 
     def ids_of(self, tools: set[str]) -> list[str]:
+        """Evidence ids produced by any of the given tools."""
         return [e for e, r in self.evidence.items() if r.tool in tools]
 
     def status(self, text: str, ids: list[str] | None = None) -> str:
@@ -218,6 +225,7 @@ class Run:
         return self._status_cache[key]
 
     def numeric_ok(self, text: str, ids: list[str] | None = None) -> bool:
+        """True if every number in ``text`` is supported by the evidence or derivable from figures in the same paragraph."""
         if self.status(text, ids) in ("supported", "partially_supported"):
             return True
         # A margin or growth rate the report computed itself is traceable (spec P2 asks for exactly
@@ -342,6 +350,7 @@ def _keyword_support(sentence: str, digests: list[str]) -> bool:
 
 
 def fa1_numerical_accuracy(run: Run, _j: dict | None) -> MetricResult:
+    """FA-1: share of numeric claims that match their cited evidence (or any evidence if uncited)."""
     bad, good = [], 0
     for c in run.numeric_claims:
         cited = [i for i in c.ids if i in run.evidence]
@@ -356,6 +365,7 @@ def fa1_numerical_accuracy(run: Run, _j: dict | None) -> MetricResult:
 
 
 def fa2_citation_accuracy(run: Run, _j: dict | None) -> MetricResult:
+    """FA-2: share of cited evidence ids that exist and support a citing claim."""
     cited = set(cited_ids(run.body_text)) | {i for c in run.claim_objs for i in c.ids}
     if not cited:
         return _make("FA-2", None, "the body cites no evidence ids")
@@ -395,6 +405,7 @@ def _digest_has_period(digest: str, years: set[str], quarters: set[int]) -> bool
 
 
 def fa3_temporal_accuracy(run: Run, _j: dict | None) -> MetricResult:
+    """FA-3: share of period-bearing numeric claims whose year/quarter appears in their cited evidence."""
     total, ok, bad = 0, 0, []
     for c in run.numeric_claims:
         years, quarters = _periods(c.text)
@@ -418,6 +429,7 @@ _TICKER_PAREN = re.compile(r"\(([A-Z]{1,5})\)|\b(?:NASDAQ|NYSE)\s*:\s*([A-Z]{1,5
 _NOT_TICKERS = frozenset("CEO CFO COO CTO AI GAAP USD EPS YOY FY US EU UK IP PE ROE ROI FCF CAGR IT API SEC GPU CPU "
                          "ESG TTM AWS GCP LLM SAAS R&D M&A".split())
 def fa4_entity_accuracy(run: Run, _j: dict | None) -> MetricResult:
+    """FA-4: share of tickers, company names and executive names in the body that the evidence or query confirms."""
     body = _UNVERIFIED.sub("", run.body_text)
     blob = "\n".join(run.digests.values())
     # Sources are not tidy ("Carolina  Dybeck Happe" in Yahoo's officer list): compare on single spaces.
@@ -438,6 +450,7 @@ def fa4_entity_accuracy(run: Run, _j: dict | None) -> MetricResult:
 
 
 def fa5_hallucination_rate(run: Run, _j: dict | None) -> MetricResult:
+    """FA-5: count of numeric claims found in or derivable from no evidence record."""
     bad = [c.text for c in run.numeric_claims if not run.numeric_ok(c.text)
            and not (c.ids & set(run.evidence) and run.numeric_ok(c.text, sorted(c.ids & set(run.evidence))))]
     return _make("FA-5", len(bad), f"{len(bad)} of {len(run.numeric_claims)} numeric claims can be neither found in "
@@ -450,6 +463,7 @@ def fa5_hallucination_rate(run: Run, _j: dict | None) -> MetricResult:
 
 
 def co1_section_coverage(run: Run, _j: dict | None) -> MetricResult:
+    """CO-1: share of the template's required sections that are present."""
     required = TEMPLATES.get(run.template, [])
     if not required:
         return _make("CO-1", None, f"unknown template {run.template!r}")
@@ -481,11 +495,13 @@ def _source_types(run: Run) -> set[str]:
 
 
 def co2_source_diversity(run: Run, _j: dict | None) -> MetricResult:
+    """CO-2: number of distinct source types cited in the body."""
     types = _source_types(run)
     return _make("CO-2", len(types), f"{len(types)} distinct source types cited: {', '.join(sorted(types)) or 'none'}")
 
 
 def co3_temporal_coverage(run: Run, _j: dict | None) -> MetricResult:
+    """CO-3: span in years of the periods in numeric claims and tables (recent five-year window)."""
     years: set[int] = set()
     for c in run.numeric_claims:
         years.update(int(y) for y in _YEAR.findall(c.text))
@@ -525,6 +541,7 @@ def _risk_categories(text: str) -> set[str]:
 
 
 def co4_risk_coverage(run: Run, _j: dict | None) -> MetricResult:
+    """CO-4: share of risk categories in the retrieved 10-K text that the report also covers."""
     filings = run.ids_of({"sec_filing_search"})
     tenk = _risk_categories(" ".join(run.digests[i] for i in filings))
     if not tenk:
@@ -541,6 +558,7 @@ def co4_risk_coverage(run: Run, _j: dict | None) -> MetricResult:
 
 
 def ad1_insight_density(run: Run, judgement: dict | None) -> MetricResult:
+    """AD-1: judge-counted insights per page (needs the LLM judge)."""
     if not judgement:
         return _make("AD-1", None, _JUDGE_OFF)
     count = judgement.get("insight_count", len(judgement.get("insights") or []))
@@ -549,6 +567,7 @@ def ad1_insight_density(run: Run, judgement: dict | None) -> MetricResult:
 
 
 def ad2_cross_source(run: Run, _j: dict | None) -> MetricResult:
+    """AD-2: count of claims citing evidence from two or more different tools."""
     hits = [c.text for c in run.claim_objs
             if len({run.evidence[i].tool for i in c.ids if i in run.evidence}) >= 2]
     return _make("AD-2", len(hits), f"{len(hits)} claims cite evidence from two or more different tools", hits)
@@ -583,6 +602,7 @@ def _in_numbers(value: float, digests: list[str]) -> bool:
 
 
 def ad3_quantitative_reasoning(run: Run, _j: dict | None) -> MetricResult:
+    """AD-3: count of distinct derived quantities (percentages, multiples, calculated table cells)."""
     calc = [run.digests[i] for i in run.ids_of({"calculation_engine"})]
     other_ids = [i for i, r in run.evidence.items() if r.tool != "calculation_engine"]
     other = [run.digests[i] for i in other_ids]
@@ -618,6 +638,7 @@ _FORWARD = re.compile(r"\b(?:will|expects?|guidance|forecasts?|project(?:ed|ion|
 
 
 def ad4_forward_looking(run: Run, _j: dict | None) -> MetricResult:
+    """AD-4: count of forward-looking sections (by title or by forward-looking sentences)."""
     hits = []
     for key, body in run.body_sections.items():
         titled = _FORWARD_TITLE.search(key) or _FORWARD_TITLE.search(section_title(key))
@@ -713,6 +734,7 @@ def _automated_contradictions(run: Run) -> list[str]:
 
 
 def cs1_logical_flow(run: Run, judgement: dict | None) -> MetricResult:
+    """CS-1: judge's logical-flow score (needs the LLM judge)."""
     lf = (judgement or {}).get("logical_flow")
     if not lf:
         return _make("CS-1", None, _JUDGE_OFF)
@@ -720,6 +742,7 @@ def cs1_logical_flow(run: Run, judgement: dict | None) -> MetricResult:
 
 
 def cs2_internal_consistency(run: Run, judgement: dict | None) -> MetricResult:
+    """CS-2: count of contradictions, from the automated check plus those the judge reports."""
     auto = _automated_contradictions(run)
     judged = list((judgement or {}).get("contradictions") or [])
     examples = auto + [f"{j.get('a', '')} VS {j.get('b', '')}" for j in judged]
@@ -738,6 +761,7 @@ def _exec_number_overlap(run: Run) -> tuple[int, int]:
 
 
 def cs3_exec_summary(run: Run, judgement: dict | None) -> MetricResult:
+    """CS-3: judge's executive-summary score, with the automated share of its numbers found in the body."""
     shared, total = _exec_number_overlap(run)
     auto = f"{shared} of {total} numbers in the executive summary also appear in the body" if total else \
         "executive summary has no numbers"
@@ -752,6 +776,7 @@ _ARTEFACTS = re.compile(r"\bNone\b(?! of\b)|\bnan\b|\{'|Traceback|MOCK RESPONSE|
 
 
 def cs4_formatting(run: Run, _j: dict | None) -> MetricResult:
+    """CS-4: share of formatting checks passed (title, headers, table, citations, length, artefacts, sources)."""
     report = run.report
     checks: dict[str, bool] = {}
     checks["H1 title present"] = bool(re.search(r"^# \S", report, re.MULTILINE))
@@ -784,6 +809,7 @@ def _plan_steps(run: Run) -> list[dict[str, Any]]:
 
 
 def ab1_tool_efficiency(run: Run, _j: dict | None) -> MetricResult:
+    """AB-1: research evidence records cited in the body per tool call."""
     research = {e for s in _plan_steps(run) for e in s.get("evidence_ids") or []}
     useful = research & cited_ids(run.body_text)
     calls = int(run.bundle.get("tool_calls") or 0)
@@ -799,6 +825,7 @@ def _call_key(entry: dict[str, Any]) -> tuple[str, str]:
 
 
 def ab2_error_recovery(run: Run, _j: dict | None) -> MetricResult:
+    """AB-2: share of tool-error episodes that were recovered (retry succeeded, arguments repaired or fallback used)."""
     log = list(run.bundle.get("call_log") or [])
     episodes: list[tuple[int, tuple[str, str]]] = []
     for n, entry in enumerate(log):
@@ -825,6 +852,7 @@ def ab2_error_recovery(run: Run, _j: dict | None) -> MetricResult:
 
 
 def ab3_planning(run: Run, judgement: dict | None) -> MetricResult:
+    """AB-3: judge's planning score, with automated expected-tool coverage and plan-step outcomes."""
     steps = _plan_steps(run)
     used = {s.get("tool") for s in steps}
     expected = EXPECTED_TOOLS.get(run.challenge_id, set())
@@ -843,6 +871,7 @@ def ab3_planning(run: Run, judgement: dict | None) -> MetricResult:
 def ab4_memory_utilization(run: Run, _j: dict | None) -> MetricResult:
     # The spec formula multiplies memory_hits by total_api_calls; that is a deliberate spec error
     # (ERROR_LOG.md, Error 1). A utilisation *ratio* needs hits divided by external API calls.
+    """AB-4: memory hits (recalls plus cache hits) divided by external API calls."""
     log = run.bundle.get("call_log") or []
     recalls = sum(1 for r in run.evidence.values() if r.tool == "vector_db_search" and r.data.get("results"))
     cache_hits = sum(1 for e in log if e.get("cache_hit") and e.get("ok"))
@@ -855,6 +884,7 @@ def ab4_memory_utilization(run: Run, _j: dict | None) -> MetricResult:
 
 
 def ab5_latency(run: Run, _j: dict | None) -> MetricResult:
+    """AB-5: run duration in seconds against a 300 s (single-company) or 600 s (multi-company) limit."""
     duration = run.bundle.get("duration_s")
     if duration is None:
         return _make("AB-5", None, "no duration recorded")

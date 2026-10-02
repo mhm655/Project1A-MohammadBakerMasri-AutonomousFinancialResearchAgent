@@ -19,6 +19,7 @@ _TICKER = re.compile(r"^[A-Za-z][A-Za-z0-9.\-]{0,9}$")
 
 @dataclass
 class Fallback:
+    """An alternative tool to try when the primary fails: ``map_args`` converts the original arguments (returning ``None`` if unusable) and ``note`` explains the substitution."""
     tool: str
     map_args: Callable[[dict[str, Any]], dict[str, Any] | None]
     note: str

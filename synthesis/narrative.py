@@ -26,6 +26,7 @@ _COMPANY_SUFFIXES = re.compile(r"[,.]?\s+(inc|incorporated|corp|corporation|co|c
 
 @dataclass
 class Thread:
+    """A narrative theme for one entity: thesis, supporting and contradicting evidence ids, and the takeaway."""
     theme: str  # growth | profitability | sentiment_vs_fundamentals | competition | risk | capital_allocation
     entity: str
     thesis: str

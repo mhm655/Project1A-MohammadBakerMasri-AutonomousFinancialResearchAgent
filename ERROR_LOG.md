@@ -5,7 +5,9 @@ A–E (Section A4.3, "Error Detection Exercise"). Below are the seven I identifi
 location, the erroneous text, why it is wrong, and the correction. Two further candidates follow at
 the end, in case any of the seven turns out to be unintended.
 
-> Status: identified on Day 1 (first full read). To be re-checked on Day 14 before submission.
+> Status: identified on Day 1 (first full read). Re-checked on Day 14: each quoted passage was matched
+> against the project document at the section given, and each correction was re-verified. No change to
+> the seven; the implementation notes (Errors 1, 2 and 7) still describe the code as built.
 
 ---
 

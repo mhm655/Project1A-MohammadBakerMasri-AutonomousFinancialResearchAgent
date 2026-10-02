@@ -205,6 +205,7 @@ class ToolRegistry:
     # ------------------------------------------------------------------ lookup
 
     def get(self, name: str) -> ToolSpec:
+        """The ToolSpec for ``name``; raises ToolNotFoundError if unknown."""
         try:
             return self._specs[name]
         except KeyError:
@@ -222,6 +223,7 @@ class ToolRegistry:
         return len(self._specs)
 
     def is_unlocked(self, name: str) -> bool:
+        """True unless unlock enforcement is on and the tool's unlock rule is not yet met."""
         spec = self.get(name)
         return not (self.enforce_unlocks and spec.unlock and not spec.unlock.is_met(self.completed_challenges))
 
@@ -341,6 +343,7 @@ class ToolRegistry:
             raise
 
     def clear_cache(self) -> None:
+        """Discard all cached tool results."""
         self._cache.clear()
 
     # ------------------------------------------------------------------ internals

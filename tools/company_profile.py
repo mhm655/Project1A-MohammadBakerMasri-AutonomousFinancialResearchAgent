@@ -27,6 +27,7 @@ _HONORIFIC = re.compile(r"^(?:mr|mrs|ms|dr|prof|sir)\.?\s+", re.IGNORECASE)
 
 
 def mock_company_profile(ticker: str) -> dict[str, Any]:
+    """Company profile from bundled mock data; peers get only name and market cap. Raises ToolExecutionError for an unknown ticker."""
     ticker = ticker.upper()
     if ticker in PROFILES:
         return {"ticker": ticker, **PROFILES[ticker], "notes": [MOCK_NOTICE]}
@@ -57,6 +58,7 @@ def yfinance_info(ticker: str) -> dict[str, Any]:
 
 
 def live_company_profile(ticker: str) -> dict[str, Any]:
+    """Company profile built from live SEC EDGAR data."""
     from tools.sec_edgar import resolve_cik, submissions
 
     ticker = ticker.upper()

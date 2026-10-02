@@ -69,6 +69,7 @@ def episode_from_result(result: Any) -> dict[str, Any]:
 
 def derive_lessons(tool_stats: dict[str, dict[str, int]], errors: list[dict[str, str]],
                    metrics: dict[str, Any]) -> list[str]:
+    """Turn a finished run's tool statistics, errors and metrics into short planner lessons."""
     lessons = []
     for tool, s in sorted(tool_stats.items()):
         if s["done"] and not s["cited"]:
@@ -88,6 +89,7 @@ def derive_lessons(tool_stats: dict[str, dict[str, int]], errors: list[dict[str,
 
 
 class EpisodicMemory:
+    """SQLite log of past research runs (episodes); ``path=None`` keeps it in memory."""
     def __init__(self, path: str | Path | None = None) -> None:
         if path is not None:
             Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -99,6 +101,7 @@ class EpisodicMemory:
             self._db.commit()
 
     def record(self, episode: dict[str, Any]) -> None:
+        """Insert or replace the episode for its ``session_id``, stamped with the current UTC time."""
         with self._lock:
             self._db.execute(
                 "INSERT OR REPLACE INTO episodes VALUES (?,?,?,?,?,?,?,?,?,?,?)",
@@ -109,6 +112,7 @@ class EpisodicMemory:
             self._db.commit()
 
     def episodes(self, template: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+        """Past episodes, best score first (newest first on ties), optionally only for one report ``template``."""
         sql, params = "SELECT * FROM episodes", []
         if template:
             sql, params = sql + " WHERE template = ?", [template]

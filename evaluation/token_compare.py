@@ -85,6 +85,7 @@ class ScriptedProvider(llm_module.MockProvider):
         return "{}" if request.json_mode else "MOCK RESPONSE"
 
     def complete(self, request: Any) -> Any:
+        """Complete the request with the scripted responder, then set prompt tokens to include the tool schemas."""
         self._responder = self._script
         response = super().complete(request)
         # Real providers bill the tool schemas as prompt tokens; the stock mock counts the messages only.
@@ -162,6 +163,7 @@ def render_table(before: dict[str, dict[str, Any]], after: dict[str, dict[str, A
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point with ``measure`` (run and save bundles) and ``table`` (print the token table) subcommands."""
     parser = argparse.ArgumentParser(prog="python -m evaluation.token_compare", description=__doc__.split("\n\n")[0])
     sub = parser.add_subparsers(dest="cmd", required=True)
     m = sub.add_parser("measure", help="run C1..C8 offline and save bundles")

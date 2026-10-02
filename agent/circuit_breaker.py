@@ -45,6 +45,7 @@ def provider_for(tool: str) -> str | None:
 
 @dataclass
 class BreakerConfig:
+    """Thresholds for a circuit breaker: trip on ``consecutive_failures`` in a row or when the failure ratio over the last ``window`` calls reaches ``window_failure_ratio``; ``cooldown_s`` before a trial call; ``max_open_providers`` open at once marks the system degraded."""
     consecutive_failures: int = 3
     window: int = 6
     window_failure_ratio: float = 0.5
@@ -88,6 +89,7 @@ class CircuitBreaker:
             return False
 
     def record_success(self) -> None:
+        """Record a successful call: closes a half-open breaker, or resets the failure streak when closed."""
         with self._lock:
             self._refresh()
             if self._state == HALF_OPEN:
@@ -160,16 +162,19 @@ class BreakerBoard:
             self.for_provider(provider)
 
     def for_provider(self, name: str) -> CircuitBreaker:
+        """The breaker for provider ``name``, created on first use."""
         with self._lock:
             if name not in self._breakers:
                 self._breakers[name] = CircuitBreaker(name, self.config, self._clock)
             return self._breakers[name]
 
     def for_tool(self, tool: str) -> CircuitBreaker | None:
+        """The breaker for the provider behind ``tool``, or ``None`` for local tools."""
         provider = provider_for(tool)
         return self.for_provider(provider) if provider else None
 
     def open_providers(self) -> list[str]:
+        """Sorted names of the providers whose breaker is currently open."""
         with self._lock:
             breakers = list(self._breakers.items())
         return sorted(name for name, breaker in breakers if breaker.state == OPEN)
@@ -179,6 +184,7 @@ class BreakerBoard:
         return len(self.open_providers()) >= self.config.max_open_providers
 
     def snapshot(self) -> dict[str, str]:
+        """Map of provider name to current breaker state."""
         with self._lock:
             breakers = sorted(self._breakers.items())
         return {name: breaker.state for name, breaker in breakers}

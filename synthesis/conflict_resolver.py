@@ -39,6 +39,7 @@ Status = Literal["verified", "single_source", "conflicted", "unverified"]
 
 @dataclass
 class ReliabilityConfig:
+    """Tunable weights and penalties used when scoring claim reliability and resolving conflicts."""
     weights: dict[int, float] = field(default_factory=lambda: dict(DEFAULT_TIER_WEIGHTS))
     major_news_domains: tuple[str, ...] = MAJOR_NEWS_DOMAINS
     tolerance: float = TOLERANCE
@@ -73,14 +74,17 @@ def tier_for_source(tool: str, source_tier: int | None, url_or_host: str = "") -
 
 @dataclass
 class Period:
+    """A fiscal period: year, period label (``FY`` or ``Q1``..``Q4``) and optional period end date."""
     fiscal_year: int | None
     fiscal_period: str = "FY"  # "FY", "Q1".."Q4"
     period_end: str | None = None
 
     def key(self) -> tuple[int | None, str]:
+        """Hashable (fiscal year, fiscal period) identity of the period."""
         return (self.fiscal_year, self.fiscal_period)
 
     def label(self) -> str:
+        """Human-readable label such as ``FY2024`` or ``Q3 FY2024``."""
         if self.fiscal_year is None:
             return self.fiscal_period
         if self.fiscal_period == "FY":
@@ -90,6 +94,7 @@ class Period:
 
 @dataclass
 class Claim:
+    """One value for one metric of one entity and period, with its evidence, source tiers and provider."""
     claim_id: str
     entity: str
     metric: str
@@ -108,6 +113,7 @@ class Claim:
 
 @dataclass
 class ConflictRecord:
+    """A disagreement between sources for one metric and period, how it was resolved and the confidence."""
     entity: str
     metric: str
     period: Period
@@ -125,6 +131,7 @@ class ConflictRecord:
 
 
 def format_money(usd: float) -> str:
+    """Format USD as dollars, in millions or billions for large amounts."""
     sign = "-" if usd < 0 else ""
     a = abs(usd)
     if a >= 1e9:
@@ -135,6 +142,7 @@ def format_money(usd: float) -> str:
 
 
 def format_value(value: float | str, unit: str) -> str:
+    """Format a value according to its unit (USD, USD/share, ratio or plain count)."""
     if isinstance(value, str):
         return value
     if unit == "USD":

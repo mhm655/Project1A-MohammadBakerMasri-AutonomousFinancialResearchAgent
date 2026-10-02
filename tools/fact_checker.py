@@ -53,6 +53,7 @@ _YEAR = re.compile(r"^(19|20)\d{2}$")
 
 @dataclass(frozen=True)
 class Quantity:
+    """A number found in text: absolute value, kind (percent or amount), whether a scale word was present, and the matched text."""
     value: float  # absolute value in base units (a percentage is stored as a fraction)
     kind: str  # "percent" or "amount"
     scaled: bool  # True if an explicit scale word/suffix was present
@@ -121,6 +122,7 @@ def _match(claim_q: Quantity, source_q: Quantity) -> tuple[float, bool] | None:
 
 
 def fact_checker(claim: str, sources: list[str] | None = None) -> dict[str, Any]:
+    """Check the numeric quantities in ``claim`` against ``sources``; returns a status, confidence, evidence and notes."""
     claim_quantities = extract_quantities(claim)
     sources = sources or []
 

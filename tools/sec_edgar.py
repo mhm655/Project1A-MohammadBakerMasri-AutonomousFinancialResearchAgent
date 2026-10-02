@@ -17,10 +17,13 @@ from __future__ import annotations
 import re
 import warnings
 from datetime import date, timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from tools.base import ToolExecutionError
 from tools.mock_data import ANNUAL, MOCK_NOTICE, PROFILES, RISK_FACTORS
+
+if TYPE_CHECKING:
+    from tools.http import HttpClient
 
 TOOL = "sec_filing_search"
 
@@ -46,7 +49,7 @@ FORM_ITEMS = {"10-K": ["1", "1A", "7", "7A", "8"], "10-Q": ["2", "1A"]}
 # --------------------------------------------------------------------------------------------------
 
 
-def _http():
+def _http() -> HttpClient:
     from tools.http import get_http
 
     return get_http()
@@ -63,6 +66,7 @@ def resolve_cik(ticker: str) -> tuple[str, str]:
 
 
 def submissions(cik: str) -> dict[str, Any]:
+    """SEC EDGAR submissions record for a CIK."""
     return _http().get_json(SUBMISSIONS_URL.format(cik=cik), ttl_s=DAY)
 
 
@@ -186,6 +190,7 @@ def risk_headings(runs: list[tuple[int, str]], span: tuple[int, int]) -> list[st
 
 
 def live_sec_filing_search(ticker: str, filing_type: str, year: int | None = None) -> dict[str, Any]:
+    """Fetch a filing from SEC EDGAR and split it into sections, with risk factors for 10-Ks."""
     cik, title = resolve_cik(ticker)
     subs = submissions(cik)
     filing = find_filing(subs, filing_type, year)
@@ -278,6 +283,7 @@ def _mdna(ticker: str, fy_index: int) -> str:
 
 
 def mock_sec_filing_search(ticker: str, filing_type: str, year: int | None = None) -> dict[str, Any]:
+    """Mock SEC filing for a ticker and fiscal year, from bundled data."""
     ticker = ticker.upper()
     if ticker not in ANNUAL:
         raise ToolExecutionError(f"{TOOL}: no EDGAR filer found for ticker {ticker!r}", tool=TOOL)

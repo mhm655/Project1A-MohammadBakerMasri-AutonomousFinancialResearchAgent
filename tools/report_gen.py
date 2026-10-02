@@ -39,6 +39,7 @@ def cited_ids(text: str) -> set[str]:
 
 
 def section_title(key: str) -> str:
+    """Turn a section key such as ``risk_factors`` into a title, keeping small words lowercase."""
     words = key.split("_")
     return " ".join(w if (i and w in _LOWERCASE_WORDS) else w.capitalize() for i, w in enumerate(words))
 
@@ -68,6 +69,7 @@ def report_generator(
     sources: list[dict[str, Any]],
     title: str | None = None,
 ) -> dict[str, Any]:
+    """Assemble a report for ``template`` from section texts and the sources list; returns the report and any missing sections."""
     required = TEMPLATES[template]
     provided = {k: nest_headings(v.strip()) for k, v in sections.items() if isinstance(v, str) and v.strip()}
     missing = [s for s in required if s not in provided]

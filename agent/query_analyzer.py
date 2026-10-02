@@ -88,6 +88,7 @@ _INVESTIGATIVE_EXTRA = re.compile(r"explain why|why (?:did|is|are|has)", re.IGNO
 
 @dataclass
 class QueryProfile:
+    """Heuristic reading of a request: report template, tickers, names, query type, complexity, periods and an ambiguity score with its signals."""
     template: str
     tickers: list[str]
     names: list[str]
@@ -165,6 +166,7 @@ def _query_type(template: str, query: str, tickers: list[str], sector: str | Non
 
 
 def analyze_query(query: str) -> QueryProfile:
+    """Analyze ``query`` without calling a model: resolve entities, detect sector and periods, and score ambiguity (low below 0.3, high above 0.7)."""
     template, tickers, names = _resolve_entities(query)
     sector = _find_sector(query)
     cross_memory = bool(_CROSS_MEMORY.search(query))

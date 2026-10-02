@@ -1,156 +1,216 @@
 # ARA-1: Autonomous Financial Research Agent
 
-ARA-1 is an autonomous agent that takes a research question about a public company and writes a
-cited investment research report. It plans the research, gathers data from SEC filings, market
-data, earnings communications and the news, and resolves conflicting figures along the way. It
-needs no step-by-step guidance.
+Zetheta Project 1A. Author: Mohammad Baker Masri.
 
-Zetheta Project 1A · Mohammad Baker Masri
+ARA-1 takes a research question about a public company, sector or market situation and writes a
+cited investment research report. It plans the work, gathers data from SEC filings, market data,
+earnings communications and the news, and resolves conflicting figures. Every figure in the report
+is checked against the evidence behind it. The whole system runs at zero cost: every dependency and
+data source is free, and no credit card is needed anywhere.
 
-> **Status: Day 6.** Done so far:
-> - the architecture specification;
-> - the tool registry (12 tools);
-> - configuration, the LLM client with its provider fallback chain, the Chroma vector store, and
->   tracing;
-> - the agent loop, which runs Challenge 1 end to end ([sample report on mock data](results/dev/day04_challenge1_mock.md));
-> - live data: SEC EDGAR filings, SEC XBRL financials (yfinance as backup), web search and Google News sentiment;
-> - memory: semantic chunking into Chroma, a structured facts store, episodic lessons, and prompt budgeting.
+## Architecture at a glance
 
-**Runs at zero cost.** Every dependency and data source is free, and no credit card is required
-anywhere.
+```
+query -> query analysis -> plan -> execute steps (bounded ReAct, 12 tools) -> synthesis -> write -> verify -> report
+              |                          |                    |
+        ambiguity, scope           memory (Chroma,       claim ledger, source tiers,
+                                   SQLite facts,         conflict protocol
+                                   episodic lessons)
+```
 
-## What is built and what is planned
+- **Agent loop** (`agent/`): a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per
+  step, re-planning, verification and reflection.
+- **Tools** (`tools/`): 12 tools with JSON schemas, argument validation, caching, evidence ids and
+  a call log.
+- **LLM client** (`agent/llm.py`): Gemini, then Groq, then Ollama, through the `openai` SDK.
+- **Memory** (`memory/`): Chroma vector store, SQLite facts store, episodic lessons, prompt budgeting.
+- **Synthesis** (`synthesis/`): claim ledger, source-tier weights, conflict resolution, narrative threads.
+- **Resilience** (`agent/error_handler.py`, `agent/circuit_breaker.py`): per-class retries, one
+  circuit breaker per data provider, fallback chains.
+- **Evaluation** (`evaluation/`): 23 metrics (the 22 in the spec plus benchmark recall BM-1), an LLM judge, a dashboard, stress tests.
 
-| Component | Status |
-|---|---|
-| **Tool registry**: 12 tools, schema validation, repair of common LLM argument mistakes, caching, evidence ids, call log | Built (Day 2) |
-| **Local tools**: `calculation_engine`, `fact_checker`, `report_generator` | Built (Day 2) |
-| **Live data tools**: `sec_filing_search` (EDGAR, 10-K items and risk factors), `financial_data_api` (SEC XBRL, restatement detection, yfinance backup), `web_search` (Brave/Bing/DuckDuckGo, Google News fallback), `news_sentiment` (Google News + finance-tuned VADER); rate-limited and disk-cached | Built (Day 5) |
-| **Remaining network tools**: `company_profile` (EDGAR + yfinance), `earnings_transcript` (Motley Fool call transcripts split into prepared remarks and Q&A, 8-K press release as fallback), `peer_comparison` (yfinance industry peers or caller-chosen peers, SEC XBRL metrics) | Built (Day 7) |
-| **LLM client**: Gemini → Groq → Ollama through the `openai` SDK, with retries, reasoning-token accounting and tracing. Verified against the live Gemini API. | Built (Day 3) |
-| **Long-term memory**: Chroma with local embeddings | Built (Day 3) |
-| **Hybrid agent loop**: a Plan-and-Execute graph (LangGraph) with a bounded ReAct executor per step, re-planning, verification of every cited figure, reflection | Built (Day 4) |
-| **Memory**: chunking per source type (one chunk per risk factor, Q&A pairs kept together); financial statements in a SQLite facts store; episodic lessons fed to the planner; prompts fitted to a token budget (40/30 primary/supporting); Challenge 7 recalls earlier research | Built (Day 6) |
-| **Synthesis**: a claim ledger (entity, metric, fiscal period, unit, evidence, confidence), configurable source-tier weights, the A6.3 conflict protocol (restatement, triangulated majority, highest tier, unresolved range) with a conflicts table in the report, and narrative threads (growth, margins, peers, news sentiment vs fundamentals) handed to the writer as a brief | Built (Day 8) |
-| **Error handling**: an error taxonomy with per-class retries and exponential backoff, one circuit breaker per data provider (stops research when several are down), fallback chains with at least two alternatives per network tool, gaps and fallback use stated in the report, and seeded failure injection (`--fail-rate`) | Built (Day 9) |
-| **Query analysis**: query type, complexity and a scored ambiguity level with its reasons; for ambiguous requests, documented assumptions (e.g. "the banks" = six largest US banks) and the questions it would have asked; flags for private companies, recent IPOs and fast-changing situations (M&A, leadership changes, restatements) | Built (Day 10) |
-| **Evaluation**: 22 metrics, LLM judge, dashboard | Day 11 |
-| **Optimisation**: execute calls carry one tool schema, per-provider synthesis budget, deterministic review, ticker enforcement in plans, section-targeted memory recall, 500-character memory chunks; every change logged with before/after numbers in [docs/optimization_log.md](docs/optimization_log.md) | Built (Day 13) |
+The full design is in [docs/architecture_specification_final.md](docs/architecture_specification_final.md).
 
-The full design is in the [architecture specification](docs/architecture_specification.md).
+The agent is a LangGraph state machine (`agent/core.py`, `_build_graph`):
+
+```mermaid
+flowchart LR
+    START([query]) --> analyze --> recall --> plan --> execute
+    execute -->|steps ready, budget left| execute
+    execute --> review
+    review -->|new steps| execute
+    review -->|plan complete| synthesize
+    review -->|nothing new for a gap| render
+    synthesize --> verify --> reflect
+    reflect -->|sections missing| review
+    reflect --> render --> remember --> END([report])
+```
+
+## Requirements
+
+- Python 3.11 or newer (`requires-python = ">=3.11"` in `pyproject.toml`; developed on 3.14).
+- About 1 GB of free disk space for the dependencies and the embedding model.
+- Windows, Linux or macOS. Development and testing were done on Windows 10. Only the venv
+  activation command differs by system (see below).
+- Internet access for live runs. Mock runs and the tests need none.
 
 ## Setup
 
-### 1. Prerequisites
+1. Create and activate a virtual environment.
 
-- **Python 3.11 or newer** (developed on 3.14).
-- **Git.**
-- About 1 GB of free disk space for the dependencies and the embedding model.
+   | System | Create | Activate |
+   |---|---|---|
+   | Windows (PowerShell) | `python -m venv .venv` | `.venv\Scripts\Activate.ps1` |
+   | Windows (Git Bash) | `python -m venv .venv` | `source .venv/Scripts/activate` |
+   | Linux / macOS | `python3 -m venv .venv` | `source .venv/bin/activate` |
 
-### 2. Install
+2. Install the dependencies.
 
-```bash
-git clone <this repository>
-cd Project1A-MohammadBakerMasri-AutonomousFinancialResearchAgent
-python -m venv .venv
-```
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
 
-Activate the environment:
+   For the tests and lint, also run `python -m pip install pytest ruff`
+   (or `python -m pip install -e ".[dev]"`).
 
-| System | Command |
-|---|---|
-| Windows (PowerShell) | `.venv\Scripts\Activate.ps1` |
-| Windows (Git Bash) | `source .venv/Scripts/activate` |
-| macOS / Linux | `source .venv/bin/activate` |
+3. Create your `.env` from the template and fill in the keys you have.
 
-Then install the dependencies:
+   ```bash
+   cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+   ```
 
-```bash
-python -m pip install -r requirements.txt
-```
+   `.env` is git-ignored, so keys are never committed.
 
-### 3. Configure
+## API keys
 
-```bash
-cp .env.example .env
-```
+All services are free and need no credit card. Without any LLM key, mock mode still works.
 
-Open `.env` and fill in the following. `.env` is git-ignored, so your keys never get committed.
-
-| Variable | Required? | How to get it (all free, no card) |
-|---|---|---|
-| `GEMINI_API_KEY` | Recommended: the primary LLM | Sign in at <https://aistudio.google.com/apikey> with a Google account, then click **Create API key** |
-| `GROQ_API_KEY` | Optional: backup LLM | Create an account at <https://console.groq.com/keys> and create a key |
-| `SEC_CONTACT_EMAIL` | Required from Day 5 | Any email you read. The SEC requires a contact address in the User-Agent of every EDGAR request; no account is needed |
-
-**Optional: an offline LLM with Ollama.** Install it from <https://ollama.com>, then run
-`ollama pull qwen2.5:3b` (about 2 GB). ARA-1 falls back to it automatically when the cloud providers
-are unavailable. Run with `ARA_MODE=local` to use only Ollama.
-
-### 4. Check the setup
-
-```bash
-python -m config.doctor
-```
-
-The doctor checks the following, and says how to fix anything that is missing:
-
-- the Python version and installed packages;
-- your `.env` file and which keys are set (it never prints key values);
-- the configuration;
-- the tool registry;
-- the vector database. The embedding model, about 80 MB, is downloaded once on the first run.
-
-For each LLM provider it also checks that:
-
-- the model exists;
-- the model answers a prompt;
-- it accepts ARA-1's real tool schemas and completes a tool-call round trip.
-
-Use `--offline` to skip the network checks.
-
-### 5. Run a research task
-
-```bash
-python -m agent "Create a comprehensive profile of Microsoft Corporation" --data mock --out report.md
-```
-
-`--data live` (the default) uses the free live sources; `--data mock` uses canned data; `--mode mock`
-needs no network at all. Responses are cached under `data/cache/`, so repeat research on a company is
-fast. The first download of a large 10-K can take minutes on a slow connection. Every run writes a full trace to `traces/`.
-
-### 6. Run the tests
-
-```bash
-python -m pytest
-```
-
-The tests need no network access and no API keys.
-
-## Run modes
-
-Set these in `.env` or as environment variables. Defaults live in [config/default.toml](config/default.toml).
-
-| `ARA_MODE` | LLM | Data | Use |
+| Variable | Required? | Where to get it (free) | Without it |
 |---|---|---|---|
-| `mock` | Scripted mock | Mock fixtures | Tests, and demos with no network |
-| `local` | Ollama only | Live | Offline or unlimited development |
-| `free` *(default)* | Gemini → Groq → Ollama | Live | Challenge runs |
+| `GEMINI_API_KEY` | Recommended. Primary LLM. | <https://aistudio.google.com/apikey>: sign in, click Create API key. | Gemini is skipped; the client tries Groq, then Ollama. |
+| `GROQ_API_KEY` | Optional. Backup LLM (two Groq models share this one key). | <https://console.groq.com/keys> | Groq is skipped; the client tries Ollama. |
+| Ollama (no key) | Optional. Offline last resort. | Install from <https://ollama.com>, then `ollama pull qwen2.5:3b` (about 2 GB). | If no provider is reachable, a live run cannot call an LLM. |
+| `SEC_CONTACT_EMAIL` | Required for live SEC data. This is an email address, not a key. | Any email you read. The SEC asks for a contact address in the User-Agent of every EDGAR request. No account needed. | Live SEC EDGAR and XBRL tools do not work. Mock mode is unaffected. |
+| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | Not needed. Paid providers, off by default. | Only used if you add them to `ARA_PROVIDER_ORDER`. | Nothing changes. |
 
-`ARA_DATA_MODE=mock|live` overrides the data source independently of the LLM. The live data tools
-arrive on Day 5; until then, keep `ARA_DATA_MODE=mock`.
+Fallback chain: Gemini, then Groq, then Ollama. A provider whose key is missing is skipped. If a
+provider fails or hits its quota, the client moves to the next one. Live data sources (yfinance,
+Google News, web search) need no keys.
+
+Optional run settings (all in `.env.example`, defaults in [config/default.toml](config/default.toml)):
+
+| Variable | Values | Meaning |
+|---|---|---|
+| `ARA_MODE` | `mock`, `local`, `free` (default) | `mock`: scripted LLM and mock data, no network. `local`: Ollama only. `free`: Gemini, Groq, Ollama. |
+| `ARA_DATA_MODE` | `mock`, `live` | Tool data source, independent of the LLM. |
+| `ARA_PROVIDER_ORDER` | e.g. `gemini,groq,groq_qwen,ollama` | Provider order. |
+| `ARA_GEMINI_MODEL`, `ARA_GROQ_MODEL`, `ARA_GROQ_QWEN_MODEL`, `ARA_OLLAMA_MODEL` | model names | Override a model. |
+| `ARA_GEMINI_REASONING_EFFORT` | e.g. `minimal` | Gemini thinking budget. |
+| `ARA_LOG_LEVEL` | `INFO`, `DEBUG`, ... | Log level. |
+
+## Check your setup
+
+```bash
+python -m config.doctor              # full check, including a live call to each LLM provider
+python -m config.doctor --offline    # skip network checks
+python -m config.doctor --provider gemini
+python -m config.doctor --json       # machine-readable output
+```
+
+The doctor checks the Python version, packages, `.env`, settings, the tool registry and the vector
+database. For each LLM provider it checks that the model exists, answers a prompt and completes a
+tool-call round trip. It says how to fix anything missing and never prints key values.
+
+## Quick start
+
+All commands run from the repository root with the venv active.
+
+**1. Mock run (no keys, no network):**
+
+```bash
+python -m agent "Create a comprehensive profile of Microsoft Corporation" --mode mock --data mock --out report.md
+```
+
+**2. Live run (needs the keys above):**
+
+```bash
+python -m agent "Create a comprehensive profile of Microsoft Corporation" --out report.md
+```
+
+Options of `python -m agent`:
+
+| Option | Meaning |
+|---|---|
+| `--out FILE` | Write the report to this file (default: print it). |
+| `--mode {mock,local,free}` | Override `ARA_MODE`. |
+| `--data {mock,live}` | Override `ARA_DATA_MODE`. |
+| `--max-seconds N` | Wall-clock limit (default 300). |
+| `--fail-rate R`, `--fail-seed S`, `--fail-tools a,b` | Inject tool failures to test recovery. |
+
+Responses are cached under `data/cache/`, so repeat research is faster. Each run prints a summary
+line and writes a full trace to `traces/session-<time>-<id>.jsonl`.
+
+**3. The eight challenges:**
+
+```bash
+python -m evaluation.runner                      # C1..C8, live data (about 45 s pause between runs)
+python -m evaluation.runner C1 C4 --pause 30     # a subset
+python -m evaluation.runner --data mock --pause 0
+```
+
+Each run is saved as a bundle in `results/runs/C<n>.json`, and the report as `results/challenge_<n>.md`.
+
+| Id | Challenge |
+|---|---|
+| C1 | Single-company profile |
+| C2 | Earnings analysis |
+| C3 | Risk assessment |
+| C4 | Industry comparison |
+| C5 | Contradictory data handling |
+| C6 | Ambiguous query handling |
+| C7 | Sector analysis with memory |
+| C8 | Full research report with degradation (50% injected tool failures) |
+
+**4. Evaluation:**
+
+```bash
+python -m evaluation.evaluate                    # score bundles, run the judge, write dashboard and report
+python -m evaluation.evaluate --ids C1 C4 --no-judge
+python -m evaluation.dashboard                   # re-render dashboard and report from results/eval/scores.json
+python -m evaluation.stress                      # concurrency, context and outage stress tests
+```
+
+Outputs: `results/eval/scores.json`, `results/evaluation_dashboard.html`,
+`results/evaluation_report.md`. The judge uses the free LLM chain; `--no-judge` skips it.
+
+**5. View a trace:**
+
+```bash
+python -m agent.trace_viewer traces/<session>.jsonl
+```
+
+The trace viewer is new on Day 14. See [docs/trace_gallery.md](docs/trace_gallery.md) for examples.
+
+## Tests and lint
+
+```bash
+python -m pytest                    # about 650 tests, no network or keys needed (network tests are deselected)
+python -m pytest -p no:cacheprovider -W ignore
+ruff check .                        # lint, including docstring checks (D1) on source code
+```
 
 ## Project layout
 
 ```
-agent/        reasoning loop (Day 4), LLM client (llm.py), tracing (tracing.py)
-tools/        tool registry, 12 JSON tool schemas, tool implementations
-memory/       vector store (Chroma); context manager and episodic memory (Day 6)
-synthesis/    claim ledger, conflict resolution, narrative (Day 8)
-evaluation/   metrics, benchmarks, dashboard (Day 11)
+agent/        agent loop (core.py), LLM client, tracing, query analysis, error handling,
+              circuit breakers, fallback chains, trace viewer
+tools/        tool registry, 12 JSON tool schemas (tools/schemas/), tool implementations
+memory/       Chroma vector store, chunking, facts store, episodic memory, context manager
+synthesis/    claim ledger, conflict resolution, narrative threads
+evaluation/   challenge runner, metrics, judge, dashboard, stress tests, token analysis
 config/       default.toml, settings loader, environment doctor
-docs/         architecture specification and diagram
-results/      challenge outputs
+docs/         architecture specification, trace gallery, evaluation report, optimisation log
+results/      challenge outputs, run bundles, scores, dashboard
 tests/        pytest suite
 ```
 
@@ -158,13 +218,33 @@ tests/        pytest suite
 
 | Document | Purpose |
 |---|---|
-| [docs/architecture_specification.md](docs/architecture_specification.md) | The full design: cognitive loop, tools, memory, synthesis, error handling, evaluation |
+| [docs/architecture_specification_final.md](docs/architecture_specification_final.md) | The final design: cognitive loop, tools, memory, synthesis, error handling, evaluation |
 | [docs/architecture_diagram.svg](docs/architecture_diagram.svg) | Architecture diagram |
-| [docs/optimization_log.md](docs/optimization_log.md) | Day 13: each optimisation with its evidence and before/after numbers |
+| [docs/trace_gallery.md](docs/trace_gallery.md) | Annotated example traces |
+| [docs/evaluation_report_final.md](docs/evaluation_report_final.md) | Final evaluation of the eight challenges |
+| [docs/optimization_log.md](docs/optimization_log.md) | Each optimisation with before/after numbers |
 | [ERROR_LOG.md](ERROR_LOG.md) | The 7 deliberate errors found in the project document |
+| [results/](results/) | Challenge reports, run bundles, scores, dashboard, stress and token reports |
 | [tools/schemas/](tools/schemas/) | The 12 tool definitions (OpenAI function format plus `x-ara` metadata) |
 
-![Architecture](docs/architecture_diagram.svg)
+## Status by day
+
+| Day | Component | Status |
+|---|---|---|
+| 1 | Architecture specification and diagram, error log | Done |
+| 2 | Tool registry (12 tools), schema validation, argument repair, caching, evidence ids, call log; local tools `calculation_engine`, `fact_checker`, `report_generator` | Done |
+| 3 | LLM client (Gemini, Groq, Ollama; retries, reasoning-token accounting, tracing); Chroma long-term memory with local embeddings | Done |
+| 4 | Hybrid agent loop: Plan-and-Execute graph with bounded ReAct executor, re-planning, verification of cited figures, reflection | Done |
+| 5 | Live data tools: `sec_filing_search`, `financial_data_api` (SEC XBRL, restatement detection, yfinance backup), `web_search`, `news_sentiment`; rate-limited, disk-cached | Done |
+| 6 | Memory: chunking per source type, SQLite facts store, episodic lessons, prompt budgeting | Done |
+| 7 | Remaining network tools: `company_profile`, `earnings_transcript`, `peer_comparison` | Done |
+| 8 | Synthesis: claim ledger, source-tier weights, conflict protocol, narrative threads | Done |
+| 9 | Error handling: error taxonomy, retries, circuit breakers, fallback chains, failure injection (`--fail-rate`) | Done |
+| 10 | Query analysis: type, complexity, ambiguity score, documented assumptions, private-company and recent-IPO flags | Done |
+| 11 | Evaluation: 23 metrics (22 + BM-1), LLM judge, dashboard | Done |
+| 12 | Challenge runs, stress tests, token usage analysis | Done |
+| 13 | Optimisation: one schema per execute call, per-provider synthesis budget, deterministic review, section-targeted memory recall; see [docs/optimization_log.md](docs/optimization_log.md) | Done |
+| 14 | Final documentation: technical README, final architecture specification, trace gallery, final evaluation report, trace viewer, docstrings enforced by ruff | Done |
 
 ## Use of AI tools
 

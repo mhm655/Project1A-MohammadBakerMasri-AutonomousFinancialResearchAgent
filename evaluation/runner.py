@@ -33,6 +33,7 @@ TRACE_TYPES = frozenset({"llm_call", "decision", "error", "note", "conflict", "a
 
 @dataclasses.dataclass(frozen=True)
 class Challenge:
+    """One of the spec's evaluation challenges: its query, optional failure injection and expected report length in pages."""
     id: str
     number: int
     title: str
@@ -165,6 +166,7 @@ def run_challenge(challenge: Challenge, *, max_seconds: float = 300.0, seed: int
 
 
 def save(challenge: Challenge, bundle: dict[str, Any], *, out_dir: Path, report_dir: Path | None) -> Path:
+    """Write a run bundle to ``out_dir/<id>.json`` and, if ``report_dir`` is given, its report to ``challenge_<n>.md``; returns the bundle path."""
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{challenge.id}.json"
     path.write_text(json.dumps(bundle, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -175,6 +177,7 @@ def save(challenge: Challenge, bundle: dict[str, Any], *, out_dir: Path, report_
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: run the selected challenges and save their bundles."""
     parser = argparse.ArgumentParser(prog="python -m evaluation.runner", description=__doc__.split("\n\n")[0])
     parser.add_argument("ids", nargs="*", help="challenge ids (default: C1..C8)")
     parser.add_argument("--data", choices=["mock", "live"], default="live")

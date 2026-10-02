@@ -163,6 +163,7 @@ def system_prompt(tools_description: str, max_tool_calls: int, today: date | Non
 
 def plan_prompt(*, query: str, template: str, sections: list[str], entities: list[str], memory: str,
                 tool_names: list[str], max_steps: int, memory_tickers: list[str] | None = None) -> str:
+    """Fill the planning prompt for ``query`` with template, sections, entities, memory notes, available tools and the step limit."""
     return PLAN_PROMPT.format(
         memory_companies=(f"Companies from memory (use these for company-specific tools): "
                           f"{', '.join(memory_tickers)}\n") if memory_tickers else "",
@@ -186,6 +187,7 @@ def execute_step_prompt(*, goal: str, tool: str, evidence: str, problem: str = "
 
 def replan_prompt(*, query: str, template: str, sections: list[str], completed: str, failed: str,
                   gaps: list[str], used: int, budget: int) -> str:
+    """Fill the replanning prompt with completed and failed steps, gaps found in the draft and the tool-call budget used."""
     gap_text = ("\nGaps found in the draft:\n" + "\n".join(f"- {g}" for g in gaps) + "\n") if gaps else ""
     return REPLAN_PROMPT.format(
         query=query, template=template, sections=", ".join(sections), completed=completed or "(none)",
@@ -194,6 +196,7 @@ def replan_prompt(*, query: str, template: str, sections: list[str], completed: 
 
 
 def synthesize_prompt(*, query: str, evidence: str, sections: list[str], brief: str = "") -> str:
+    """Fill the synthesis prompt with the evidence and the report sections to write (``brief`` optional)."""
     listed = "\n".join(f"- {s}: {SECTION_GUIDANCE.get(s, '')}".rstrip(": ") for s in sections)
     return SYNTHESIZE_PROMPT.format(query=query, evidence=evidence, sections="\n" + listed,
                                     brief=f"\n{brief}\n" if brief else "")

@@ -54,6 +54,7 @@ class InMemoryVectorStore:
     records: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
+        """Store a document and return its generated id, ``stored`` flag and the record total."""
         ticker = metadata["ticker"].upper()
         stored_on = _parse_date(metadata["date"]).isoformat()  # "2025-01-29T15:00Z" is stored as the day, as in Chroma
         prefix = record_id_prefix(metadata)
@@ -73,6 +74,7 @@ class InMemoryVectorStore:
         return {"id": record_id, "stored": True, "total_records": len(self.records)}
 
     def search(self, query: str, top_k: int = 5, filter: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Rank stored records by token overlap with ``query``; ``filter`` narrows by metadata. Raises ToolValidationError for a query with no words."""
         filter = filter or {}
         query_tokens = _tokens(query)
         if not query_tokens:
@@ -103,12 +105,14 @@ class InMemoryVectorStore:
         return len(written)
 
     def companies(self) -> dict[str, int]:
+        """Record count per ticker, largest first."""
         counts: dict[str, int] = {}
         for record in self.records.values():
             counts[record["metadata"]["ticker"]] = counts.get(record["metadata"]["ticker"], 0) + 1
         return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
 
     def clear(self) -> None:
+        """Remove every stored record."""
         self.records.clear()
 
 
@@ -175,6 +179,7 @@ _HASHING_CLASS: type | None = None
 
 
 def hashing_embedding_function(dimensions: int = 256) -> Any:
+    """A deterministic offline embedding function that hashes words into ``dimensions`` buckets."""
     global _HASHING_CLASS
     if _HASHING_CLASS is None:
         _HASHING_CLASS = _hashing_embedding_class()
@@ -228,9 +233,11 @@ class ChromaVectorStore:
         self._lock = threading.Lock()  # id allocation must be atomic
 
     def count(self) -> int:
+        """Number of stored records."""
         return self._collection.count()
 
     def store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
+        """Store a document under a new readable id and return its id, ``stored`` flag and the record total."""
         meta = _normalize_meta(metadata)
         prefix = record_id_prefix(meta)
         with self._lock:
@@ -245,6 +252,7 @@ class ChromaVectorStore:
         return {"id": record_id, "stored": True, "total_records": self.count()}
 
     def search(self, query: str, top_k: int = 5, filter: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Semantic search over stored records; ``filter`` narrows by metadata. Raises ToolValidationError for a query with no words."""
         if not _tokens(query):
             raise ToolValidationError("vector_db_search: query has no searchable words", tool="vector_db_search")
         total = self.count()
@@ -291,6 +299,7 @@ class ChromaVectorStore:
         return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
 
     def clear(self) -> None:
+        """Remove every stored record."""
         ids = self._collection.get(include=[])["ids"]
         if ids:
             self._collection.delete(ids=ids)
@@ -384,17 +393,21 @@ def _with_ticker(filter: dict[str, Any] | None, ticker: str | None) -> dict[str,
 
 def vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None,
                      ticker: str | None = None) -> dict[str, Any]:
+    """Search the shared in-memory store (mock mode); ``ticker`` is a shortcut for a ticker filter."""
     return DEFAULT_STORE.search(query, top_k, _with_ticker(filter, ticker))
 
 
 def vector_db_store(content: str, metadata: dict[str, Any]) -> dict[str, Any]:
+    """Store a document in the shared in-memory store (mock mode)."""
     return DEFAULT_STORE.store(content, metadata)
 
 
 def live_vector_db_search(query: str, top_k: int = 5, filter: dict[str, Any] | None = None,
                           ticker: str | None = None) -> dict[str, Any]:
+    """Search the persistent Chroma store (live mode); ``ticker`` is a shortcut for a ticker filter."""
     return get_live_store().search(query, top_k, _with_ticker(filter, ticker))
 
 
 def live_vector_db_store(content: str, metadata: dict[str, Any]) -> dict[str, Any]:
+    """Store a document in the persistent Chroma store (live mode)."""
     return get_live_store().store(content, metadata)

@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS facts (
 
 
 class FactsStore:
+    """SQLite store of structured financial facts keyed by ticker, item and period."""
     def __init__(self, path: str | Path | None = None) -> None:
         """``path=None`` keeps the store in memory (tests and mock runs)."""
         if path is not None:
@@ -79,6 +80,7 @@ class FactsStore:
             return [dict(r) for r in self._db.execute(sql + " ORDER BY period_end DESC, item", params)]
 
     def value(self, ticker: str, item: str, period_end: str, period: str = "annual") -> float | None:
+        """The stored value for one ticker, item and period end, or None if absent."""
         with self._lock:
             row = self._db.execute("SELECT value FROM facts WHERE ticker=? AND item=? AND period_end=? AND period=?",
                                    (ticker.upper(), item, period_end, period)).fetchone()
@@ -98,5 +100,6 @@ class FactsStore:
         return f"{ticker.upper()} financial statements in memory: " + "; ".join(parts)
 
     def tickers(self) -> list[str]:
+        """All tickers that have stored facts, sorted."""
         with self._lock:
             return [r[0] for r in self._db.execute("SELECT DISTINCT ticker FROM facts ORDER BY ticker")]

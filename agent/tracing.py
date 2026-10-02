@@ -73,6 +73,7 @@ class TraceLogger:
     # ------------------------------------------------------------------ core
 
     def log(self, event_type: str, **fields: Any) -> dict[str, Any]:
+        """Append an event of ``event_type`` to the trace with a sequence number, timestamp and ``fields``; raises ValueError for an unknown type."""
         if event_type not in EVENT_TYPES:
             raise ValueError(f"Unknown trace event type {event_type!r}")
         with self._lock:
@@ -91,6 +92,7 @@ class TraceLogger:
         return event
 
     def close(self) -> None:
+        """Close the trace file; later events are kept in memory only."""
         with self._lock:
             if self._fh is not None:
                 self._fh.close()
@@ -105,15 +107,19 @@ class TraceLogger:
     # ------------------------------------------------------------------ convenience wrappers
 
     def thought(self, text: str, **fields: Any) -> dict[str, Any]:
+        """Log a ``thought`` event."""
         return self.log("thought", text=text, **fields)
 
     def decision(self, chosen: str, rationale: str, **fields: Any) -> dict[str, Any]:
+        """Log a ``decision`` event recording the choice and its rationale."""
         return self.log("decision", chosen=chosen, rationale=rationale, **fields)
 
     def metric(self, name: str, value: Any, **fields: Any) -> dict[str, Any]:
+        """Log a ``metric`` event."""
         return self.log("metric", name=name, value=value, **fields)
 
     def of_type(self, event_type: str) -> list[dict[str, Any]]:
+        """Events of the given type, in order."""
         return [e for e in self.events if e["type"] == event_type]
 
     # ------------------------------------------------------------------ integrations

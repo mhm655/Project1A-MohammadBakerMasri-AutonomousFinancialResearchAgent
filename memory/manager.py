@@ -38,6 +38,7 @@ SOURCE_TYPES = {"sec_filing_search": None, "earnings_transcript": "earnings_call
 
 
 class MemoryManager:
+    """Bundles the vector, facts and episodic stores so the agent can share one set of memories."""
     def __init__(self, vectors: Any, facts: FactsStore, episodes: EpisodicMemory) -> None:
         self.vectors, self.facts, self.episodes = vectors, facts, episodes
 
@@ -125,6 +126,7 @@ class MemoryManager:
         return self.vectors.add_many(chunk_findings(sections, base))
 
     def record_episode(self, result: Any, tickers: list[str]) -> dict[str, Any]:
+        """Build the episode from a run result, save it to episodic memory and return it."""
         episode = {**episode_from_result(result), "tickers": tickers}
         self.episodes.record(episode)
         return episode

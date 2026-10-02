@@ -17,6 +17,7 @@ A mock handler with canned data is kept for tests and offline runs.
 from __future__ import annotations
 
 import functools
+from collections.abc import Callable
 from datetime import date, timedelta
 from typing import Any
 
@@ -84,6 +85,7 @@ def key_ratios(income: dict[str, float], balance: dict[str, float] | None = None
 
 
 def mock_financial_data_api(ticker: str, statement_type: str, period: str = "annual", years: int = 3) -> dict[str, Any]:
+    """Financial statement or key ratios from bundled mock data for the last ``years`` periods."""
     ticker = ticker.upper()
     if ticker not in ANNUAL:
         raise ToolExecutionError(f"{TOOL}: no financial data for ticker {ticker!r}", tool=TOOL)
@@ -171,7 +173,7 @@ def _days(fact: dict[str, Any]) -> int | None:
     return (date.fromisoformat(fact["end"]) - date.fromisoformat(fact["start"])).days
 
 
-def _latest_by_period(facts: list[dict[str, Any]], keep, notes: list[str], label: str) -> dict[str, float]:
+def _latest_by_period(facts: list[dict[str, Any]], keep: Callable[[dict[str, Any]], bool], notes: list[str], label: str) -> dict[str, float]:
     """``period end -> value`` from the latest filing; differing earlier values are reported."""
     by_end: dict[str, list[dict[str, Any]]] = {}
     for fact in facts:
@@ -226,6 +228,7 @@ def _quarter_label(end: date, fy_ends: list[date]) -> tuple[int, str]:
 
 
 def live_financial_data_api(ticker: str, statement_type: str, period: str = "annual", years: int = 3) -> dict[str, Any]:
+    """Financial statement or key ratios from SEC XBRL data, falling back to yfinance for non-SEC tickers."""
     from tools.sec_edgar import fiscal_year_of, resolve_cik, submissions
 
     ticker = ticker.upper()

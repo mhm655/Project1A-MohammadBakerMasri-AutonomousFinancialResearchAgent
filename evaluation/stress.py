@@ -57,6 +57,7 @@ _FILING_PARAGRAPH = (
 
 @dataclass
 class StressResult:
+    """Outcome of one stress test: pass/fail, metrics, findings, duration and any bugs found."""
     name: str
     passed: bool
     metrics: dict[str, Any] = field(default_factory=dict)
@@ -442,6 +443,7 @@ MARKER = "<!-- ANALYSIS -->"
 
 
 def render(results: list[StressResult], *, live: bool = False) -> str:
+    """Render the stress-test results as the Markdown report."""
     env_line = (f"mock LLM + mock data (full mock mode), {os.cpu_count()} CPUs, Python {platform.python_version()}, "
                 f"{platform.system()}")
     lines = ["# ARA-1 Stress Test Report", "", f"Date: {date.today().isoformat()}  ", f"Environment: {env_line}", "",
@@ -464,6 +466,7 @@ def render(results: list[StressResult], *, live: bool = False) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: run the stress tests and write the report."""
     parser = argparse.ArgumentParser(prog="python -m evaluation.stress", description=__doc__.split("\n\n")[0])
     parser.add_argument("--only", choices=["concurrency", "context", "outage"])
     parser.add_argument("--out", default=str(ROOT / "results" / "stress_test_report.md"))

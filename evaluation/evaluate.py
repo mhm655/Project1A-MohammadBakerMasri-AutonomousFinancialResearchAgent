@@ -69,6 +69,7 @@ def _run_entry(bundle: dict[str, Any], metrics: list[dict[str, Any]]) -> dict[st
 
 def evaluate_dir(runs_dir: Path, ids: list[str] | None, *, use_judge: bool, force_judge: bool,
                  pause: float) -> dict[str, Any]:
+    """Score every run bundle in ``runs_dir`` (optionally only ``ids``) and return the scores document. ``pause`` spaces out live judge calls."""
     be = _backends()
     wanted = {i.upper() for i in ids} if ids else None
     runs: list[tuple[int, Any]] = []
@@ -130,6 +131,7 @@ def _print_summary(scores: dict[str, Any]) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: score run bundles, write scores.json, the dashboard and the report."""
     p = argparse.ArgumentParser(description="Score run bundles and render the dashboard and report")
     p.add_argument("--runs", default="results/runs")
     p.add_argument("--ids", nargs="*")

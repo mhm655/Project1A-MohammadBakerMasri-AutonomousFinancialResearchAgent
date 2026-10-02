@@ -32,6 +32,7 @@ from config.settings import ConfigError, LLMSettings, ProviderSettings, Settings
 
 @dataclass
 class ToolCall:
+    """A tool call requested by the model."""
     id: str
     name: str
     arguments: str  # JSON text, exactly as the model produced it; the tool registry validates it
@@ -42,6 +43,7 @@ class ToolCall:
 
 @dataclass
 class TokenUsage:
+    """Token counts for one LLM call."""
     prompt_tokens: int = 0
     completion_tokens: int = 0
     #: Hidden "thinking" tokens. Billed and counted against quotas, but not part of the visible reply.
@@ -49,11 +51,13 @@ class TokenUsage:
 
     @property
     def total_tokens(self) -> int:
+        """Prompt, completion and reasoning tokens combined."""
         return self.prompt_tokens + self.completion_tokens + self.reasoning_tokens
 
 
 @dataclass
 class LLMRequest:
+    """A provider-independent chat request."""
     messages: list[dict[str, Any]]
     tools: list[dict[str, Any]] | None = None
     tool_choice: str | None = None  # "auto", "required" or "none"
@@ -66,6 +70,7 @@ class LLMRequest:
 
 @dataclass
 class LLMResponse:
+    """A provider-independent chat response, with the provider that answered and any earlier failed attempts."""
     content: str | None
     tool_calls: list[ToolCall]
     provider: str
@@ -96,6 +101,7 @@ class LLMProviderError(LLMError):
 
     @property
     def retryable(self) -> bool:
+        """Whether retrying the same provider may help."""
         return self.kind in self.RETRYABLE_KINDS
 
 
@@ -109,10 +115,12 @@ class AllProvidersFailedError(LLMError):
 
 
 class Provider(Protocol):
+    """Interface every LLM provider implements."""
     name: str
     model: str
 
-    def complete(self, request: LLMRequest) -> LLMResponse: ...
+    def complete(self, request: LLMRequest) -> LLMResponse:
+        """Send ``request`` and return the response; raises :class:`LLMProviderError` on failure."""
 
 
 # --------------------------------------------------------------------------------------------------
@@ -310,6 +318,7 @@ class OpenAICompatibleProvider:
         return [m.id.removeprefix("models/") for m in self._client.models.list()]
 
     def complete(self, request: LLMRequest) -> LLMResponse:
+        """Send ``request`` to the OpenAI-compatible chat endpoint; raises a classified :class:`LLMProviderError` on failure."""
         kwargs: dict[str, Any] = {
             "model": self.model,
             "messages": request.messages,
@@ -408,6 +417,7 @@ class AnthropicProvider:
         return "\n\n".join(system_parts), converted
 
     def complete(self, request: LLMRequest) -> LLMResponse:
+        """Send ``request`` to the Anthropic Messages API; raises a classified :class:`LLMProviderError` on failure."""
         system, messages = self.convert_messages(request.messages)
         if request.json_mode:
             system = (system + "\n\n" if system else "") + "Respond with a single JSON object and nothing else."
@@ -473,6 +483,7 @@ class MockProvider:
         self.requests: list[LLMRequest] = []
 
     def complete(self, request: LLMRequest) -> LLMResponse:
+        """Return the next scripted reply (or raise a scripted exception) and record the request."""
         self.requests.append(request)
         if self._responder is not None:
             item = self._responder(request)
@@ -509,6 +520,7 @@ class MockProvider:
 
 
 def build_provider(settings: ProviderSettings, *, timeout_s: float = 60.0) -> Provider:
+    """Build the provider matching ``settings.kind``; raises ConfigError for an unknown kind."""
     if settings.kind == "openai_compatible":
         return OpenAICompatibleProvider(settings, timeout_s=timeout_s)
     if settings.kind == "anthropic":
@@ -525,6 +537,7 @@ def build_provider(settings: ProviderSettings, *, timeout_s: float = 60.0) -> Pr
 
 @dataclass
 class UsageStats:
+    """Accumulated call, failure, token and latency counts."""
     calls: int = 0
     failures: int = 0
     prompt_tokens: int = 0
@@ -534,6 +547,7 @@ class UsageStats:
 
     @property
     def total_tokens(self) -> int:
+        """Prompt, completion and reasoning tokens combined."""
         return self.prompt_tokens + self.completion_tokens + self.reasoning_tokens
 
 
@@ -547,6 +561,7 @@ class UsageTracker:
         return self.by_model.setdefault(f"{provider}/{model}", UsageStats())
 
     def record_success(self, response: LLMResponse) -> None:
+        """Add a successful response's tokens and latency to its provider/model stats."""
         stats = self._stats(response.provider, response.model)
         stats.calls += 1
         stats.prompt_tokens += response.usage.prompt_tokens
@@ -555,9 +570,11 @@ class UsageTracker:
         stats.latency_ms += response.latency_ms
 
     def record_failure(self, provider: str, model: str) -> None:
+        """Count a failed call against ``provider``/``model``."""
         self._stats(provider, model).failures += 1
 
     def totals(self) -> UsageStats:
+        """Stats summed over all providers and models."""
         total = UsageStats()
         for s in self.by_model.values():
             total.calls += s.calls
@@ -569,6 +586,7 @@ class UsageTracker:
         return total
 
     def summary(self) -> dict[str, Any]:
+        """Per-model stats and overall totals as a plain dict, with ``total_tokens`` included."""
         rows = {k: {**vars(v), "total_tokens": v.total_tokens} for k, v in self.by_model.items()}
         t = self.totals()
         return {"by_model": rows, "total": {**vars(t), "total_tokens": t.total_tokens}}
@@ -618,6 +636,7 @@ class LLMClient:
 
     @classmethod
     def from_settings(cls, settings: Settings, *, tracer: Any = None, **overrides: Any) -> LLMClient:
+        """Build a client from ``settings`` using the configured providers; raises ConfigError if none is configured. ``overrides`` replace constructor options."""
         llm: LLMSettings = settings.llm
         configured = llm.configured_chain()
         if not configured:

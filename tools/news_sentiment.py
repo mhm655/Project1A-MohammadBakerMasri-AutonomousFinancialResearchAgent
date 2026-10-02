@@ -32,6 +32,7 @@ _HEADLINES = [
 
 
 def label(score: float) -> str:
+    """Classify a compound sentiment score as positive, negative or neutral."""
     if score >= NEUTRAL_BAND:
         return "positive"
     if score <= -NEUTRAL_BAND:
@@ -55,6 +56,7 @@ def aggregate(scores: list[float]) -> dict[str, Any]:
 
 
 def mock_news_sentiment(query: str, num_articles: int = 20, lookback_days: int = 30) -> dict[str, Any]:
+    """Deterministic mock news articles with sentiment scores for ``query``."""
     rng = seeded_rng(TOOL, query)
     articles = []
     for i in range(num_articles):
@@ -153,6 +155,7 @@ def google_news(query: str, *, lookback_days: int, limit: int) -> list[dict[str,
 
 
 def live_news_sentiment(query: str, num_articles: int = 20, lookback_days: int = 30) -> dict[str, Any]:
+    """Recent Google News headlines for ``query``, scored with VADER plus a finance vocabulary."""
     articles = google_news(query, lookback_days=lookback_days, limit=num_articles)
     for article in articles:
         article["summary"] = article["title"]

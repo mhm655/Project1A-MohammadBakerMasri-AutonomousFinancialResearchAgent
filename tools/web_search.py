@@ -46,10 +46,12 @@ def seeded_rng(*parts: object) -> random.Random:
 
 
 def slugify(text: str) -> str:
+    """Lowercase ``text`` as a hyphenated URL slug of at most 60 characters."""
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:60] or "result"
 
 
 def mock_web_search(query: str, num_results: int = 10, date_range: str | None = None) -> dict[str, Any]:
+    """Deterministic mock web results for ``query``, no older than ``date_range`` allows."""
     rng = seeded_rng(TOOL, query)
     max_age = DATE_RANGE_DAYS.get(date_range or "", 365)
     results = []
@@ -78,6 +80,7 @@ _TIMELIMIT = {"day": "d", "week": "w", "month": "m", "year": "y"}
 
 
 def live_web_search(query: str, num_results: int = 10, date_range: str | None = None) -> dict[str, Any]:
+    """Web search via DuckDuckGo back ends, falling back to Google News headlines."""
     from urllib.parse import urlparse
 
     from tools.base import ToolExecutionError

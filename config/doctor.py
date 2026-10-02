@@ -36,6 +36,7 @@ REQUIRED_PACKAGES = [
 
 @dataclass
 class Check:
+    """One environment check: its name, a status (ok, warn, fail or skip) and a human-readable detail."""
     name: str
     status: str  # "ok", "warn", "fail", "skip"
     detail: str
@@ -50,11 +51,13 @@ def _run(name: str, fn: Callable[[], tuple[str, str]]) -> Check:
 
 
 def check_python() -> tuple[str, str]:
+    """Require Python 3.11 or newer."""
     v = sys.version_info
     return ("ok" if v >= (3, 11) else "fail"), f"Python {v.major}.{v.minor}.{v.micro}"
 
 
 def check_packages() -> tuple[str, str]:
+    """Verify every package in REQUIRED_PACKAGES can be imported; list the missing ones."""
     missing = []
     for module, dist in REQUIRED_PACKAGES:
         try:
@@ -67,6 +70,7 @@ def check_packages() -> tuple[str, str]:
 
 
 def check_env_file() -> tuple[str, str]:
+    """Warn if the project has no .env file."""
     from config.settings import PROJECT_ROOT
 
     if not (PROJECT_ROOT / ".env").exists():
@@ -75,6 +79,7 @@ def check_env_file() -> tuple[str, str]:
 
 
 def check_settings() -> tuple[str, str]:
+    """Load the settings and summarise mode, data mode, provider chain and API-key presence."""
     from config.settings import load_settings
 
     s = load_settings()
@@ -86,6 +91,7 @@ def check_settings() -> tuple[str, str]:
 
 
 def check_llm_configured() -> tuple[str, str]:
+    """Check that at least one cloud LLM key is set (always ok in mock mode)."""
     from config.settings import load_settings
 
     s = load_settings()
@@ -100,6 +106,7 @@ def check_llm_configured() -> tuple[str, str]:
 
 
 def check_sec_email() -> tuple[str, str]:
+    """Warn if SEC_CONTACT_EMAIL is unset (EDGAR requires it in the User-Agent)."""
     from config.settings import load_settings
 
     s = load_settings()
@@ -109,6 +116,7 @@ def check_sec_email() -> tuple[str, str]:
 
 
 def check_registry() -> tuple[str, str]:
+    """Build the default tool registry and require at least 10 registered tools."""
     from config.settings import load_settings
     from tools import build_default_registry
 
@@ -120,6 +128,7 @@ def check_registry() -> tuple[str, str]:
 
 
 def check_vector_db(offline: bool) -> tuple[str, str]:
+    """Round-trip one record through the Chroma vector store (hashing embeddings when offline)."""
     from memory.vector_store import ChromaVectorStore
 
     model = "hashing" if offline else "default"
@@ -141,6 +150,7 @@ def check_vector_db(offline: bool) -> tuple[str, str]:
 
 
 def check_provider(name: str) -> list[Check]:
+    """Check one LLM provider: model listing, a plain completion and a full tool-call round trip. Returns one Check per step."""
     from agent.llm import LLMClient, assistant_message, build_provider, tool_result_message
     from config.settings import load_settings
     from tools import build_default_registry
@@ -226,6 +236,7 @@ def check_provider(name: str) -> list[Check]:
 
 
 def run(offline: bool = False, only_provider: str | None = None) -> list[Check]:
+    """Run every environment check and return the results; offline mode skips the live LLM provider checks."""
     checks = [
         _run("python", check_python),
         _run("packages", check_packages),
@@ -266,6 +277,7 @@ def run(offline: bool = False, only_provider: str | None = None) -> list[Check]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point; returns 1 if any check failed, else 0."""
     parser = argparse.ArgumentParser(description="Check the ARA-1 environment.")
     parser.add_argument("--offline", action="store_true", help="skip network checks")
     parser.add_argument("--provider", help="check only this LLM provider")

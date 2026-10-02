@@ -31,6 +31,7 @@ TIER_CONFIDENCE = {1: 0.95, 2: 0.85, 3: 0.70, 4: 0.60, 5: 0.30}
 
 @dataclass
 class MemoryRecord:
+    """One piece of text to store in the vector store, with its metadata."""
     content: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -186,6 +187,7 @@ def _prefixed_chunks(prefix: str, text: str) -> list[str]:
 
 
 def chunk_news(data: dict[str, Any], base: dict[str, Any]) -> list[MemoryRecord]:
+    """One record per news article, carrying its headline, source, date, URL and sentiment score."""
     records = []
     for article in data.get("articles", []):
         text = (f"News ({article.get('source') or 'unknown source'}, {article.get('published') or 'undated'}): "

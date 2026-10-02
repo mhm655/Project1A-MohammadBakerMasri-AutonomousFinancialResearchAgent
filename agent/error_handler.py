@@ -130,6 +130,7 @@ class RetryPolicy:
     max_delay_s: float = 60.0
 
     def retries_for(self, error_class: str) -> int:
+        """Maximum retries for ``error_class``: ``max_retries`` for transient and rate-limited errors, 1 for timeouts and malformed output, otherwise 0."""
         if error_class in (TRANSIENT, RATE_LIMITED):
             return self.max_retries
         if error_class in (TIMEOUT, MALFORMED):
@@ -279,6 +280,7 @@ class ResilientDispatcher:
         return getattr(self._local, "attempts", [])
 
     def call(self, tool: str, args: dict[str, Any]) -> ToolResult:
+        """Call ``tool`` with retries and the fallback chain; raises ``AllFallbacksFailed`` when nothing succeeds, or the original error for invalid arguments."""
         attempts: list[Attempt] = []
         self._local.attempts = attempts
 
@@ -465,6 +467,7 @@ class FailureInjector:
         return cls(rate=rate, seed=seed)
 
     def maybe_fail(self, tool: str) -> None:
+        """Raise a simulated failure (timeout, HTTP 503 or malformed output) for network tools at the configured rate; local tools never fail."""
         if provider_for(tool) is None:
             return
         rate = self.per_tool.get(tool, self.rate)

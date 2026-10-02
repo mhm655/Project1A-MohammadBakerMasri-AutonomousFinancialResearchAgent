@@ -57,6 +57,7 @@ def count_tokens(text: str) -> int:
 
 @dataclass
 class FittedContext:
+    """Evidence rendered to fit a token budget: the text, the ids included and dropped, and the token count."""
     text: str
     included: list[str] = field(default_factory=list)
     dropped: list[str] = field(default_factory=list)

@@ -35,6 +35,7 @@ class ConfigError(ValueError):
 
 @dataclass(frozen=True)
 class ProviderSettings:
+    """Settings for one LLM provider. ``api_key_env`` names the environment variable holding its key (empty = no key needed); ``api_key`` is the value read from it."""
     name: str
     kind: str
     model: str
@@ -50,6 +51,7 @@ class ProviderSettings:
 
     @property
     def needs_key(self) -> bool:
+        """True if the provider requires an API key (``api_key_env`` is set)."""
         return bool(self.api_key_env)
 
     @property
@@ -60,6 +62,7 @@ class ProviderSettings:
 
 @dataclass(frozen=True)
 class LLMSettings:
+    """LLM settings: the provider fallback order, per-provider settings and shared request defaults."""
     provider_order: tuple[str, ...]
     providers: dict[str, ProviderSettings]
     temperature: float = 0.0
@@ -72,11 +75,13 @@ class LLMSettings:
         return [self.providers[name] for name in self.provider_order]
 
     def configured_chain(self) -> list[ProviderSettings]:
+        """Providers in fallback order, keeping only those that are configured."""
         return [p for p in self.chain() if p.is_configured]
 
 
 @dataclass(frozen=True)
 class PathSettings:
+    """Filesystem locations for data, the Chroma store, the episodic database and traces."""
     data_dir: Path
     chroma_dir: Path
     episodic_db: Path
@@ -85,6 +90,7 @@ class PathSettings:
 
 @dataclass(frozen=True)
 class AgentSettings:
+    """Agent loop limits (tool calls, replans, reflections) and synthesis prompt-token budgets."""
     max_tool_calls: int = 20
     max_calls_per_step: int = 3
     max_replans: int = 3
@@ -105,6 +111,7 @@ class AgentSettings:
 
 @dataclass(frozen=True)
 class RetrySettings:
+    """Retry backoff parameters: base delay, maximum retries and maximum jitter."""
     base_delay_s: float = 1.0
     max_retries: int = 5
     max_jitter_s: float = 0.5
@@ -112,6 +119,7 @@ class RetrySettings:
 
 @dataclass(frozen=True)
 class MemorySettings:
+    """Vector-memory settings: the Chroma collection name prefix and the embedding model."""
     collection_prefix: str = "ara_findings"
     embedding_model: str = "default"
 
@@ -133,6 +141,7 @@ class ResilienceSettings:
     fail_tools: tuple[str, ...] = ()
 
     def breaker_config(self) -> Any:
+        """Build the circuit-breaker configuration from these settings."""
         from agent.circuit_breaker import BreakerConfig
 
         return BreakerConfig(consecutive_failures=self.consecutive_failures, window=self.window,
@@ -143,11 +152,13 @@ class ResilienceSettings:
 @dataclass(frozen=True)
 class SynthesisSettings:
     #: Base weight of source tiers 1-5 (spec A6.2 with the corrected order, architecture section 12.3).
+    """Report-synthesis settings: source-tier reliability weights and the synthesis brief size."""
     tier_weights: tuple[float, ...] = (0.95, 0.85, 0.70, 0.60, 0.30)
     #: Budget of the synthesis brief (resolved figures, conflicts, narrative threads) in the writer prompt.
     brief_tokens: int = 900
 
     def reliability(self) -> Any:
+        """Build the conflict resolver's reliability configuration from the tier weights."""
         from synthesis.conflict_resolver import ReliabilityConfig
 
         return ReliabilityConfig(weights={tier: w for tier, w in enumerate(self.tier_weights, start=1)})
@@ -155,6 +166,7 @@ class SynthesisSettings:
 
 @dataclass(frozen=True)
 class SecSettings:
+    """SEC EDGAR access settings: application name, contact email and request rate limit."""
     app_name: str
     contact_email: str | None
     max_requests_per_second: int = 8
@@ -169,6 +181,7 @@ class SecSettings:
 
 @dataclass(frozen=True)
 class Settings:
+    """The complete, immutable application configuration, grouping all the settings sections."""
     mode: str
     data_mode: str
     llm: LLMSettings

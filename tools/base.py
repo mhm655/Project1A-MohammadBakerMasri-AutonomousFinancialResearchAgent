@@ -87,6 +87,7 @@ class UnlockRule:
     after_challenge: int
 
     def is_met(self, completed_challenges: int) -> bool:
+        """True once at least ``after_challenge`` challenges have been completed."""
         return completed_challenges >= self.after_challenge
 
 

@@ -56,5 +56,9 @@ line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "UP"]
-ignore = ["E501"]
+select = ["E", "F", "W", "I", "B", "UP", "D1"]
+# D107/D105: constructor arguments are documented in the class docstring instead.
+ignore = ["E501", "D107", "D105"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D1"]

@@ -79,6 +79,7 @@ _TIME_QUESTION = "Which period should the research cover (the latest quarter, th
 
 @dataclass
 class Disambiguation:
+    """How an ambiguous request was handled: ambiguity ``level``, how it is read, assumptions made, clarifying questions, tickers, timeframe, themes and ``mode``."""
     level: str
     proceed_reading: str
     assumptions: list[str] = field(default_factory=list)
@@ -111,6 +112,7 @@ def _questions(profile: QueryProfile, has_aspect: bool, has_period: bool) -> lis
 
 
 def disambiguate(profile: QueryProfile, *, today: date, mode: str = "autonomous") -> Disambiguation:
+    """Decide how to proceed for ``profile``: proceed as stated (low ambiguity), ask for clarification (high ambiguity in interactive mode), or proceed with stated assumptions."""
     timeframe, tf_assumed = _timeframe(profile, today)
     level = profile.ambiguity_level
     has_aspect = not any("no explicit aspect" in s for s in profile.signals)
@@ -177,6 +179,7 @@ def render_assumptions(d: Disambiguation) -> str:
 
 @dataclass
 class CoverageFlag:
+    """A coverage limitation for one entity (private company, recent IPO or non-US filer) with a user-facing message and confidence note."""
     kind: str  # private_company | recent_ipo | non_us_filer
     entity: str
     message: str
@@ -185,6 +188,7 @@ class CoverageFlag:
 
 @dataclass
 class TemporalFlag:
+    """A recent event for an entity (from news or an 8-K) that the report should flag as time-sensitive."""
     entity: str
     event: str
     evidence_id: str
@@ -219,6 +223,7 @@ def _period_label(row: dict[str, Any]) -> str:
 
 
 def coverage_flags(evidence: dict[str, ToolResult], failures: list[tuple[str, dict, str]]) -> list[CoverageFlag]:
+    """Derive coverage flags from tool failures and evidence, at most one per kind and entity."""
     flags: list[CoverageFlag] = []
     seen: set[tuple[str, str]] = set()
 
@@ -330,6 +335,7 @@ def _about_other_company(entity: str, text: str) -> bool:
 
 
 def rate_of_change_flags(evidence: dict[str, ToolResult], *, today: date, lookback_days: int = 60) -> list[TemporalFlag]:
+    """Find events from the last ``lookback_days`` in news, web and 8-K evidence; deduplicated per entity and event, newest first."""
     cutoff = today - timedelta(days=lookback_days)
     found: list[TemporalFlag] = []
 
@@ -374,6 +380,7 @@ def rate_of_change_flags(evidence: dict[str, ToolResult], *, today: date, lookba
 
 
 def render_temporal_flags(flags: list[TemporalFlag]) -> str:
+    """Render temporal flags as a Markdown note, or an empty string when there are none."""
     if not flags:
         return ""
     lines = ["**Temporal sensitivity:** recent events may be changing the picture quickly. "

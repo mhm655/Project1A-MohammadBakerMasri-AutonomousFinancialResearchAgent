@@ -70,6 +70,7 @@ class DiskCache:
         return self.dir / f"{digest}.json", self.dir / f"{digest}.body"
 
     def get(self, key: str, ttl_s: float) -> bytes | None:
+        """Cached body for ``key`` if present and younger than ``ttl_s`` seconds, else None."""
         meta_path, body_path = self._paths(key)
         try:
             meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -80,12 +81,14 @@ class DiskCache:
             return None
 
     def put(self, key: str, body: bytes) -> None:
+        """Write ``body`` and its timestamp metadata under ``key``."""
         meta_path, body_path = self._paths(key)
         body_path.write_bytes(body)
         meta_path.write_text(json.dumps({"key": key, "stored_at": self._clock(), "bytes": len(body)}), encoding="utf-8")
 
 
 class HttpClient:
+    """HTTP client with per-host rate limiting, retries with backoff, and an optional disk cache. ``sec_user_agent`` is the User-Agent required for SEC hosts; ``rate_limits`` maps host to requests per second; ``transport`` and ``sleep`` can be replaced in tests."""
     def __init__(
         self,
         *,
@@ -173,6 +176,7 @@ class HttpClient:
         raise ToolExecutionError(f"{host}: {last_error} after {self.max_retries + 1} attempts", retryable=True)
 
     def get_json(self, url: str, **kwargs: Any) -> Any:
+        """GET ``url`` and parse the response as JSON; raises a retryable ToolExecutionError on invalid JSON."""
         body = self.get(url, **kwargs)
         try:
             return json.loads(body)

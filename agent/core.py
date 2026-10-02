@@ -207,6 +207,7 @@ VERIFY_LIMITS = {"sec_filing_search": 400_000, "earnings_transcript": 250_000}
 
 
 def verification_text(result: ToolResult) -> str:
+    """Evidence text for ``result`` shown to the claim verifier, truncated to the per-tool limit in ``VERIFY_LIMITS`` (6000 characters by default)."""
     return evidence_digest(result, VERIFY_LIMITS.get(result.tool, 6000))
 
 
@@ -293,6 +294,7 @@ SOURCE_TYPES = {
 
 
 def source_entry(result: ToolResult) -> dict[str, Any]:
+    """Source-list entry (id, title, source type, date, mock flag and optional URL) for a tool result."""
     args = ", ".join(f"{v}" for v in result.args.values() if not isinstance(v, (dict, list)))[:80]
     data = result.data
     if result.tool == "earnings_transcript" and data.get("quarter"):
@@ -318,6 +320,7 @@ def source_entry(result: ToolResult) -> dict[str, Any]:
 
 
 class ResearchState(TypedDict, total=False):
+    """LangGraph state passed between the research nodes; all keys are optional."""
     query: str
     profile: QueryProfile
     memory_notes: str
@@ -334,6 +337,7 @@ class ResearchState(TypedDict, total=False):
 
 @dataclass
 class ResearchResult:
+    """Outcome of one research run: the report and its sections, plan, evidence, gaps, verification, usage and trace location."""
     session_id: str
     query: str
     template: str
@@ -395,6 +399,7 @@ class ResearchAgent:
 
     @classmethod
     def from_settings(cls, settings: Settings, **overrides: Any) -> ResearchAgent:
+        """Build an agent from ``settings``; ``overrides`` replace any constructor option (``llm`` supplies the client, ``memory`` the memory manager)."""
         options: dict[str, Any] = {"agent_settings": settings.agent, "traces_dir": str(settings.paths.traces_dir),
                                    "synthesis_settings": settings.synthesis, "resilience_settings": settings.resilience,
                                    "retry_settings": settings.retry}
@@ -409,6 +414,7 @@ class ResearchAgent:
     # ------------------------------------------------------------------ public API
 
     def run(self, query: str) -> ResearchResult:
+        """Execute the full research flow for ``query`` and return the :class:`ResearchResult`; also writes the trace and records the episode in memory."""
         started = self._clock()
         self._deadline = started + self.max_seconds
         # Keep time to write the report with whatever was gathered: a quarter of the budget, at

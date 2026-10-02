@@ -143,6 +143,7 @@ def _modes(runs: list[dict[str, Any]]) -> str:
 
 # --------------------------------------------------------------------------- HTML
 def render_html(scores: dict[str, Any]) -> str:
+    """Render the evaluation scores as a self-contained HTML dashboard."""
     esc = html.escape
     runs = scores.get("runs", [])
     summary = scores.get("summary", {})
@@ -223,6 +224,7 @@ def _md(text: Any) -> str:
 
 
 def render_markdown(scores: dict[str, Any], existing: str | None = None) -> str:
+    """Render the evaluation scores as the Markdown report; ``existing`` is the previous report text, if any."""
     runs = scores.get("runs", [])
     summary = scores.get("summary", {})
     lines: list[str] = [
@@ -300,6 +302,7 @@ def write_outputs(scores: dict[str, Any], html_path: Path, report_path: Path) ->
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: re-render the dashboard and report from a scores.json file."""
     p = argparse.ArgumentParser(description="Re-render the dashboard and report from scores.json")
     p.add_argument("scores", nargs="?", default="results/eval/scores.json")
     p.add_argument("--dashboard", default="results/evaluation_dashboard.html")

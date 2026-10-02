@@ -28,6 +28,7 @@ def _check_period(quarter: str | None, year: int | None) -> None:
 
 
 def mock_earnings_transcript(ticker: str, quarter: str | None = None, year: int | None = None) -> dict[str, Any]:
+    """Earnings transcript from bundled mock data; the latest reported quarter when ``quarter`` is omitted."""
     ticker = ticker.upper()
     _check_period(quarter, year)
     if quarter is None:
@@ -96,6 +97,7 @@ RELEASE_WINDOW_DAYS = (5, 80)
 
 
 def live_earnings_transcript(ticker: str, quarter: str | None = None, year: int | None = None) -> dict[str, Any]:
+    """Earnings transcript for a quarter (latest when omitted), falling back to the press release if no transcript is found."""
     ticker = ticker.upper()
     _check_period(quarter, year)
     latest_note = None

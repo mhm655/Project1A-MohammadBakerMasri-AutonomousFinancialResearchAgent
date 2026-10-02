@@ -14,6 +14,7 @@ from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Command-line entry point: run one research query and write or print the Markdown report; returns the exit code."""
     parser = argparse.ArgumentParser(prog="python -m agent", description="Run an ARA-1 research task.")
     parser.add_argument("query", help="the research request")
     parser.add_argument("--out", help="write the report to this Markdown file")
