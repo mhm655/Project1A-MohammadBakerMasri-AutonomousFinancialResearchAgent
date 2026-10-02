@@ -8,12 +8,12 @@ Reproduce: `python -m evaluation.runner --data live --out-dir results/runs_day13
 
 ## Summary
 
-- Pass rate over 23 metrics x 8 challenges: **53% (Day 11) -> 61% (Day 13)**.
+- Pass rate over 23 metrics x 8 challenges: **53% (Day 11, 93 of 174 measured) -> 61% (Day 13, 103 of 169 measured)**. Fewer metrics were measurable on Day 13 (for example AB-2 needs a tool error, and fewer runs had one).
 - Memory Utilization (AB-4) passes in 7 of 8 runs, up from 1 of 8 (mean 0.29 -> 0.60).
 - Forward-Looking Analysis (AD-4): 7 sections in total, up from 4; 2 of 8 reports meet the target of 2, up from 1.
 - Tool Efficiency (AB-1) mean 0.70 -> 0.72; 5 of 8 runs pass, up from 4.
-- Total live LLM tokens 257,229 -> 150,656 and LLM calls 78 -> 37. Mock tokens for the same eight challenges: 132,856 -> 92,055 (-30.7%).
-- Regressions: Temporal Accuracy (FA-3) 8/8 -> 4/8 and Executive Summary Quality (CS-3) 3/8 -> 0/8. Both are probably linked to the new forward-looking text (see below).
+- Total live LLM tokens 257,229 -> 150,656 (prompt + completion; with reasoning tokens 260,476 -> 152,238, the basis used in `results/token_usage_analysis.md`) and LLM calls 78 -> 37. Mock tokens for the same eight challenges: 132,856 -> 92,055 (-30.7%).
+- Regressions: Temporal Accuracy (FA-3) 8/8 -> 4/8 and Executive Summary Quality (CS-3) 3/8 -> 0/8, probably linked to the new forward-looking text; C7 lost its cross-source synthesis (AD-2 9 -> 0) and most calculations (AD-3 20 -> 2) (see below).
 
 ## Providers (this confounds the comparison)
 
@@ -137,7 +137,7 @@ Mock data and a scripted LLM (see `docs/optimization_log.md`, "How the numbers w
 
 - **Memory Utilization (AB-4):** 0.29 -> 0.60, 7 of 8 passing. Cause: section-targeted recall (M1). The gain is in recalls with results; external calls did not fall. C6 stays at 0 because memory has nothing on the banks.
 - **Tokens and calls (live):** 257,229 -> 150,656 tokens, 78 -> 37 LLM calls. Contributors: one tool schema per execute call (T1), skipped reviews (T3, T4), and fewer repair calls (Day 12 reference resolver). Provider mix also differs, so the live figure is indicative; the mock figure (-30.7%) isolates the Day 13 changes.
-- **C7 (cross-memory):** all 16 planned steps done, none skipped (Day 11: 11 of 25 skipped); 71,351 -> 28,447 tokens; 23 -> 4 LLM calls (P2, tool descriptions).
+- **C7 (cross-memory), process only:** all 16 planned steps done, none skipped (Day 11: 11 of 25 skipped); 71,351 -> 28,447 tokens; 23 -> 4 LLM calls (P2, tool descriptions). The report itself did not improve: see "What regressed".
 - **Citation Accuracy (FA-2):** 4/8 -> 7/8. Cross-Source Synthesis (AD-2): 4/8 -> 7/8. Data Source Diversity (CO-2): 4/8 -> 6/8. These were not targets; they may reflect the provider mix and judge variance.
 - **Forward-Looking Analysis (AD-4):** 4 -> 7 sections in total (P1). C2 reaches 2 (executive summary and guidance and outlook). Five of eight reports now have at least one such section (Day 11: three); six still miss the target of 2.
 - **Planning Quality (AB-3):** 5 of 8 -> 6 of 8 passing. C6 rose from 2 to 4; C7 stays at 2; C5 fell from 5 to 4.
@@ -149,7 +149,9 @@ Mock data and a scripted LLM (see `docs/optimization_log.md`, "How the numbers w
 - **Executive Summary Quality (CS-3): 3/8 -> 0/8** (mean 3.38 -> 3.00); **Logical Flow (CS-1): 4/8 -> 2/8.** The forward view was asked for in two sections, usually the executive summary. The judge may score longer summaries lower. Judge scores move by a point between runs of the same bundle, so these are small differences.
 - **Tool Efficiency (AB-1)** fell in C4 (0.59 -> 0.50), C7 (0.47 -> 0.44) and C8 (0.62 -> 0.40). C8 had two calculation steps skipped and a review skipped for lack of a provider.
 - **Numerical Accuracy (FA-1)** fell in C5 (1.00 -> 0.96) and C6 (0.96 -> 0.88). Hallucination Rate (FA-5) mean 0.25 -> 0.38. Both are within the range seen between providers; no cause was isolated.
-- **Quantitative Reasoning (AD-3)** rose in the mean (5.5 -> 8.1) but fell to 2 in C7, where fewer calculations ran.
+- **C7 analysis: passed 11/22 -> 10/20; Cross-Source Synthesis (AD-2) 9 -> 0; Quantitative Reasoning (AD-3) 20 -> 2.** The new plan used only three tools (company_profile, financial_data_api and earnings_transcript, 16 steps) and no calculation, filing, news or peer step, so there was little to combine or compute. The synthesis prompt also left 10 of 38 evidence items out (6,000-token cap on Groq). The plan became runnable but narrower.
+- **Quantitative Reasoning (AD-3)** rose in the mean (5.5 -> 8.1), driven by C3 and C8.
+- **Reviews skipped while providers were briefly rate-limited (T4):** C4 and C8 skipped a review because every provider was cooling down at that moment, including short 30-second rate-limit cooldowns, not only exhausted quotas. In C8, two calculation steps that a review might have retried stayed skipped.
 
 ## Remaining limitations
 

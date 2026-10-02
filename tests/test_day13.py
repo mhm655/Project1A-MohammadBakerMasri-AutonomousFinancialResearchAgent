@@ -10,7 +10,7 @@ from test_core import QUERY, ScriptedLLM, make_agent
 
 from agent import core, prompts
 from agent.llm import AllProvidersFailedError, LLMClient, LLMProviderError, MockProvider
-from agent.parser import PlanStep
+from agent.parser import Plan, PlanStep
 from config.settings import AgentSettings, load_settings
 from memory.vector_store import DEFAULT_STORE
 from tools import build_default_registry
@@ -53,16 +53,18 @@ def test_execute_call_carries_only_the_planned_tools_schema():
 
 
 def test_unknown_planned_tool_falls_back_to_all_schemas():
-    plan = {"steps": [{"id": "s1", "goal": "x", "tool": "financial_data_api", "args": None}]}
-    script = Recording(plan=json.dumps(plan))
+    script = Recording()
     agent = make_agent(script)
-    agent.registry = build_default_registry("mock")
-    agent.llm.tracer = None
-    # a step whose tool has no schema among the research tools (here: unknown) gets every schema
-    step = PlanStep(id="s9", goal="g", tool="no_such_tool", args=None)
+    agent.run(QUERY)  # sets up the registry, deadlines and budget
+    agent._deadline = agent._research_deadline = agent._clock() + 300
+    agent.budget_used = 0
+    script.execute_requests.clear()
+    # a step whose tool has no schema among the research tools gets every schema, and no "other tools" line
+    step = PlanStep(id="s9", goal="Get Microsoft revenue", tool="no_such_tool", args=None)
+    agent._run_step(step, Plan(steps=[step]))
     research = [t for t in agent.registry.openai_tools() if t["function"]["name"] not in core.SYSTEM_TOOLS]
-    tools = [t for t in research if t["function"]["name"] == step.tool] or research
-    assert tools is research and len(tools) > 1
+    assert script.execute_requests and len(script.execute_requests[0].tools) == len(research) > 1
+    assert "Other research tools" not in script.execute_requests[0].messages[-1]["content"]
 
 
 def test_execute_prompt_lists_other_tools_only_when_given():
@@ -107,6 +109,39 @@ def test_synthesis_budget_is_traced_with_the_provider(tmp_path):
     result = agent.run(QUERY)
     budget = next(e for e in _events(result) if e["type"] == "metric" and e["name"] == "synthesis_prompt_budget")
     assert budget["value"]["provider"] == "mock" and budget["value"]["budget_tokens"] == 10800
+
+
+class FailFirstSynthesis(ScriptedLLM):
+    """The large-context provider fails on the first synthesis call (for example its quota runs out)."""
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.synth_prompts = []
+
+    def __call__(self, request):
+        prompt = request.messages[-1]["content"]
+        if "[ARA:SYNTHESIZE]" in prompt:
+            self.synth_prompts.append(prompt)
+            if len(self.synth_prompts) == 1:
+                raise LLMProviderError("mock", "bad_request", "request too large")
+        return super().__call__(request)
+
+
+def test_synthesis_retries_with_the_default_budget_when_a_large_budget_call_fails(tmp_path):
+    script = FailFirstSynthesis()
+    agent = make_agent(script, traces_dir=str(tmp_path),
+                       agent_settings=AgentSettings(prompt_tokens_by_provider={"mock": 24000}))
+    result = agent.run(QUERY)
+    assert len(script.synth_prompts) == 2 and result.sections  # the report was still written
+    notes = [e.get("text", "") for e in _events(result) if e["type"] == "note"]
+    assert any("retrying with the default 5400-token budget" in n for n in notes)
+
+
+def test_synthesis_failure_with_the_default_budget_is_not_retried(tmp_path):
+    script = FailFirstSynthesis()
+    result = make_agent(script, traces_dir=str(tmp_path)).run(QUERY)  # mock uses the default cap
+    assert len(script.synth_prompts) == 1 and not result.sections
+    assert any("could not be written" in g for g in result.gaps)
 
 
 # ---------------------------------------------------------------------------------------------- T3 / T4
@@ -251,15 +286,40 @@ def test_targeted_recall_dedupes_hits_across_searches(monkeypatch):
     assert out["memory_notes"].count("Microsoft business overview") == 1
 
 
+# Five records close to the query fill the query-wide top 5; two short ones match only a section topic.
+EIGHT = [f"comprehensive profile Microsoft Corporation key executives recent developments {i}" for i in range(5)] + [
+    "business overview", "financial summary"]
+
+
 def test_targeted_recall_applies_the_relevance_floor(monkeypatch):
-    _seed(DEFAULT_STORE, "MSFT", ["Microsoft business overview segments cloud products customers"])
-    low, agent_low = _recall(make_agent(ScriptedLLM()), monkeypatch, 0.0)
-    DEFAULT_STORE.clear()
-    _seed(DEFAULT_STORE, "MSFT", ["Microsoft business overview segments cloud products customers"])
-    high, agent_high = _recall(make_agent(ScriptedLLM()), monkeypatch, 0.99)
-    assert len(agent_low.evidence) >= len(agent_high.evidence) >= 1  # the query-wide search keeps its hits
-    assert all(call.tool == "vector_db_search" for call in agent_high.registry.call_log) \
-        if hasattr(agent_high.registry, "call_log") else True
+    _seed(DEFAULT_STORE, "MSFT", EIGHT)
+    _, agent_low = _recall(make_agent(ScriptedLLM()), monkeypatch, 0.0)
+    _, agent_high = _recall(make_agent(ScriptedLLM()), monkeypatch, 0.99)
+    assert len(agent_high.evidence) == 1  # the floor removes every targeted hit; the query-wide search stays
+    assert len(agent_low.evidence) > 1
+
+
+def test_query_wide_recall_keeps_hits_with_a_negative_score(monkeypatch):
+    # Cosine similarity can be below zero; the query-wide search had no floor before Day 13 and has none now.
+    agent = make_agent(ScriptedLLM())
+    real = build_default_registry("mock")
+    hit = {"id": "r1", "content": "Microsoft note", "score": -0.05, "metadata": {"date": "2025-01-01"}}
+
+    class Stub:
+        def __getattr__(self, name):
+            return getattr(real, name)
+
+        def dispatch(self, name, args):
+            result = real.dispatch(name, args)
+            return result if args["query"] != QUERY else core.dataclasses.replace(
+                result, data={**result.data, "results": [hit]})
+
+    monkeypatch.setattr(core, "RECALL_MIN_SCORE", 0.3)
+    agent.registry = Stub()
+    agent.tracer = core.TraceLogger()
+    agent.evidence = {}
+    out = agent._node_recall({"query": QUERY, "profile": core.analyze_query(QUERY)})
+    assert "Microsoft note" in out["memory_notes"]
 
 
 def test_recall_makes_only_local_memory_calls_and_skips_companies_with_no_memory(monkeypatch):

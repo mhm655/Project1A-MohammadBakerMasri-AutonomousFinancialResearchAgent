@@ -608,7 +608,8 @@ class ResearchAgent:
             top_k = 5 if len(targets) <= 2 else 3
             # The query-wide search first, then section-targeted ones (local searches: no API cost). The
             # targeted ones keep only hits above a relevance floor so they add findings, not noise.
-            queries = [(state["query"][:400], 0.0, top_k)] + [
+            # No floor on the query-wide search (cosine scores can be negative): it keeps its pre-Day-13 behaviour.
+            queries = [(state["query"][:400], float("-inf"), top_k)] + [
                 (f"{ticker} {t}" if ticker else t, RECALL_MIN_SCORE, min(top_k, 3)) for t in topics]
             for n, (query, floor, k) in enumerate(queries):
                 args: dict[str, Any] = {"query": query, "top_k": k}
@@ -868,8 +869,23 @@ class ResearchAgent:
         try:
             reply = self._llm(prompt, purpose="synthesize", writing=True, reasoning_effort="low", max_tokens=6000)
         except LLMError as exc:
-            self.gaps.append(f"The report text could not be written: {str(exc)[:200]}")
-            return {"sections": {}}
+            small = self.cfg.prompt_budget(None)
+            if budget <= small:
+                self.gaps.append(f"The report text could not be written: {str(exc)[:200]}")
+                return {"sections": {}}
+            # The prompt was sized for a large-context provider that then failed; the fallback (Groq's free
+            # tier) rejects a prompt that big. Re-fit the evidence to the default cap and try once more.
+            self.tracer.log("note", text=f"Synthesis failed with a {budget}-token budget for {provider}; "
+                                         f"retrying with the default {small}-token budget")
+            fitted = fit_evidence(self.evidence, max(300, small - overhead), evidence_digest)
+            prompt = prompts.synthesize_prompt(query=state["query"], evidence=fitted.text,
+                                               sections=sections_needed, brief=brief)
+            try:
+                reply = self._llm(prompt, purpose="synthesize:refit", writing=True, reasoning_effort="low",
+                                  max_tokens=6000)
+            except LLMError as exc2:
+                self.gaps.append(f"The report text could not be written: {str(exc2)[:200]}")
+                return {"sections": {}}
         sections = parse_sections(reply.content, sections_needed)
         # A fallback model with a small output cap (Groq's Qwen: 1,000 tokens) stops mid-report; Day 12
         # reruns lost 2-4 sections that way. Ask it to carry on: the cut section is rewritten in full.

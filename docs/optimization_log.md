@@ -91,6 +91,7 @@ Misses in the Day 11 bundles (`results/runs/C*.json`) and scores (`results/eval/
 | 800 chars, 150 overlap | 42% | 50% |
 
 - **Change.** `memory/chunking.py` `MAX_CHARS` 1500 -> 500. The default embedding model reads at most about 256 tokens (about 1,000 characters), so the tail of a 1,500-character chunk is not embedded; this is a likely reason for the gain. 350 characters and overlap scored higher still but 350 chunks stop standing alone, and overlap needs changes in every chunker; both are left as options.
+- **Caveats on the probe.** A probe is an exact phrase, and a hit means a retrieved chunk contains it. Smaller chunks are favoured by construction, because the phrase is a larger share of a short chunk's embedding; a phrase split across two smaller chunks counts as a miss, which works the other way. The sample is small: the same 1,500-character baseline scored 25% hit@3 on 24 probes and 35% on 48. The gain is therefore indicative. It was not checked end to end, and none of the Day 13 live AB-4 gain comes from chunk size, because the stored chunks were not re-ingested.
 - **Relevance floor (negative result).** For "<TICKER> <topic>" queries (210 hits), the share of keyword-relevant hits was 62% at floors 0.00-0.30, 63% at 0.35-0.40 and 61% at 0.50, while the share of hits kept fell from 100% to 63%. The floor does not separate relevant from irrelevant hits by this proxy. 0.30 was kept as a guard against near-zero matches; it removes 3% of hits.
 - **Alpha.** The architecture specification asked whether α of a hybrid re-ranker needs tuning. No hybrid re-ranker exists in the code, so there is no α. The open-question marker was updated.
 - **Side effects.** New chunks are about 3x smaller and more numerous (5,469 against 2,387 for the same text). Chunks already in the store stay at their old size until re-ingested. Two unit tests that call `split_paragraphs` on text written for 1,500-character chunks now pass `1500` explicitly (`tests/test_memory.py`).
@@ -98,6 +99,13 @@ Misses in the Day 11 bundles (`results/runs/C*.json`) and scores (`results/eval/
 ### Fix found on the way
 
 `_node_execute` raised `ValueError: max_workers must be greater than 0` when no step was ready (an empty plan on a cross-memory query with no recalled company). The guard is now `len(ready) <= 1`.
+
+### Debugging pass (after the first Day 13 commit)
+
+- **Synthesis on a large-context budget had no fallback.** T2 sizes the prompt for the provider that will be tried first. If Gemini then failed (for example its quota ran out during the call), the next provider in the chain, Groq's free tier, received a prompt of up to 21,600 tokens and rejected it, so no report was written. Now a failed synthesis call made with a budget above the default is retried once, with the evidence re-fitted to the default cap (`agent/core.py` `_node_synthesize`; purpose `synthesize:refit`).
+- **The query-wide recall gained a floor by accident.** M1 gave the original query-wide memory search a floor of 0.0. Cosine scores range from -1 to 1, so hits with a slightly negative score, which were kept before Day 13, were dropped. The query-wide search now has no floor; only the targeted searches use `RECALL_MIN_SCORE`.
+- **Tests.** `test_unknown_planned_tool_falls_back_to_all_schemas` re-implemented the fallback in the test instead of calling the agent; it now runs `_run_step`. The relevance-floor test could not fail (`>=` checks and an assertion that fell back to `True`); it now seeds records that only the targeted searches can find. New tests cover the synthesis re-fit, the no-retry case and the negative-score hit.
+- **Report corrections.** Pass-rate denominators (174 and 169 measured), the token basis (reasoning tokens excluded), the C7 analysis regression (AD-2 9 -> 0, AD-3 20 -> 2) and the T4 review skips during short rate-limit cooldowns (C4, C8) are now stated in `results/evaluation_report_v2.md`.
 
 ## Summary
 
@@ -113,4 +121,4 @@ Misses in the Day 11 bundles (`results/runs/C*.json`) and scores (`results/eval/
 | M1 | Section-targeted recall | AB-4 0.29, 1 of 8 passing | AB-4 0.60, 7 of 8 passing |
 | M2 | Chunk size 500 | hit@3 35% | hit@3 52%; floor made no difference |
 
-Mock total tokens for eight challenges: 132,856 -> 92,055 (-30.7%); LLM calls 52 -> 44. Live total tokens: 257,229 -> 150,656; LLM calls 78 -> 37 (different providers and the Day 12 reference resolver also contribute).
+Mock total tokens for eight challenges: 132,856 -> 92,055 (-30.7%); LLM calls 52 -> 44. Live total tokens (prompt + completion): 257,229 -> 150,656, or 260,476 -> 152,238 with reasoning tokens as in `results/token_usage_analysis.md`; LLM calls 78 -> 37 (different providers and the Day 12 reference resolver also contribute).
