@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 MAX_CHARS = 500  # about 125 tokens; Day 13 probe: hit@3 35% -> 52% versus 1500 (results/runs_day13/memory_probe.md)
@@ -190,9 +191,15 @@ def chunk_news(data: dict[str, Any], base: dict[str, Any]) -> list[MemoryRecord]
     """One record per news article, carrying its headline, source, date, URL and sentiment score."""
     records = []
     for article in data.get("articles", []):
+        # A null score or an unparseable date must not abort the whole ingest (one bad article would lose the batch).
         text = (f"News ({article.get('source') or 'unknown source'}, {article.get('published') or 'undated'}): "
-                f"{article['title']} [sentiment {article.get('sentiment_score', 0):+.2f}]")
-        meta = {**base, "date": article.get("published") or base["date"], "source_url": article.get("url", "")}
+                f"{article['title']} [sentiment {article.get('sentiment_score') or 0:+.2f}]")
+        published = article.get("published")
+        try:
+            date.fromisoformat(str(published)[:10])
+        except ValueError:
+            published = None
+        meta = {**base, "date": published or base["date"], "source_url": article.get("url", "")}
         records.append(MemoryRecord(text, meta))
     return records
 

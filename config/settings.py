@@ -239,9 +239,9 @@ def load_settings(
         data_mode=data_mode,
         llm=_llm_settings(raw.get("llm", {}), mode, env),
         paths=_path_settings(raw.get("paths", {}), project_root, env),
-        agent=AgentSettings(**raw.get("agent", {})),
-        retry=RetrySettings(**raw.get("retry", {})),
-        memory=MemorySettings(**raw.get("memory", {})),
+        agent=_section(AgentSettings, "agent", raw.get("agent", {})),
+        retry=_section(RetrySettings, "retry", raw.get("retry", {})),
+        memory=_section(MemorySettings, "memory", raw.get("memory", {})),
         sec=SecSettings(
             app_name=raw.get("sec", {}).get("app_name", "ARA-1 Research Agent"),
             contact_email=env.get("SEC_CONTACT_EMAIL") or None,
@@ -252,6 +252,14 @@ def load_settings(
         synthesis=_synthesis_settings(raw.get("synthesis", {})),
         resilience=_resilience_settings(raw.get("resilience", {}), env),
     )
+
+
+def _section(cls: Any, name: str, values: Mapping[str, Any]) -> Any:
+    """Build a settings dataclass from a TOML table; a misspelt key is a ConfigError, not a bare TypeError."""
+    try:
+        return cls(**values)
+    except TypeError as exc:
+        raise ConfigError(f"[{name}] in the configuration: {exc}") from exc
 
 
 def _resilience_settings(raw: dict[str, Any], env: Mapping[str, str]) -> ResilienceSettings:
@@ -268,7 +276,7 @@ def _resilience_settings(raw: dict[str, Any], env: Mapping[str, str]) -> Resilie
     if isinstance(values.get("fail_tools"), str):
         values["fail_tools"] = [t for t in values["fail_tools"].split(",")]
     values["fail_tools"] = tuple(t.strip() for t in values.get("fail_tools", ()) if t.strip())
-    settings = ResilienceSettings(**values)
+    settings = _section(ResilienceSettings, "resilience", values)
     if not 0 <= settings.fail_rate <= 1:
         raise ConfigError(f"resilience.fail_rate must be between 0 and 1, got {settings.fail_rate}")
     return settings
@@ -279,6 +287,13 @@ def _synthesis_settings(raw: dict[str, Any]) -> SynthesisSettings:
     if len(weights) != 5 or any(not 0 < w <= 1 for w in weights):
         raise ConfigError("synthesis.tier_weights must be five weights in (0, 1], for tiers 1 to 5")
     return SynthesisSettings(tier_weights=weights, brief_tokens=int(raw.get("brief_tokens", 900)))
+
+
+def _provider_model(name: str, p: Mapping[str, Any], env: Mapping[str, str], prefix: str) -> str:
+    model = env.get(prefix + "MODEL") or p.get("model")
+    if not model:
+        raise ConfigError(f"Provider {name!r}: no model set (add `model` or set {prefix}MODEL)")
+    return str(model)
 
 
 def _llm_settings(raw: dict[str, Any], mode: str, env: Mapping[str, str]) -> LLMSettings:
@@ -295,7 +310,7 @@ def _llm_settings(raw: dict[str, Any], mode: str, env: Mapping[str, str]) -> LLM
         providers[name] = ProviderSettings(
             name=name,
             kind=kind,
-            model=env.get(prefix + "MODEL") or p["model"],
+            model=_provider_model(name, p, env, prefix),
             base_url=env.get(prefix + "BASE_URL") or p.get("base_url", ""),
             api_key_env=key_env,
             schema_dialect=dialect,

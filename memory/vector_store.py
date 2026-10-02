@@ -123,9 +123,10 @@ def _passes(meta: dict[str, Any], flt: dict[str, Any]) -> bool:
         return False
     if "verified" in flt and meta.get("verified") != flt["verified"]:
         return False
-    if "date_from" in flt and meta.get("date", "") < flt["date_from"]:
+    # Compare parsed days, as Chroma does: "2025-01-29T15:00Z" as a bound must equal the day 2025-01-29.
+    if "date_from" in flt and meta.get("date", "") < _parse_date(flt["date_from"]).isoformat():
         return False
-    if "date_to" in flt and meta.get("date", "") > flt["date_to"]:
+    if "date_to" in flt and meta.get("date", "") > _parse_date(flt["date_to"]).isoformat():
         return False
     if "min_confidence" in flt and meta.get("confidence", 0) < flt["min_confidence"]:
         return False

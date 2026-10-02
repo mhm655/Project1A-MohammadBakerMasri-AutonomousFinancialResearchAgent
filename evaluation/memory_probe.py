@@ -68,7 +68,8 @@ def make_probes(records: list[dict[str, Any]], n: int, seed: int = SEED) -> list
     keys = sorted(groups)
     probes: list[dict[str, str]] = []
     i = 0
-    while len(probes) < n and keys:
+    # Bounded: a small store has fewer distinct phrases than ``n``, and an unbounded loop never ended.
+    while len(probes) < n and keys and i < n * 50:
         key = keys[i % len(keys)]
         i += 1
         words = rng.choice(groups[key])["content"].split()
@@ -117,7 +118,7 @@ def hit_at_k(col: Any, probes: list[dict[str, str]], ks: tuple[int, ...] = (3, 5
         for k in ks:
             if any(needle in _norm(d) for d in found[:k]):
                 hits[k] += 1
-    return {f"hit@{k}": hits[k] / len(probes) for k in ks}
+    return {f"hit@{k}": hits[k] / len(probes) if probes else 0.0 for k in ks}
 
 
 def floor_table(col: Any, tickers: list[str]) -> list[dict[str, Any]]:
@@ -132,7 +133,7 @@ def floor_table(col: Any, tickers: list[str]) -> list[dict[str, Any]]:
     rows = []
     for floor in FLOORS:
         kept = [rel for score, rel in scored if score >= floor]
-        rows.append({"floor": floor, "kept_share": len(kept) / len(scored),
+        rows.append({"floor": floor, "kept_share": len(kept) / len(scored) if scored else 0.0,
                      "relevant_share": (sum(kept) / len(kept)) if kept else None, "hits": len(kept)})
     return rows
 

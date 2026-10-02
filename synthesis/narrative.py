@@ -172,7 +172,7 @@ def _news_for(evidence: dict[str, ToolResult], ticker: str) -> dict[str, Any] | 
     if len(hits) == 1:
         score, label = hits[0][1], hits[0][2] or sentiment_label(hits[0][1])
     else:
-        score = sum(h[1] * (h[3] or 1) for h in hits) / (total or len(hits))
+        score = sum(h[1] * (h[3] or 1) for h in hits) / sum(h[3] or 1 for h in hits)  # same weights in numerator and denominator
         label = sentiment_label(score)
     return {"score": score, "label": label, "articles": total, "ids": [h[0] for h in hits]}
 

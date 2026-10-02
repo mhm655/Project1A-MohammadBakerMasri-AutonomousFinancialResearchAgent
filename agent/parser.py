@@ -264,13 +264,20 @@ def parse_replan(text: str | None, registry: ToolRegistry, plan: Plan, *, max_ne
     steps, rejected = parse_steps(data.get("add_steps") or [], registry,
                                   existing_ids={s.id for s in plan.steps}, max_steps=max_new_steps)
     # Never repeat a call that already succeeded.
-    done_calls = {(s.tool, json.dumps(s.args, sort_keys=True)) for s in plan.by_status("done") if s.args}
+    done_calls = {(s.tool, json.dumps(s.args, sort_keys=True)): s.id for s in plan.by_status("done") if s.args}
     fresh = []
+    repeats: dict[str, str] = {}  # rejected step id -> the completed step that made the same call
     for step in steps:
-        if step.args is not None and (step.tool, json.dumps(step.args, sort_keys=True)) in done_calls:
+        key = (step.tool, json.dumps(step.args, sort_keys=True))
+        if step.args is not None and key in done_calls:
             rejected.append(f"{step.id}: repeats a completed call")
+            repeats[step.id] = done_calls[key]
         else:
             fresh.append(step)
+    # A step that depended on a rejected repeat would wait for a step that is not in the plan and never
+    # become ready; point it at the completed step instead, whose evidence is what it needs.
+    for step in fresh:
+        step.depends_on = list(dict.fromkeys(repeats.get(d, d) for d in step.depends_on))
     return ReplanDecision(done=not fresh, new_steps=fresh, rationale=str(data.get("rationale") or ""),
                           rejected=rejected)
 

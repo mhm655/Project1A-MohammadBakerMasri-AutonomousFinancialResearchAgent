@@ -57,6 +57,8 @@ class FactsStore:
         rows = []
         for row in data.get("data", []):
             for item, value in row["values"].items():
+                if value is None:
+                    continue  # a missing figure must not overwrite a stored one, or count as a line item
                 item_unit = "per_share" if item == "eps_diluted" else unit
                 rows.append((ticker, period, row["period_end"], row.get("fiscal_year"), row.get("fiscal_period"),
                              item, value, item_unit, provider, evidence_id, session, now))

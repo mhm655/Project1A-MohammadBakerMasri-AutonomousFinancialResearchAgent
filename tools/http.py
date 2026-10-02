@@ -80,6 +80,11 @@ class DiskCache:
         except (OSError, ValueError, KeyError):
             return None
 
+    def discard(self, key: str) -> None:
+        """Remove ``key`` from the cache (no error if it is absent)."""
+        for path in self._paths(key):
+            path.unlink(missing_ok=True)
+
     def put(self, key: str, body: bytes) -> None:
         """Write ``body`` and its timestamp metadata under ``key``."""
         meta_path, body_path = self._paths(key)
@@ -181,6 +186,11 @@ class HttpClient:
         try:
             return json.loads(body)
         except ValueError as exc:
+            # A 200 with a non-JSON body (an HTML error page) was already cached by get(); drop it so the
+            # bad body is not served for the rest of its TTL.
+            if self.cache:
+                params = kwargs.get("params")
+                self.cache.discard(f"{url}?{urlencode(params)}" if params else url)
             raise ToolExecutionError(f"invalid JSON from {url}: {exc}", retryable=True) from exc
 
 

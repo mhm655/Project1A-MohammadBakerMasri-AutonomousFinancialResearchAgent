@@ -296,6 +296,7 @@ def _print_table(checks: list[Check]) -> None:
     icons = {"ok": "OK  ", "warn": "WARN", "fail": "FAIL", "skip": "SKIP"}
     try:
         from rich.console import Console
+        from rich.markup import escape
         from rich.table import Table
 
         colours = {"ok": "green", "warn": "yellow", "fail": "red", "skip": "dim"}
@@ -304,7 +305,8 @@ def _print_table(checks: list[Check]) -> None:
         table.add_column("Check")
         table.add_column("Detail", overflow="fold")
         for c in checks:
-            table.add_row(f"[{colours[c.status]}]{icons[c.status]}[/]", c.name, c.detail)
+            # escape: provider error text may contain "[...]", which rich would parse as markup (or reject)
+            table.add_row(f"[{colours[c.status]}]{icons[c.status]}[/]", escape(c.name), escape(c.detail))
         Console().print(table)
     except ImportError:
         for c in checks:

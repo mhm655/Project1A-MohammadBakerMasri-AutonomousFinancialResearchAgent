@@ -165,7 +165,9 @@ def normalise(raw: dict[str, Any], *, provider: str, model: str) -> dict[str, An
     summary_block = raw.get("exec_summary") if isinstance(raw.get("exec_summary"), dict) else {}
     contradictions = [
         {"a": str(c.get("a", "")).strip(), "b": str(c.get("b", "")).strip(), "why": str(c.get("why", "")).strip()}
-        for c in (raw.get("contradictions") or []) if isinstance(c, dict) and (c.get("a") or c.get("b"))
+        # a non-list value (the judge replied with a number or string) is treated as "none reported"
+        for c in (raw["contradictions"] if isinstance(raw.get("contradictions"), list) else [])
+        if isinstance(c, dict) and (c.get("a") or c.get("b"))
     ]
     return {
         "insights": insights,

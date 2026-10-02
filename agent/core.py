@@ -678,7 +678,9 @@ class ResearchAgent:
             if not plan.steps:
                 plan = None  # nothing runnable was left: use the default plan, as for an unusable reply
         if plan is None:
-            plan = default_plan(profile)
+            # A query about earlier research names no company; the ones recalled from memory stand in, as
+            # they do for the LLM plan above (otherwise the fallback plan was empty and nothing was researched).
+            plan = default_plan(dataclasses.replace(profile, tickers=profile.tickers or memory_tickers))
             if not plan.steps:
                 self.gaps.append("No research plan could be made: the LLM failed and no company was identified.")
         self.tracer.log("decision", chosen="plan", rationale=plan.rationale, steps=len(plan.steps))
@@ -805,7 +807,11 @@ class ResearchAgent:
         """Once the plan is complete, let the LLM add steps for real gaps (bounded by max_replans)."""
         plan, replans = state["plan"], state.get("replans", 0)
         gaps = state.get("pending_gaps", [])
-        if replans >= self.cfg.max_replans or not self._budget_left() or not self._time_left():
+        # With every step done and no gap there is nothing to research, so the time check (which records
+        # "time limit reached") is skipped: a last step finishing after the research deadline cut nothing short.
+        nothing_to_add = not gaps and not plan.by_status("failed", "skipped")
+        if (replans >= self.cfg.max_replans or not self._budget_left()
+                or (not nothing_to_add and not self._time_left())):
             # Nothing new can be researched, so a gap-driven review must not re-write the same draft.
             return {"pending_gaps": [], "skip_resynthesis": bool(gaps)}
         if self.llm.next_provider_name() is None:
@@ -816,7 +822,7 @@ class ResearchAgent:
             self.tracer.decision("research_complete", "review skipped: no LLM provider is available "
                                  "(all are out of quota or offline); writing the report with what was gathered")
             return {"plan": plan, "replans": replans + 1, "pending_gaps": [], "skip_resynthesis": bool(gaps)}
-        if not gaps and not plan.by_status("failed", "skipped"):
+        if nothing_to_add:
             # Day 12: the review answered "done" in most runs. With every step done and no gap noted there is
             # nothing for it to add, so skip the call.
             self.tracer.decision("research_complete", f"deterministic check: all {len(plan.steps)} planned step(s) "
@@ -1147,7 +1153,7 @@ def _mark(claim: str, note: str) -> str:
     return f"{claim} *({note})*"
 
 
-_SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z*(\[])")
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])(\s+)(?=[A-Z*(\[])")  # captures the separators
 _LIST_ITEM = re.compile(r"^(?:[-*+]|\d{1,2}[.)])\s+")
 _ABBREVIATION = re.compile(r"\b(?:vs|e\.g|i\.e|approx|Inc|Corp|Co|Ltd|No|U\.S)\.$", re.IGNORECASE)
 
@@ -1156,9 +1162,13 @@ def _sentences(text: str) -> list[str]:
     """Sentences of ``text``; "vs.", "e.g." and "Inc." do not end a sentence (a split there left
     "GM's 27.0x P/E ..." as a separate, uncited claim)."""
     parts: list[str] = []
-    for part in _SENTENCE.split(text):
+    # Rejoin with the original whitespace, not one space: the verifier finds each claim in the body by
+    # exact text, and "Corp.  Revenue ..." rejoined as "Corp. Revenue ..." was counted but never marked.
+    pieces = _SENTENCE_SPLIT.split(text)  # sentence, separator, sentence, ...
+    for i in range(0, len(pieces), 2):
+        part = pieces[i]
         if parts and _ABBREVIATION.search(parts[-1]):
-            parts[-1] = f"{parts[-1]} {part}"
+            parts[-1] = f"{parts[-1]}{pieces[i - 1]}{part}"
         else:
             parts.append(part)
     return [p.strip() for p in parts if p.strip()]

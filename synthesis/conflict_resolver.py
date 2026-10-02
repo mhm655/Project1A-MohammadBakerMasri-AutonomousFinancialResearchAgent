@@ -132,13 +132,13 @@ class ConflictRecord:
 
 def format_money(usd: float) -> str:
     """Format USD as dollars, in millions or billions for large amounts."""
-    sign = "-" if usd < 0 else ""
     a = abs(usd)
-    if a >= 1e9:
-        return f"{sign}${a / 1e9:,.2f} billion"
-    if a >= 1e6:
-        return f"{sign}${a / 1e6:,.1f} million"
-    return f"{sign}${a:,.0f}"
+    # Rounding can carry into the next unit (999,999.6 -> "$1,000,000"), and -0.4 rounds to "-$0": decide on rounded values.
+    if round(a / 1e6, 1) >= 1000:
+        return f"{'-' if usd < 0 else ''}${a / 1e9:,.2f} billion"
+    if round(a) >= 1e6:
+        return f"{'-' if usd < 0 else ''}${a / 1e6:,.1f} million"
+    return f"{'-' if usd < 0 and round(a) else ''}${a:,.0f}"
 
 
 def format_value(value: float | str, unit: str) -> str:

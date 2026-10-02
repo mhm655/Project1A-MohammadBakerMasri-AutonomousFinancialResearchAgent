@@ -159,6 +159,9 @@ def _tool_result(eid: str, rec: dict[str, Any]) -> ToolResult:
     fields.setdefault("tool", "unknown")
     fields.setdefault("args", {})
     fields.setdefault("data", {})
+    for key in ("args", "data"):  # an explicit null (old or hand-edited bundle) must not crash .get() later
+        if fields[key] is None:
+            fields[key] = {}
     fields.setdefault("source_tier", None)
     fields.setdefault("retrieved_at", "")
     fields.setdefault("latency_ms", 0.0)
@@ -179,7 +182,7 @@ class Run:
         self.bundle = bundle
         self.challenge_id: str = (bundle.get("challenge") or {}).get("id", "")
         self.template: str = bundle.get("template") or (bundle.get("profile") or {}).get("template", "")
-        self.query: str = bundle.get("query", "")
+        self.query: str = bundle.get("query") or ""
         self.tickers: list[str] = list((bundle.get("profile") or {}).get("tickers") or [])
         self.evidence: dict[str, ToolResult] = {
             eid: _tool_result(eid, rec) for eid, rec in (bundle.get("evidence") or {}).items() if rec}
@@ -561,7 +564,9 @@ def ad1_insight_density(run: Run, judgement: dict | None) -> MetricResult:
     """AD-1: judge-counted insights per page (needs the LLM judge)."""
     if not judgement:
         return _make("AD-1", None, _JUDGE_OFF)
-    count = judgement.get("insight_count", len(judgement.get("insights") or []))
+    count = judgement.get("insight_count")
+    if count is None:  # a judge reply with a null count: fall back to the listed insights
+        count = len(judgement.get("insights") or [])
     return _make("AD-1", round(count / run.pages, 2),
                  f"{count} insights over {run.pages:.1f} pages (~500 words each)", list(judgement.get("insights") or [])[:3])
 

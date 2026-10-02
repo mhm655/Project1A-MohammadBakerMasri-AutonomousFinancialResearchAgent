@@ -150,6 +150,8 @@ def run_challenge(challenge: Challenge, *, max_seconds: float = 300.0, seed: int
     from agent.core import ResearchAgent
     from config.settings import load_settings
 
+    fail_keys = ("ARA_FAIL_RATE", "ARA_FAIL_SEED", "ARA_FAIL_TOOLS")
+    saved = {key: os.environ.get(key) for key in fail_keys}  # restored below, not just cleared
     os.environ.pop("ARA_FAIL_RATE", None)
     os.environ.pop("ARA_FAIL_TOOLS", None)
     if challenge.fail_rate:
@@ -161,8 +163,11 @@ def run_challenge(challenge: Challenge, *, max_seconds: float = 300.0, seed: int
         agent = ResearchAgent.from_settings(settings, max_seconds=max_seconds)
         return agent, agent.run(challenge.query)
     finally:
-        for key in ("ARA_FAIL_RATE", "ARA_FAIL_SEED", "ARA_FAIL_TOOLS"):
-            os.environ.pop(key, None)
+        for key, old in saved.items():
+            if old is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = old
 
 
 def save(challenge: Challenge, bundle: dict[str, Any], *, out_dir: Path, report_dir: Path | None) -> Path:

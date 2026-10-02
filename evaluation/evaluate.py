@@ -62,7 +62,9 @@ def _run_entry(bundle: dict[str, Any], metrics: list[dict[str, Any]]) -> dict[st
             "data_mode": bundle.get("data_mode"), "stop_reason": bundle.get("stop_reason"),
             "duration_s": bundle.get("duration_s"), "tool_calls": bundle.get("tool_calls"),
             "llm_calls": usage.get("calls", 0),
-            "tokens": (usage.get("prompt_tokens") or 0) + (usage.get("completion_tokens") or 0),
+            # reasoning tokens are billed and counted by LLMClient.total_tokens, so include them here too
+            "tokens": ((usage.get("prompt_tokens") or 0) + (usage.get("completion_tokens") or 0)
+                       + (usage.get("reasoning_tokens") or 0)),
             "fail_rate": bundle.get("fail_rate"), "injected_failures": bundle.get("injected_failures") or {},
             "metrics": metrics}
 

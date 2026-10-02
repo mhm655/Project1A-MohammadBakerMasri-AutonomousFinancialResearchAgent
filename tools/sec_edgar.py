@@ -80,6 +80,19 @@ def fiscal_year_of(period_end: date) -> int:
     return period_end.year - 1 if period_end.month == 1 and period_end.day <= 7 else period_end.year
 
 
+def _filing_fiscal_year(form: str, period_end: date, fiscal_year_end: str | None) -> int:
+    """Fiscal year of a filing's report date. A 10-Q's period ends inside its fiscal year, so for a
+    company whose year ends before December (Microsoft: June) a quarter ending after that month
+    belongs to the *next* calendar year's fiscal year (the quarter ended 2025-12-31 is fiscal 2026)."""
+    year = fiscal_year_of(period_end)
+    fye = fiscal_year_end or ""
+    if form == "10-Q" and len(fye) == 4 and fye.isdigit():
+        month, day = int(fye[:2]), int(fye[2:])
+        if month != 12 and not (month == 1 and day <= 7) and period_end.month > month:
+            year += 1
+    return year
+
+
 def find_filing(subs: dict[str, Any], form: str, year: int | None) -> dict[str, str]:
     """The most recent filing of ``form`` (for ``year``, the fiscal year of the report, if given)."""
     recent = subs["filings"]["recent"]
@@ -87,7 +100,8 @@ def find_filing(subs: dict[str, Any], form: str, year: int | None) -> dict[str, 
         if kind != form:
             continue
         report_date = recent["reportDate"][i] or recent["filingDate"][i]
-        if year is not None and fiscal_year_of(date.fromisoformat(report_date[:10])) != year:
+        if year is not None and _filing_fiscal_year(
+                form, date.fromisoformat(report_date[:10]), subs.get("fiscalYearEnd")) != year:
             continue
         return {key: recent[key][i] for key in ("accessionNumber", "filingDate", "reportDate", "primaryDocument", "items")
                 if key in recent}
