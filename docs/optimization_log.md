@@ -107,6 +107,24 @@ Misses in the Day 11 bundles (`results/runs/C*.json`) and scores (`results/eval/
 - **Tests.** `test_unknown_planned_tool_falls_back_to_all_schemas` re-implemented the fallback in the test instead of calling the agent; it now runs `_run_step`. The relevance-floor test could not fail (`>=` checks and an assertion that fell back to `True`); it now seeds records that only the targeted searches can find. New tests cover the synthesis re-fit, the no-retry case and the negative-score hit.
 - **Report corrections.** Pass-rate denominators (174 and 169 measured), the token basis (reasoning tokens excluded), the C7 analysis regression (AD-2 9 -> 0, AD-3 20 -> 2) and the T4 review skips during short rate-limit cooldowns (C4, C8) are now stated in `results/evaluation_report_v2.md`.
 
+## Day 15: final debugging (live Challenge 4)
+
+Three live C4 runs on Day 15, with fixes in between. Bundles: `results/runs_day14/live/C4.json` (last run kept; earlier runs are summarised here).
+
+| Run | Duration | Outcome | Problem found |
+|---|---|---|---|
+| 1 | 305 s | completed, over the 300 s target | Writing to memory took 2 min 23 s: `add_many` re-embedded all 2,174 chunks, although most were already stored |
+| 2 | 272 s | stopped at the time limit; 2 calculation steps skipped | One `earnings_transcript` download blocked for the whole 213 s left for research |
+| 3 | 120 s | completed; every research step done; review ran | none |
+
+Fixes:
+- **D15-1 Memory writes.** `memory/vector_store.py` `ChromaVectorStore.add_many` looks up which content-hash ids already exist and embeds only the new chunks; known ids get a metadata-only update (Chroma does not re-embed for that). Memory write in run 2: 3 s. Test: `test_add_many_embeds_only_chunks_not_already_stored`.
+- **D15-2 Per-call tool timeout.** `agent.tool_timeout_s = 120` caps one research tool call (`agent/core.py` `_dispatch`); before, the cap was all the research time left. The download keeps running in the background and is cached. Test: `test_one_slow_tool_call_cannot_use_the_whole_research_window`.
+- **D15-3 Review skip rule (T4).** The review is skipped only when no provider can be tried at all (`next_provider_name()` is None: out of quota or offline), not during a 30 s rate-limit cooldown. Day 13 skipped reviews in C4 and C8 this way. In run 3 the review ran on Groq while Gemini returned 503. Test: `test_review_still_runs_when_providers_are_only_briefly_rate_limited`.
+- **D15-4 Forward view (P1).** The prompt keeps the forward view in body sections, allows at most one outlook sentence in the executive summary, and forbids a fiscal period or "as of" date that the cited evidence does not give. Aimed at the Day 13 CS-3 and FA-3 regressions. Run 3's summary states findings with figures and one labelled "Analysis:" sentence. The eight-challenge effect was not re-measured.
+
+Still open: C4 compares company-level figures because the free sources give no clean cloud-segment figures (the agent states this gap); C7's narrow plan.
+
 ## Summary
 
 | ID | Change | Evidence before | Result |

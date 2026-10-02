@@ -245,6 +245,7 @@ tests/        pytest suite
 | 12 | Challenge runs, stress tests, token usage analysis | Done |
 | 13 | Optimisation: one schema per execute call, per-provider synthesis budget, deterministic review, section-targeted memory recall; see [docs/optimization_log.md](docs/optimization_log.md) | Done |
 | 14 | Final documentation: technical README, final architecture specification, trace gallery, final evaluation report, trace viewer, docstrings enforced by ruff | Done |
+| 15 | Final review and live checks on Challenge 4: per-call tool timeout, no re-embedding of stored chunks, forward view kept out of the executive summary, review skipped only when no provider can answer | Done |
 
 ## Use of AI tools
 

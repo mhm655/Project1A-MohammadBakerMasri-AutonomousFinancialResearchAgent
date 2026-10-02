@@ -95,6 +95,9 @@ class AgentSettings:
     max_calls_per_step: int = 3
     max_replans: int = 3
     max_reflections: int = 2
+    #: Longest one research tool call may take. Without it a single slow download could use the whole
+    #: research window (Day 14, C4: an earnings transcript blocked for 213 s and the calculations never ran).
+    tool_timeout_s: float = 120.0
     #: Prompt budget for the largest prompts (synthesis). Groq free tier: ~7,000 input tokens per minute.
     #: This is the default for providers not listed in ``prompt_tokens_by_provider``.
     max_prompt_tokens: int = 6000

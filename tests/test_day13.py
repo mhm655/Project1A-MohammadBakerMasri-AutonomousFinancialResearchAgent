@@ -167,11 +167,19 @@ def test_review_still_runs_when_reflection_notes_a_gap(tmp_path):
 def test_review_is_skipped_when_no_llm_provider_is_available(tmp_path):
     script = ScriptedLLM(synthesis=PARTIAL)
     agent = make_agent(script, traces_dir=str(tmp_path))
-    agent.llm.any_provider_ready = lambda: False
+    agent.llm.next_provider_name = lambda: None  # every provider out of quota or offline
     result = agent.run(QUERY)
     assert "REPLAN" not in script.stages  # without the check, the gap review above would have been called
     reasons = [e["rationale"] for e in _events(result) if e["type"] == "decision" and e["chosen"] == "research_complete"]
     assert any("no LLM provider is available" in r for r in reasons)
+
+
+def test_review_still_runs_when_providers_are_only_briefly_rate_limited(tmp_path):
+    script = ScriptedLLM(synthesis=PARTIAL)
+    agent = make_agent(script, traces_dir=str(tmp_path))
+    agent.llm.any_provider_ready = lambda: False  # all cooling for seconds, none out of quota
+    agent.run(QUERY)
+    assert "REPLAN" in script.stages
 
 
 def test_rate_limit_waits_never_pass_the_research_deadline():
@@ -333,3 +341,19 @@ def test_recall_makes_only_local_memory_calls_and_skips_companies_with_no_memory
 def test_recall_topics_come_from_the_template():
     assert core.recall_topics("company_profile") == ["Business Overview", "Financial Summary"]
     assert core.recall_topics("risk_assessment") == ["Financial Risks", "Operational Risks"]
+
+
+def test_one_slow_tool_call_cannot_use_the_whole_research_window():
+    # Day 14, C4: one earnings-transcript download blocked for 213 s and the calculation steps never ran.
+    import time
+
+    from tools.base import ToolExecutionError
+
+    agent = make_agent(ScriptedLLM(), agent_settings=AgentSettings(tool_timeout_s=1.0))
+    agent.run(QUERY)  # sets up the registry, dispatcher and worker pool
+    agent._research_deadline = agent._clock() + 300  # plenty of research time left
+    agent.dispatcher.call = lambda tool, args: time.sleep(4)
+    started = time.monotonic()
+    with pytest.raises(ToolExecutionError, match="allowed per tool call"):
+        agent._dispatch("earnings_transcript", {"ticker": "MSFT"})
+    assert time.monotonic() - started < 3

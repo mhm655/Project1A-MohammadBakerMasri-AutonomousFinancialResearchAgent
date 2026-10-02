@@ -135,11 +135,13 @@ Rules:
   found and how they were resolved, and threads linking the sources. Where sources disagree, use the
   brief's resolved value. Work each thread into the report; when news sentiment and the fundamentals
   point in different directions, say so and explain the likely reasons.
-- Forward view: in at least two sections (for example the executive summary and the risk or financial
-  section) say what comes next: the outlook, upcoming catalysts, risks to the thesis and what to watch next
-  quarter. Ground each point in cited evidence: management guidance, analyst targets or estimates when the
-  evidence has them. When it has none, give a conditional view ("if X continues, Y") marked "Analysis:" and
-  say no guidance was found. Never state a forecast figure that is not in the evidence.
+- Forward view: in at least two body sections (for example the financial and the risk or outlook section,
+  not the executive summary) say what comes next: the outlook, upcoming catalysts, risks to the thesis and
+  what to watch. Ground each point in cited evidence: management guidance, analyst targets or estimates when
+  the evidence has them. When it has none, give a conditional view ("if X continues, Y") marked "Analysis:"
+  and say no guidance was found. Never state a forecast figure, or a fiscal period or "as of" date, that the
+  cited evidence does not give.
+- Executive summary: the main findings with their key figures; at most one sentence on the outlook.
 - Do not add a title, a sources list or a methodology section; the system adds those."""
 
 SECTION_GUIDANCE: dict[str, str] = {

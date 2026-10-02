@@ -796,8 +796,8 @@ The shared contracts are `PlanStep`, `ToolResult` (evidence) and `Claim`. Nothin
 ### 21.4 Open issues
 
 1. **C7's plan is narrow.** The Day 13 plan for the cross-memory query used only `company_profile`, `financial_data_api` and `earnings_transcript` (16 steps) and no news, filing, peer or calculation step. AD-2 fell 9 → 0 and AD-3 20 → 2. The synthesis prompt left 10 of 38 evidence items out under the 6,000-token Groq cap.
-2. **Forward-view prompt and regressions.** After the forward-view rule (P1), FA-3 fell 8/8 → 4/8 and CS-3 3/8 → 0/8. Forward sentences name periods that the cited evidence does not contain. The link is probable, not proven (different providers, judge variance).
-3. **Reviews skipped during short cooldowns.** `any_provider_ready()` is false during a 30 s rate-limit cooldown, so C4 and C8 skipped a review they might have run. Two calculation steps in C8 stayed skipped.
+2. **Forward-view prompt and regressions.** After the forward-view rule (P1), FA-3 fell 8/8 → 4/8 and CS-3 3/8 → 0/8. Forward sentences name periods that the cited evidence does not contain. The link is probable, not proven (different providers, judge variance). *Day 15:* the rule now keeps the forward view out of the executive summary (at most one outlook sentence there) and forbids a fiscal period or "as of" date that the cited evidence does not give. A live C4 run on Day 15 produced a findings-only summary; the eight-challenge effect is not re-measured.
+3. **Reviews skipped during short cooldowns.** Fixed on Day 15: the review is skipped only when `next_provider_name()` is None (every provider out of quota or offline). A short rate-limit cooldown no longer skips it; in the Day 15 C4 run the review ran on Groq while Gemini answered 503.
 4. **Provider-mix confounding.** Day 11 used Groq for 75 of 78 calls; Day 13 used Gemini for 6 of 37. The Day 11 to Day 13 comparison is one run per challenge on mixed providers. Only the mock token numbers isolate the Day 13 changes.
 5. **Stored chunks are not re-ingested at 500 characters.** The live store still holds mostly 1,500-character chunks (2,032 chunks at probe time). The chunk-size gain applies to new ingests, and none of the Day 13 AB-4 gain comes from it.
 6. **AB-4 measures local recalls.** M1 raised AB-4 by adding local searches; external calls did not fall.
@@ -805,6 +805,7 @@ The shared contracts are `PlanStep`, `ToolResult` (evidence) and `Claim`. Nothin
 8. **No staleness handling.** Market data and fundamentals are not flagged as stale at recall.
 9. **Judge independence.** The judge can share a model family with the writer, scores are single-run, and they move by a point between runs.
 10. **Shared and per-run state.** One `ResearchAgent` per task is required, and mock mode shares one vector store.
+12. **One slow tool call and memory writes (fixed on Day 15).** A live C4 run took 305 s: storing 2,174 chunks re-embedded content already in the store (2 min 23 s). A second run lost 213 s of research to one earnings-transcript download. `add_many` now embeds only chunks whose content-hash id is new (known ids get a metadata update), and each research tool call is capped at `agent.tool_timeout_s` (120 s). The third run completed in 120 s with every research step done.
 11. **Day 1 diagram.** `docs/architecture_diagram.svg` shows the v0.1 design and is kept only as a record; Section 6 now has the graph as built (node names in the SVG: `execute_batch`, `replan`, `render_report`, `write_memory`; 40/30/20/10 short-term split and progressive summarisation; staleness check; LLM-written lessons; claim ledger in SQLite; the LLM sharing the breaker pipeline; a 22-metric harness without BM-1). Section 6 and Section 7 are correct.
 
 ## 22. Build Record

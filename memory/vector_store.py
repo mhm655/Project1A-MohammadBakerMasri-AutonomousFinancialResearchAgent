@@ -287,8 +287,18 @@ class ChromaVectorStore:
             metas.append(meta)
         with self._lock:
             for start in range(0, len(ids), 200):  # keep batches small for the embedding model
-                self._collection.upsert(ids=ids[start:start + 200], documents=docs[start:start + 200],
-                                        metadatas=metas[start:start + 200])
+                batch = range(start, min(start + 200, len(ids)))
+                # Ids hash the content, so a stored id already has the same text and vector. Re-embedding it
+                # cost minutes per run once filings were cut into 500-character chunks (Day 14, C4: 2,174
+                # chunks); update only its metadata, and embed the new chunks.
+                known = set(self._collection.get(ids=[ids[i] for i in batch], include=[])["ids"])
+                new = [i for i in batch if ids[i] not in known]
+                old = [i for i in batch if ids[i] in known]
+                if new:
+                    self._collection.upsert(ids=[ids[i] for i in new], documents=[docs[i] for i in new],
+                                            metadatas=[metas[i] for i in new])
+                if old:
+                    self._collection.update(ids=[ids[i] for i in old], metadatas=[metas[i] for i in old])
         return len(ids)
 
     def companies(self) -> dict[str, int]:

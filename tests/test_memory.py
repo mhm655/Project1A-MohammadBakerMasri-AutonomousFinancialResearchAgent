@@ -417,3 +417,29 @@ def test_fitted_evidence_stays_within_the_budget_including_separators():
     fitted = fit_evidence(evidence, 1043, digest)
     body = fitted.text.split("\n\n(Also retrieved")[0]  # the dropped-items note is the only allowed overflow
     assert count_tokens(body) <= 1043
+
+
+def test_add_many_embeds_only_chunks_not_already_stored(tmp_path):
+    # Day 14: re-embedding every chunk of a re-fetched 10-K took over two minutes per run.
+    from memory.chunking import MemoryRecord
+    from memory.vector_store import _hashing_embedding_class
+
+    calls: list[int] = []
+
+    class Counting(_hashing_embedding_class()):
+        def __call__(self, input):  # noqa: A002 - Chroma's parameter name
+            calls.append(len(input))
+            return super().__call__(input)
+
+    store = ChromaVectorStore(tmp_path, embedding_model="hashing", embedding_function=Counting())
+    meta = {"ticker": "MSFT", "source_type": "10-K", "date": "2026-06-30"}
+    records = [MemoryRecord(f"Microsoft paragraph number {i} about cloud revenue.", dict(meta)) for i in range(5)]
+    assert store.add_many(records) == 5 and sum(calls) == 5
+    calls.clear()
+    again = records + [MemoryRecord("A new paragraph about Azure margins.", dict(meta))]
+    again[0] = MemoryRecord(again[0].content, {**meta, "verified": True})  # same text, new metadata
+    assert store.add_many(again) == 6
+    assert sum(calls) == 1  # only the new chunk was embedded
+    assert store.count() == 6
+    hit = store.search("Microsoft paragraph number 0 about cloud revenue.", top_k=1)["results"][0]
+    assert hit["metadata"]["verified"] is True  # metadata of a known chunk is still updated

@@ -523,7 +523,7 @@ class ResearchAgent:
         return False
 
     def _dispatch(self, tool: str, args: Any) -> ToolResult:
-        """A research tool call bounded by the research deadline.
+        """A research tool call bounded by ``tool_timeout_s`` and by the research deadline.
 
         On a slow link one download (a 10-K can take minutes) could otherwise consume the whole run.
         If the call overruns, the step fails and research moves on. The call keeps running in the
@@ -531,13 +531,15 @@ class ResearchAgent:
         """
         from concurrent.futures import TimeoutError as FutureTimeout
 
-        timeout = max(1.0, self._research_deadline - self._clock())
+        left = self._research_deadline - self._clock()
+        timeout = max(1.0, min(self.cfg.tool_timeout_s, left))
         # Retries, circuit breakers and fallback chains (spec A4.3, architecture section 14).
         future = self._pool.submit(self.dispatcher.call, tool, args)
         try:
             return future.result(timeout=timeout)
         except FutureTimeout:
-            raise ToolExecutionError(f"{tool} did not finish within the {timeout:.0f} s left for research; the "
+            limit = "s left for research" if timeout < self.cfg.tool_timeout_s else "s allowed per tool call"
+            raise ToolExecutionError(f"{tool} did not finish within the {timeout:.0f} {limit}; the "
                                      "download continues in the background and will be cached for the next run",
                                      tool=tool) from None
 
@@ -806,11 +808,13 @@ class ResearchAgent:
         if replans >= self.cfg.max_replans or not self._budget_left() or not self._time_left():
             # Nothing new can be researched, so a gap-driven review must not re-write the same draft.
             return {"pending_gaps": [], "skip_resynthesis": bool(gaps)}
-        if not self.llm.any_provider_ready():
-            # Every provider is cooling down or out of quota: a review call would fail or wait, and any step
-            # it added could need the LLM to run (Day 12 stress finding).
-            self.tracer.decision("research_complete", "review skipped: no LLM provider is available right now "
-                                 "(all are rate-limited or out of quota); writing the report with what was gathered")
+        if self.llm.next_provider_name() is None:
+            # Every provider is set aside (out of daily quota, or a local server that is not running): a review
+            # call would fail, and any step it added could need the LLM to run (Day 12 stress finding). A short
+            # rate-limit cooldown does not count: complete() still tries cooling providers, and skipping the
+            # review then left steps unretried (Day 13: C4, C8).
+            self.tracer.decision("research_complete", "review skipped: no LLM provider is available "
+                                 "(all are out of quota or offline); writing the report with what was gathered")
             return {"plan": plan, "replans": replans + 1, "pending_gaps": [], "skip_resynthesis": bool(gaps)}
         if not gaps and not plan.by_status("failed", "skipped"):
             # Day 12: the review answered "done" in most runs. With every step done and no gap noted there is
