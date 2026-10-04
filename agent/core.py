@@ -749,6 +749,11 @@ class ResearchAgent:
             except LLMError as exc:
                 return self._finish(step, "failed", f"the LLM could not be reached: {str(exc)[:200]}")
             if not reply.tool_calls:
+                if not (reply.content or "").strip():
+                    # Neither a tool call nor an explanation (Gemini does this when its hidden reasoning
+                    # uses up max_tokens). That is a failure to report as a gap, not a step "not needed".
+                    return self._finish(step, "failed", "the model returned an empty reply (no tool call and no "
+                                        f"explanation; finish reason: {reply.finish_reason or 'unknown'})")
                 note = step_done_note(reply.content) or (reply.content or "no tool call made").strip()[:300]
                 return self._finish(step, "skipped", f"not needed: {note}")
             self.tracer.thought(reply.content or f"Calling {[c.name for c in reply.tool_calls]}", node="execute",

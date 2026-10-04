@@ -50,6 +50,12 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
         Path(args.out).write_text(result.report_markdown, encoding="utf-8")
     else:
+        # Redirected output on Windows is cp1252: a character it cannot encode (a minus sign U+2212, an
+        # arrow) must not raise UnicodeEncodeError and lose the report after the whole run.
+        try:
+            sys.stdout.reconfigure(errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
         print(result.report_markdown)
 
     v, u = result.verification, result.llm_usage

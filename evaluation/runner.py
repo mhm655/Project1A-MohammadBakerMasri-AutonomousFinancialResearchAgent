@@ -225,7 +225,7 @@ def _run_all(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                         out_dir=Path(args.out_dir), report_dir=Path(args.report_dir) if args.report_dir else None)
             u = result.llm_usage
             print(f"{cid}: {result.stop_reason} in {result.duration_s}s | tools {result.tool_calls} | "
-                  f"LLM {u['calls']} calls, {u['prompt_tokens'] + u['completion_tokens']} tokens | {path}", flush=True)
+                  f"LLM {u['calls']} calls, {u['prompt_tokens'] + u['completion_tokens'] + u.get('reasoning_tokens', 0)} tokens | {path}", flush=True)
         except Exception:
             failed += 1
             print(f"{cid}: CRASH\n{traceback.format_exc()[-1500:]}", flush=True)

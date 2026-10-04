@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -62,7 +63,10 @@ def fmt_value(value: Any, unit: str) -> str:
     except (TypeError, ValueError):
         return str(value)
     if unit == "ratio":
-        return f"{v * 100:.0f}%"
+        pct = v * 100
+        if 99.5 <= pct < 100:  # 99.5-99.99% must not read as a (failed) 100%
+            return f"{math.floor(pct * 10) / 10:.1f}%"
+        return f"{pct:.0f}%"
     if unit == "score_1_5":
         return f"{v:.1f}/5".replace(".0/5", "/5")
     if unit == "seconds":

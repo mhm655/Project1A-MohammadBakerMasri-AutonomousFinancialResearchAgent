@@ -23,6 +23,10 @@ _QUARTER = re.compile(r"\bq([1-4])\b", re.IGNORECASE)
 #: Words that name a segment or another line item, so the consolidated figure would be wrong.
 _TOO_SPECIFIC = re.compile(r"\b(?:segment|aws|azure|cloud|services|iphone|mac|ipad|automotive|energy|division)\b",
                            re.IGNORECASE)
+#: Words that, next to a metric's name, make it another line item or a derived figure ("cost of revenue",
+#: "deferred revenue", "revenue growth", "net income margin", "revenue per share").
+_QUALIFIER = re.compile(r"\b(?:cost|costs|deferred|unearned|growth|margin|per|ratio|change|adjusted|tax|taxes|"
+                        r"expense|expenses|estimate|estimated|forecast|guidance|consensus)\b", re.IGNORECASE)
 
 
 def _records(data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -45,6 +49,10 @@ def _parse(ref: str, metrics: set[str]) -> tuple[str, int, str] | None:
     if not named:
         return None
     metric = max(named, key=len)  # "gross profit" rather than "profit"
+    # "cost of revenue", "deferred revenue", "revenue growth": the words around the metric make it a
+    # different figure. Matching it to "revenue" would put the wrong number into the calculation.
+    if _QUALIFIER.search(words.replace(f" {metric.replace('_', ' ')} ", " ", 1)):
+        return None
     return metric, int(year.group(1)), f"Q{quarter.group(1)}" if quarter else "FY"
 
 

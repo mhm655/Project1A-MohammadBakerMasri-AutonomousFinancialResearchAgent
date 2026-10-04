@@ -265,8 +265,11 @@ def run(offline: bool = False, only_provider: str | None = None) -> list[Check]:
         # A provider's failures are downgraded only if ANOTHER provider works: when the only working
         # provider rejects the tool schemas, nothing covers for it.
         working = {n for n, cs in by_provider.items() if any(c.name.endswith(" chat") and c.status == "ok" for c in cs)}
+        # A provider whose chat works but which still has a failing check (e.g. rejects the tool schemas)
+        # cannot cover for another one; only fully clean providers can excuse a provider that can chat.
+        clean = {n for n in working if all(c.status != "fail" for c in by_provider[n])}
         for name, provider_checks in by_provider.items():
-            if working - {name}:
+            if (working - {name}) if name not in working else (clean - {name}):
                 for c in provider_checks:
                     if c.status == "fail":
                         c.status, c.detail = "warn", f"{c.detail} (a fallback provider; another provider works)"

@@ -187,7 +187,14 @@ def parse_steps(raw_steps: Any, registry: ToolRegistry, *, existing_ids: set[str
                 # Keep the step: the executor asks the LLM to repair the arguments.
                 rejected.append(f"{label}: arguments will be repaired at run time ({exc})")
                 args = None
-        depends_on = [str(d) for d in raw.get("depends_on") or [] if d is not None]
+        # Models also write one dependency as a bare value ("depends_on": "s1", or 1): a string must not
+        # be split into characters, and a number must not raise TypeError out of the plan node.
+        raw_deps = raw.get("depends_on") or []
+        if isinstance(raw_deps, (str, int, float)):
+            raw_deps = [raw_deps]
+        elif not isinstance(raw_deps, list):
+            raw_deps = []
+        depends_on = [str(d) for d in raw_deps if d is not None]
         steps.append(PlanStep(id=step_id, goal=str(raw.get("goal") or f"Call {tool}"), tool=tool, args=args,
                               depends_on=depends_on, reason=str(raw.get("reason") or "")))
         taken.add(step_id)
@@ -286,7 +293,24 @@ def parse_replan(text: str | None, registry: ToolRegistry, plan: Plan, *, max_ne
 # Sections and step replies
 # --------------------------------------------------------------------------------------------------
 
-_SECTION_MARKER = re.compile(r"^\s*={2,}\s*SECTION\s*:\s*([A-Za-z0-9_ -]+?)\s*={2,}\s*$", re.MULTILINE)
+# A marker line may be decorated as bold or as a heading ("**=== SECTION: x ===**", "## === SECTION: x ===").
+_SECTION_MARKER = re.compile(r"^[ \t#*_]*={2,}\s*SECTION\s*:\s*([A-Za-z0-9_ -]+?)\s*={2,}[ \t\r*_]*$", re.MULTILINE)
+_WRAPPER_FENCE = re.compile(r"^\s*```[A-Za-z]*[ \t]*\n")
+
+
+def _unwrap_fence(text: str) -> str:
+    """``text`` without a code fence wrapped around the whole reply (```markdown ... ```).
+
+    Left in, the closing fence ends up in the last section and turns the rest of the report into a
+    code block. Fences inside the reply are not touched.
+    """
+    opening = _WRAPPER_FENCE.match(text)
+    if not opening:
+        return text
+    inner = text[opening.end():].rstrip()
+    if inner.endswith("```"):
+        return inner[:-3]
+    return inner if "```" not in inner else text  # an opening fence cut off before it was closed
 
 
 def parse_sections(text: str | None, expected: list[str]) -> dict[str, str]:
@@ -295,7 +319,7 @@ def parse_sections(text: str | None, expected: list[str]) -> dict[str, str]:
     Keys are normalised (``Executive Summary`` -> ``executive_summary``). Unexpected keys are kept;
     the report generator lists them as extra sections.
     """
-    text = normalize_text(text)
+    text = _unwrap_fence(normalize_text(text))
     if not text:
         return {}
     matches = list(_SECTION_MARKER.finditer(text))
@@ -325,6 +349,7 @@ def _split_on_headings(text: str, expected: list[str]) -> dict[str, str]:
     for m in heading.finditer(text):
         name = re.sub(r"[^a-z0-9 ]+", " ", m.group(1).lower())
         name = re.sub(r"\s+", " ", name).strip()
+        name = re.sub(r"^\d{1,2} ", "", name)  # "## 1. Executive Summary"
         if name in wanted:
             starts.append((m.start(), m.end(), wanted[name]))
     sections: dict[str, str] = {}

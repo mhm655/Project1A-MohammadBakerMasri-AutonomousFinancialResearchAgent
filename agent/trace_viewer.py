@@ -75,6 +75,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     events = filter_events(events, types, args.step)
     if args.limit:
         events = events[: args.limit]
+    # Redirected output on Windows is cp1252; trace text (model replies) often has characters outside it.
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError, OSError):
+        pass
     render(events, Console(width=200, soft_wrap=True))
     return 0
 

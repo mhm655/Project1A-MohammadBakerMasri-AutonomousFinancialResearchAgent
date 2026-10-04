@@ -186,10 +186,17 @@ def _check_entity(fact: dict[str, Any], text: str, paragraphs: list[str]) -> boo
     return bool(words) and any(all(w in p for w in words) for p in paragraphs)
 
 
+def _has_keyword(keyword: str, paragraph: str) -> bool:
+    """Substring match, but a short keyword ("AI") must be a whole word, not part of "maintain"."""
+    if len(keyword) > 3:
+        return keyword in paragraph
+    return re.search(rf"(?<!\w){re.escape(keyword)}(?!\w)", paragraph) is not None
+
+
 def _check_qualitative(fact: dict[str, Any], paragraphs: list[str]) -> bool:
     keywords = [k.lower() for k in fact.get("keywords", [])]
     need = math.ceil(len(keywords) / 2)
-    return bool(keywords) and any(sum(k in p for k in keywords) >= need for p in paragraphs)
+    return bool(keywords) and any(sum(_has_keyword(k, p) for k in keywords) >= need for p in paragraphs)
 
 
 # --- public ------------------------------------------------------------------------------------------

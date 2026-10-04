@@ -633,6 +633,8 @@ class LLMClient:
         #: A provider whose daily quota is exhausted is set aside for this long.
         self.quota_cooldown_s = 3600.0
         self._cooldown_until: dict[str, float] = {}
+        #: Why each provider was last set aside (error kind), so a skipped provider is reported truthfully.
+        self._cooldown_kind: dict[str, str] = {}
 
     @classmethod
     def from_settings(cls, settings: Settings, *, tracer: Any = None, **overrides: Any) -> LLMClient:
@@ -714,8 +716,13 @@ class LLMClient:
         ready, cooling = self._ready_and_cooling(now)
         queue = ready + cooling
         if not queue:
-            raise AllProvidersFailedError([LLMProviderError(p.name, "quota_exhausted", "daily quota used up; skipped")
-                                           for p in self.providers])
+            # Say why each provider is set aside: an offline local server is not an exhausted quota.
+            skipped = {"quota_exhausted": "daily quota used up; skipped",
+                       "connection": "local server not reachable; skipped",
+                       "rate_limit": "rate limited; skipped until the wait the server asked for is over"}
+            kinds = [self._cooldown_kind.get(p.name, "quota_exhausted") for p in self.providers]
+            raise AllProvidersFailedError([LLMProviderError(p.name, kind, skipped.get(kind, "set aside; skipped"))
+                                           for p, kind in zip(self.providers, kinds, strict=True)])
         final_pass: set[str] = set()  # providers cooled during this call get one last full try
         i = 0
         while i < len(queue):
@@ -744,6 +751,7 @@ class LLMClient:
                         # A local model server that refuses connections is not running: set it aside
                         # for ten minutes instead of retrying it on every call.
                         self._cooldown_until[provider.name] = failed_at + 600
+                        self._cooldown_kind[provider.name] = error.kind
                         self._trace("error", source="llm", provider=provider.name, model=provider.model,
                                     error_kind=error.kind, message=str(error), attempt=attempt + 1,
                                     will_retry=False, cooling_down=True, purpose=purpose)
@@ -751,6 +759,7 @@ class LLMClient:
                     if error.kind == "quota_exhausted":
                         # A daily quota: set the provider aside for an hour and do not retry it.
                         self._cooldown_until[provider.name] = failed_at + self.quota_cooldown_s
+                        self._cooldown_kind[provider.name] = error.kind
                         self._trace("error", source="llm", provider=provider.name, model=provider.model,
                                     error_kind=error.kind, message=str(error), attempt=attempt + 1,
                                     will_retry=False, cooling_down=True, purpose=purpose)
@@ -759,6 +768,7 @@ class LLMClient:
                     if cool:
                         self._cooldown_until[provider.name] = failed_at + max(error.retry_after or 0.0,
                                                                               self.cooldown_s)
+                        self._cooldown_kind[provider.name] = error.kind
                         final_pass.add(provider.name)
                         queue.append(provider)
                     will_retry = error.retryable and attempt < self.max_retries and not cool

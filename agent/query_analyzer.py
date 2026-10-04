@@ -35,7 +35,7 @@ TEMPLATE_RULES: list[tuple[str, tuple[str, ...]]] = [
     ("full_report", ("investment research report", "full research report", "complete investment")),
     ("investigative", ("contradict", "investigate", "apparent contradiction")),
     ("earnings_analysis", ("earnings", "quarterly results", "consensus")),  # before "compare": "compare to consensus"
-    ("comparative_analysis", ("compare", "comparison", " versus ", " vs ")),
+    ("comparative_analysis", ("compare", "comparison", " versus ", " vs ", " vs. ")),
     ("thematic", ("themes", "cross-cutting", "across the")),
     ("risk_assessment", ("risk assessment", "risks")),
 ]

@@ -81,6 +81,9 @@ class Period:
 
     def key(self) -> tuple[int | None, str]:
         """Hashable (fiscal year, fiscal period) identity of the period."""
+        if self.fiscal_period == "Q" and self.period_end:
+            # yfinance quarters carry no quarter number: the period end keeps them apart.
+            return (self.fiscal_year, f"Q@{self.period_end}")
         return (self.fiscal_year, self.fiscal_period)
 
     def label(self) -> str:
@@ -89,6 +92,8 @@ class Period:
             return self.fiscal_period
         if self.fiscal_period == "FY":
             return f"FY{self.fiscal_year}"
+        if self.fiscal_period == "Q" and self.period_end:
+            return f"quarter ended {self.period_end}"
         return f"{self.fiscal_period} FY{self.fiscal_year}"
 
 

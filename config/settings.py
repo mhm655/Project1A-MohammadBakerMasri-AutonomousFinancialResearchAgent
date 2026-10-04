@@ -221,6 +221,9 @@ def load_settings(
         if load_dotenv_file:
             _load_dotenv(project_root / ".env")
         env = os.environ
+    # A trailing space or CR (cmd's `set KEY=abc `, a Windows-edited file) is not part of the value, and a
+    # whitespace-only value means "unset": strip once so every lookup below sees clean values.
+    env = {k: v.strip() for k, v in env.items() if isinstance(v, str)}
 
     raw = _read_toml(config_dir / "default.toml")
     mode = env.get("ARA_MODE") or raw.get("mode", "free")

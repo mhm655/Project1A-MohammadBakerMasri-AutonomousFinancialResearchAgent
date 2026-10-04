@@ -52,9 +52,15 @@ class InMemoryVectorStore:
     """Stores records with the A3.3 schema; similarity is word-overlap (Jaccard), not embeddings."""
 
     records: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # Tool calls run in parallel worker threads: id allocation and iteration over ``records`` must be atomic.
+    _lock: Any = field(default_factory=threading.RLock, repr=False, compare=False)
 
     def store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """Store a document and return its generated id, ``stored`` flag and the record total."""
+        with self._lock:
+            return self._store(content, metadata)
+
+    def _store(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         ticker = metadata["ticker"].upper()
         stored_on = _parse_date(metadata["date"]).isoformat()  # "2025-01-29T15:00Z" is stored as the day, as in Chroma
         prefix = record_id_prefix(metadata)
@@ -75,6 +81,10 @@ class InMemoryVectorStore:
 
     def search(self, query: str, top_k: int = 5, filter: dict[str, Any] | None = None) -> dict[str, Any]:
         """Rank stored records by token overlap with ``query``; ``filter`` narrows by metadata. Raises ToolValidationError for a query with no words."""
+        with self._lock:
+            return self._search(query, top_k, filter)
+
+    def _search(self, query: str, top_k: int, filter: dict[str, Any] | None) -> dict[str, Any]:
         filter = filter or {}
         query_tokens = _tokens(query)
         if not query_tokens:
@@ -94,6 +104,10 @@ class InMemoryVectorStore:
 
     def add_many(self, records: list[Any]) -> int:
         """Store many chunks at once; content-hash ids make re-storing a chunk an update."""
+        with self._lock:
+            return self._add_many(records)
+
+    def _add_many(self, records: list[Any]) -> int:
         written = set()
         for record in records:
             meta = {"confidence": 0.5, "verified": False, **record.metadata,
@@ -107,13 +121,15 @@ class InMemoryVectorStore:
     def companies(self) -> dict[str, int]:
         """Record count per ticker, largest first."""
         counts: dict[str, int] = {}
-        for record in self.records.values():
-            counts[record["metadata"]["ticker"]] = counts.get(record["metadata"]["ticker"], 0) + 1
+        with self._lock:
+            for record in self.records.values():
+                counts[record["metadata"]["ticker"]] = counts.get(record["metadata"]["ticker"], 0) + 1
         return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
 
     def clear(self) -> None:
         """Remove every stored record."""
-        self.records.clear()
+        with self._lock:
+            self.records.clear()
 
 
 def _passes(meta: dict[str, Any], flt: dict[str, Any]) -> bool:
