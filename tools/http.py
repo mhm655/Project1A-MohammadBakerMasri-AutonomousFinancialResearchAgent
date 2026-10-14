@@ -77,7 +77,7 @@ class DiskCache:
             if self._clock() - meta["stored_at"] > ttl_s:
                 return None
             return body_path.read_bytes()
-        except (OSError, ValueError, KeyError):
+        except (OSError, ValueError, KeyError, TypeError):  # TypeError: a damaged metadata file
             return None
 
     def discard(self, key: str) -> None:
@@ -116,7 +116,8 @@ class HttpClient:
         self._limits = {host: RateLimiter(rps, burst=max(1, int(rps)), sleep=sleep)
                         for host, rps in (rate_limits or {}).items()}
         self._client = httpx.Client(transport=transport, follow_redirects=True,
-                                    headers={"Accept-Encoding": "gzip, deflate"})
+                                    headers={"Accept-Encoding": "gzip, deflate"},
+                                    event_hooks={"request": [self._keep_contact_email_on_sec_hosts]})
         self.requests_made = 0
         self.cache_hits = 0
 
@@ -127,6 +128,14 @@ class HttpClient:
                                          "User-Agent. Add it to .env.")
             return {"User-Agent": self.sec_user_agent}
         return {"User-Agent": GENERIC_USER_AGENT}
+
+    def _keep_contact_email_on_sec_hosts(self, request: httpx.Request) -> None:
+        # A redirect re-sends the request headers: the SEC User-Agent (with the contact email) must not
+        # follow a redirect to another site.
+        if self.sec_user_agent and request.headers.get("User-Agent") == self.sec_user_agent:
+            host = request.url.host or ""
+            if not any(host == h or host.endswith("." + h) for h in SEC_HOSTS):
+                request.headers["User-Agent"] = GENERIC_USER_AGENT
 
     def _limiter(self, host: str) -> RateLimiter | None:
         for pattern, limiter in self._limits.items():
@@ -167,7 +176,7 @@ class HttpClient:
                     return body
                 if response.status_code == 404:
                     raise ToolExecutionError(f"not found: {full}")
-                if response.status_code in (429, 500, 502, 503, 504):
+                if response.status_code in (408, 429, 500, 502, 503, 504):
                     last_error = f"HTTP {response.status_code}"
                     try:
                         retry_after = float(response.headers.get("retry-after", ""))

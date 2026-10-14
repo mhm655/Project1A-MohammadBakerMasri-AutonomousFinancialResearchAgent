@@ -194,7 +194,7 @@ def parse_steps(raw_steps: Any, registry: ToolRegistry, *, existing_ids: set[str
             raw_deps = [raw_deps]
         elif not isinstance(raw_deps, list):
             raw_deps = []
-        depends_on = [str(d) for d in raw_deps if d is not None]
+        depends_on = [str(d) for d in raw_deps if d is not None and str(d) != step_id]  # a step cannot wait for itself
         steps.append(PlanStep(id=step_id, goal=str(raw.get("goal") or f"Call {tool}"), tool=tool, args=args,
                               depends_on=depends_on, reason=str(raw.get("reason") or "")))
         taken.add(step_id)

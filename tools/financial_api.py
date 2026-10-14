@@ -382,6 +382,8 @@ _YF_ROWS = {
 def _yfinance_statements(ticker: str, statement_type: str, period: str, years: int, *, reason: str) -> dict[str, Any]:
     import math
 
+    from tools.sec_edgar import fiscal_year_of  # same naming of a year that ends in early January as the SEC path
+
     try:
         import yfinance as yf
 
@@ -418,7 +420,7 @@ def _yfinance_statements(ticker: str, statement_type: str, period: str, years: i
                                 {k: values.get(k) for k in STATEMENTS["balance_sheet"]},
                                 {"free_cash_flow": values.get("free_cash_flow")})
         end = col.date() if hasattr(col, "date") else date.fromisoformat(str(col)[:10])
-        rows.append({"fiscal_year": end.year, "fiscal_period": "FY" if period == "annual" else "Q",
+        rows.append({"fiscal_year": fiscal_year_of(end), "fiscal_period": "FY" if period == "annual" else "Q",
                      "period_end": end.isoformat(), "values": values})
     return {
         "ticker": ticker, "company_name": ticker, "statement_type": statement_type, "period": period,

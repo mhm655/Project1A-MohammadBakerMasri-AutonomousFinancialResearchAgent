@@ -45,6 +45,10 @@ _UNIT = (r"%|percent\b|percentage\s+points?\b|pp\b|ppts?\b|basis\s+points?\b|bps
          r"|thousand\b|million\b|billion\b|trillion\b|mn\b|bn\b|tn\b|[kmbt]\b")
 _NUM = r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"  # thousands separators allowed
 _RANGE = re.compile(rf"({_NUM})\s*(?:-|–|—|to)\s*\$?({_NUM})\s*({_UNIT})", re.IGNORECASE)
+# "between 5 and 7 billion": the unit belongs to both ends, as in a dashed range.
+_BETWEEN = re.compile(rf"\bbetween\s+\$?({_NUM})\s+and\s+\$?({_NUM})\s*({_UNIT})", re.IGNORECASE)
+# "$(5.2) billion": accounting brackets around a number must not cut it off from its unit.
+_BRACKETED = re.compile(rf"\(({_NUM})\)")
 # "30%-35%": a dash right after a percent sign is a range dash, not a minus sign on the next number.
 _PERCENT_DASH = re.compile(r"%\s*[-–—]\s*(?=\$?\d)")
 
@@ -76,6 +80,8 @@ def extract_quantities(text: str) -> list[Quantity]:
     """Find numeric quantities in text, skipping dates and bare years such as 2024."""
     text = _DATE.sub(" ", text)
     text = _PERCENT_DASH.sub("% to ", text)
+    text = _BRACKETED.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else m.group(1), text)
+    text = _BETWEEN.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else f"{m.group(1)} {m.group(3)} to {m.group(2)} {m.group(3)}", text)
     text = _RANGE.sub(lambda m: m.group(0) if _YEAR.match(m.group(1)) else f"{m.group(1)} {m.group(3)} to {m.group(2)} {m.group(3)}", text)
     found = []
     for m in _QUANTITY.finditer(text):

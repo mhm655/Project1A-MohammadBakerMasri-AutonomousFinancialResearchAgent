@@ -82,8 +82,8 @@ class TraceLogger:
                 "ts": datetime.now(UTC).isoformat(timespec="milliseconds"),
                 "session_id": self.session_id,
                 "type": event_type,
-                **redact(fields),
             }
+            event.update({k: v for k, v in redact(fields).items() if k not in event})  # fields never replace the envelope
             self.events.append(event)
             if self._fh is not None:
                 self._fh.write(json.dumps(event, default=str, ensure_ascii=False) + "\n")

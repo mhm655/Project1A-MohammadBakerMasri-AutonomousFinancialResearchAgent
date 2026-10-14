@@ -142,7 +142,7 @@ def fool_transcript(ticker: str, quarter: str, year: int) -> dict[str, Any]:
 
     slug_part = f"-{ticker.lower().replace('.', '')}-{quarter.lower()}-{year}-earnings"
     hits = live_web_search(f"{ticker} {quarter} {year} earnings call transcript fool.com", num_results=10)["results"]
-    url = next((h["url"] for h in hits if (m := _FOOL_URL.match(h["url"])) and slug_part in m.group(1)), None)
+    url = next((h["url"] for h in hits if (m := _FOOL_URL.match(h["url"])) and slug_part in "-" + m.group(1)), None)  # newer slugs start with the ticker
     if url is None:
         raise ToolExecutionError(f"{TOOL}: no Motley Fool transcript found for {ticker} {quarter} {year}", tool=TOOL)
     call_date, segments = parse_fool_transcript(_http().get(url, ttl_s=MONTH, timeout_s=60))

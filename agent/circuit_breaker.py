@@ -109,7 +109,7 @@ class CircuitBreaker:
                 self._consecutive += 1
                 self._window.append(True)
                 failures = sum(self._window)
-                window_full = len(self._window) >= self.config.window
+                window_full = len(self._window) >= max(1, self.config.window)  # window=0 keeps no history
                 if (
                     self._consecutive >= self.config.consecutive_failures
                     or (window_full and failures / len(self._window) >= self.config.window_failure_ratio)

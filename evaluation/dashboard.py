@@ -95,7 +95,10 @@ def _rows(scores: dict[str, Any]) -> list[tuple[str, list[dict[str, Any]]]]:
     seen: dict[str, dict[str, Any]] = {}
     for run in scores.get("runs", []):
         for m in run.get("metrics", []):
-            seen.setdefault(m["id"], m)
+            first = seen.setdefault(m["id"], m)
+            if m.get("target") and first.get("target") and m["target"] not in first["target"].split(" / "):
+                # AB-5 has a 300 s or 600 s limit per run: show every target in use, not only the first run's.
+                seen[m["id"]] = {**first, "target": f"{first['target']} / {m['target']}"}
     for mid, a in scores.get("aggregate", {}).items():
         seen.setdefault(mid, {"id": mid, **{k: a.get(k) for k in ("name", "category", "target", "unit")}})
     cats = list(CATEGORIES) + sorted({m.get("category") for m in seen.values()} - set(CATEGORIES))

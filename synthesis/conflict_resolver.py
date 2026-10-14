@@ -250,6 +250,10 @@ def _clusters(members: list[Claim], config: ReliabilityConfig) -> list[list[Clai
     return clusters
 
 
+def _independent(members: list[Claim]) -> int:
+    return len({base_provider(m.provider) for m in members})
+
+
 def _values(members: list[Claim]) -> list[dict[str, Any]]:
     return [{"value": m.value, "evidence_id": m.evidence_ids[0] if m.evidence_ids else "",
              "tier": _tier(m), "provider": m.provider} for m in members]
@@ -280,12 +284,13 @@ def _resolve_conflict(members: list[Claim], config: ReliabilityConfig) -> tuple[
                f"({_range_text(members)}); the filing dated {winner.filed} is the latest, so it supersedes "
                f"the earlier ones.")
     else:
-        clusters = sorted(_clusters(members, config), key=len, reverse=True)
+        # A majority needs independent sources: "sec_xbrl" and "peer_comparison:sec_xbrl" are one provider.
+        clusters = sorted(_clusters(members, config), key=lambda cl: (_independent(cl), len(cl)), reverse=True)
         top = clusters[0]
         best_tier = min(_tier(m) for m in members)
         best_tier_members = [m for m in members if _tier(m) == best_tier]
         tiers_differ = len({_tier(m) for m in members}) > 1
-        if len(members) >= 3 and len(top) >= 2 and (len(clusters) == 1 or len(top) > len(clusters[1])):
+        if len(members) >= 3 and _independent(top) >= 2 and (len(clusters) == 1 or _independent(top) > _independent(clusters[1])):
             claim = _build(top, _best(top).value, config)
             method = "triangulated_majority"
             outliers = [m for m in members if m not in top]
