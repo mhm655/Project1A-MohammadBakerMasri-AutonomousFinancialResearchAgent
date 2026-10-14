@@ -68,7 +68,7 @@ Legend: ✓ meets target, ✗ misses target, — not measured.
 | AB-2 | Error Recovery Rate | >= 90% | — | 100% ✓ | 100% ✓ | 0% ✗ | 0% ✗ | 100% ✓ | 100% ✓ | 100% ✓ |
 | AB-3 | Planning Quality | >= 4 / 5 | 4/5 ✓ | 4/5 ✓ | 5/5 ✓ | 3/5 ✗ | 5/5 ✓ | 2/5 ✗ | 2/5 ✗ | 4/5 ✓ |
 | AB-4 | Memory Utilization | >= 0.3 | 17% ✗ | 0% ✗ | 17% ✗ | 21% ✗ | 14% ✗ | 0% ✗ | 150% ✓ | 9% ✗ |
-| AB-5 | Latency | < 300 s | 44 s ✓ | 17 s ✓ | 76 s ✓ | 220 s ✓ | 138 s ✓ | 84 s ✓ | 246 s ✓ | 54 s ✓ |
+| AB-5 | Latency | < 300 s / < 600 s | 44 s ✓ | 17 s ✓ | 76 s ✓ | 220 s ✓ | 138 s ✓ | 84 s ✓ | 246 s ✓ | 54 s ✓ |
 
 ### Benchmark
 
@@ -246,7 +246,7 @@ Failing metrics:
 - **AB-2** Error Recovery Rate — method: automated; target: >= 90%
 - **AB-3** Planning Quality — method: hybrid; target: >= 4 / 5
 - **AB-4** Memory Utilization — method: automated; target: >= 0.3
-- **AB-5** Latency — method: automated; target: < 300 s
+- **AB-5** Latency — method: automated; target: < 300 s / < 600 s
 - **BM-1** Benchmark Fact Recall — method: benchmark; target: >= 70%
 
 Note: AB-4 uses memory_hits ÷ external_api_calls; the spec's "multiplied by" is a documented spec error (see ERROR_LOG.md Error 1).

@@ -93,12 +93,16 @@ def _cell_text(metric: dict[str, Any] | None) -> str:
 def _rows(scores: dict[str, Any]) -> list[tuple[str, list[dict[str, Any]]]]:
     """Metric definitions grouped by category, in canonical order (first-seen order inside a category)."""
     seen: dict[str, dict[str, Any]] = {}
+    targets: dict[str, list[str]] = {}
     for run in scores.get("runs", []):
         for m in run.get("metrics", []):
             first = seen.setdefault(m["id"], m)
-            if m.get("target") and first.get("target") and m["target"] not in first["target"].split(" / "):
+            used = targets.setdefault(m["id"], [])
+            if m.get("target") and m["target"] not in used:
+                used.append(m["target"])
+            if len(used) > 1:
                 # AB-5 has a 300 s or 600 s limit per run: show every target in use, not only the first run's.
-                seen[m["id"]] = {**first, "target": f"{first['target']} / {m['target']}"}
+                seen[m["id"]] = {**first, "target": " / ".join(used)}
     for mid, a in scores.get("aggregate", {}).items():
         seen.setdefault(mid, {"id": mid, **{k: a.get(k) for k in ("name", "category", "target", "unit")}})
     cats = list(CATEGORIES) + sorted({m.get("category") for m in seen.values()} - set(CATEGORIES))

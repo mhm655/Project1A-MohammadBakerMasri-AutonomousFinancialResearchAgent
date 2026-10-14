@@ -130,6 +130,16 @@ def test_the_dashboard_shows_every_target_a_metric_was_scored_against():
     assert targets == ["< 300 s / < 600 s"]
 
 
+def test_a_target_containing_a_slash_is_shown_once():
+    from evaluation.dashboard import _rows
+
+    metric = {"id": "CS-1", "name": "Logical Flow", "category": "Coherence and Structure", "target": ">= 4 / 5",
+              "unit": "score_1_5", "value": 4, "passed": True}
+    scores = {"runs": [{"metrics": [dict(metric)]} for _ in range(3)], "aggregate": {}}
+
+    assert [m["target"] for _category, metrics in _rows(scores) for m in metrics] == [">= 4 / 5"]
+
+
 def test_two_claims_from_one_provider_do_not_outvote_a_filing():
     from synthesis.conflict_resolver import Claim, Period, ReliabilityConfig, resolve
 
